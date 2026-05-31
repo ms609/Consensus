@@ -25,13 +25,17 @@ BugReports: https://github.com/ms609/Consensus/issues/
 Depends:
   R (>= 4.1.0),
 Imports:
+  ape,
+  Rcpp,
   Rdpack (>= 2.6),
   TreeTools (>= 2.1.0),
 Suggests:
-  ape,
+  distory,
   phangorn,
   spelling,
   testthat (>= 3.0),
+LinkingTo:
+  Rcpp,
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Config/roxygen2/version: 8.0.0

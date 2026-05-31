@@ -1,3 +1,4 @@
+^\.git$
 ^Consensus\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
