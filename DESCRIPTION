@@ -31,7 +31,7 @@ Imports:
 Suggests:
   spelling,
   testthat (>= 3.0),
-  TreeSearch (>= 2.0.0),
+  TreeSearch,
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Config/roxygen2/version: 8.0.0

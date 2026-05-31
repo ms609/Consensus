@@ -25,6 +25,10 @@
 #' implementation.  Branch lengths are fitted by non-negative least squares, so
 #' that the fitted distances are realisable by a tree, as the criterion requires.
 #'
+#' A lone input tree is its own average: it is returned (unrooted unless
+#' `outgroup` is given) without refitting, and `method`, `scale`, `weights` and
+#' `edgeLengths` then have no effect.
+#'
 #' @inheritParams Strict
 #' @param method Character specifying how to build the tree from the average
 #' distance matrix:
@@ -57,11 +61,11 @@
 #' @param check.labels Logical specifying whether to confirm that every tree
 #' describes the same leaves.  The default, `TRUE`, is safer; `FALSE` is faster
 #' when the trees are known to share an identical leaf set.
-#' @param \dots Further arguments (e.g. `spr`, `maxHits`) passed to
-#' [`TreeSearch::LeastSquaresTree()`] when `method = "ls"`.  (Arguments whose
-#' names abbreviate a formal argument of `Average()`, such as `tree` or `weight`,
-#' cannot be forwarded this way; call `TreeSearch::LeastSquaresTree()` directly to
-#' set them.)
+#' @param lsControl Optional named list of further arguments for the
+#' least-squares search (`method = "ls"`), passed to
+#' [`TreeSearch::LeastSquaresTree()`]; for example
+#' `list(spr = FALSE, maxHits = 5L, weight = "fm")` to use Fitch-Margoliash
+#' weighting.  Ignored by the other methods.
 #'
 #' @return `Average()` returns the average consensus tree, an object of class
 #' `phylo` with fitted branch lengths, unrooted unless `outgroup` is given.
@@ -76,9 +80,10 @@
 #' @seealso Split-based summaries: [`Strict()`], [`Majority()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
-#' @importFrom ape bionj cophenetic.phylo fastme.bal fastme.ols nj root
+#' @importFrom ape bionj cophenetic.phylo fastme.bal fastme.ols is.rooted nj root unroot
 #' @importFrom stats as.dist
 #' @importFrom TreeTools RenumberTips TipLabels
+#' @importFrom utils modifyList
 #' @export
 Average <- function(trees,
                     method = c("fastme.bal", "ls", "nj", "bionj", "fastme.ols"),
@@ -87,7 +92,7 @@ Average <- function(trees,
                     edgeLengths = NA,
                     outgroup = NULL,
                     check.labels = TRUE,
-                    ...) {
+                    lsControl = list()) {
   method <- match.arg(method)
   scale <- match.arg(scale)
 
@@ -98,7 +103,7 @@ Average <- function(trees,
 
   labs <- TipLabels(trees[[1]])
   averageDist <- .AverageDistance(trees, labs, weights, scale, edgeLengths)
-  tree <- .FitTree(averageDist, method, ...)
+  tree <- .FitTree(averageDist, method, lsControl)
 
   .RootResult(tree, outgroup)
 }
@@ -172,32 +177,49 @@ Average <- function(trees,
 }
 
 # Build a tree from an average distance matrix.
-.FitTree <- function(averageDist, method, ...) {
+.FitTree <- function(averageDist, method, lsControl) {
   d <- as.dist(averageDist)
   switch(method,
     nj = nj(d),
     bionj = bionj(d),
     fastme.bal = fastme.bal(d),
     fastme.ols = fastme.ols(d),
-    ls = .LeastSquaresTree(averageDist, ...)
+    ls = .LeastSquaresTree(averageDist, lsControl)
   )
 }
 
 # Least squares: delegate the topology search to TreeSearch's compiled
-# non-negative least-squares kernel.
-.LeastSquaresTree <- function(averageDist, ...) {
+# non-negative least-squares kernel.  `lsControl` is a named list of further
+# arguments for `TreeSearch::LeastSquaresTree()` (e.g. `spr`, `maxHits`,
+# `weight`); passing them through a list rather than `...` avoids R's partial
+# matching silently binding them to `Average()`'s own formals.
+.LeastSquaresTree <- function(averageDist, lsControl) {
   if (!requireNamespace("TreeSearch", quietly = TRUE) ||
       !exists("LeastSquaresTree", where = asNamespace("TreeSearch"),
               mode = "function")) {
     stop("`method = \"ls\"` requires a version of 'TreeSearch' that provides ",
          "`LeastSquaresTree()`.")
   }
-  TreeSearch::LeastSquaresTree(as.dist(averageDist), method = "nnls", ...)
+  if (!is.list(lsControl)) {
+    stop("`lsControl` must be a named list.")
+  }
+  d <- as.dist(averageDist)
+  if (length(lsControl) == 0L) {
+    TreeSearch::LeastSquaresTree(d, method = "nnls")
+  } else {
+    do.call(TreeSearch::LeastSquaresTree,
+            modifyList(list(d, method = "nnls"), lsControl))
+  }
 }
 
-# Return unrooted (the default) or rooted on the requested outgroup.
+# Return unrooted (the default, honouring the rooting-invariant contract) or
+# rooted on the requested outgroup.  Only re-root when necessary, to preserve
+# attributes (e.g. the `"RSS"` set by the least-squares search).
 .RootResult <- function(tree, outgroup) {
   if (is.null(outgroup)) {
+    if (is.rooted(tree)) {
+      tree <- unroot(tree)
+    }
     return(tree)
   }
   root(tree, outgroup = outgroup, resolve.root = TRUE)

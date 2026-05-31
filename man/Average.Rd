@@ -12,7 +12,7 @@ Average(
   edgeLengths = NA,
   outgroup = NULL,
   check.labels = TRUE,
-  ...
+  lsControl = list()
 )
 }
 \arguments{
@@ -58,11 +58,11 @@ unaffected by rooting, so the method is intrinsically unrooted.}
 describes the same leaves.  The default, \code{TRUE}, is safer; \code{FALSE} is faster
 when the trees are known to share an identical leaf set.}
 
-\item{\dots}{Further arguments (e.g. \code{spr}, \code{maxHits}) passed to
-\code{\link[TreeSearch:LeastSquaresTree]{TreeSearch::LeastSquaresTree()}} when \code{method = "ls"}.  (Arguments whose
-names abbreviate a formal argument of \code{Average()}, such as \code{tree} or \code{weight},
-cannot be forwarded this way; call \code{TreeSearch::LeastSquaresTree()} directly to
-set them.)}
+\item{lsControl}{Optional named list of further arguments for the
+least-squares search (\code{method = "ls"}), passed to
+\code{\link[TreeSearch:LeastSquaresTree]{TreeSearch::LeastSquaresTree()}}; for example
+\code{list(spr = FALSE, maxHits = 5L, weight = "fm")} to use Fitch-Margoliash
+weighting.  Ignored by the other methods.}
 }
 \value{
 \code{Average()} returns the average consensus tree, an object of class
@@ -95,6 +95,10 @@ least-squares search, which -- being NP-hard \insertCite{Day1987}{Consensus}
 -- uses tree rearrangements, as did the original \acronym{FITCH}
 implementation.  Branch lengths are fitted by non-negative least squares, so
 that the fitted distances are realisable by a tree, as the criterion requires.
+
+A lone input tree is its own average: it is returned (unrooted unless
+\code{outgroup} is given) without refitting, and \code{method}, \code{scale}, \code{weights} and
+\code{edgeLengths} then have no effect.
 }
 \examples{
 trees <- ape::rmtree(5, 8)         # five random eight-leaf trees

@@ -9,8 +9,16 @@ pairRss <- function(tree, target, labs) {
   sum((d[lower.tri(d)] - target[lower.tri(target)]) ^ 2)
 }
 
-test_that("Average() returns the least-squares tree on the toy example", {
+# `method = "ls"` needs a TreeSearch build that provides LeastSquaresTree().
+skip_without_ls <- function() {
   skip_if_not_installed("TreeSearch")
+  skip_if(!exists("LeastSquaresTree", where = asNamespace("TreeSearch"),
+                  mode = "function"),
+          "Installed TreeSearch lacks LeastSquaresTree()")
+}
+
+test_that("Average() returns the least-squares tree on the toy example", {
+  skip_without_ls()
   # ((((A,X),B),C),D) + (((A,B),C),(D,X)): averaging the path-length matrices
   # and fitting the closest tree returns input tree T2 (verified by exhaustive
   # least-squares over all 15 unrooted five-leaf topologies), not the apparent
@@ -24,7 +32,7 @@ test_that("Average() returns the least-squares tree on the toy example", {
 })
 
 test_that("Average() fits an additive matrix exactly", {
-  skip_if_not_installed("TreeSearch")
+  skip_without_ls()
   set.seed(1)
   tree <- ape::rtree(8)
   # The average of identical matrices is itself additive, so least squares
@@ -39,7 +47,7 @@ test_that("Average() fits an additive matrix exactly", {
 })
 
 test_that("Average('ls') finds the exhaustive optimum on real branch lengths", {
-  skip_if_not_installed("TreeSearch")
+  skip_without_ls()
   # Two distinct topologies with real branch lengths: the average path-length
   # matrix is non-additive (the genuine posterior-summary case).
   set.seed(1)
@@ -62,9 +70,12 @@ test_that("Average('ls') finds the exhaustive optimum on real branch lengths", {
 })
 
 test_that("A single tree is its own average", {
-  tree <- ape::rtree(6)
+  tree <- ape::rtree(6)               # rooted, with branch lengths
   expect_true(unrootedMatch(Average(list(tree)), tree))
   expect_true(unrootedMatch(Average(tree), tree))
+  # honour the unrooted-by-default contract even on the single-tree path
+  expect_false(ape::is.rooted(Average(list(tree))))
+  expect_true(ape::is.rooted(Average(tree, outgroup = tree[["tip.label"]][[1]])))
 })
 
 test_that("Average() honours distance methods, scaling and rooting", {
@@ -105,4 +116,24 @@ test_that("Average() validates its input", {
   expect_error(Average(trees, weights = c(1, 2, 3)), "one entry per tree")
   expect_error(Average(trees, weights = c(-1, 1)), "non-negative")
   expect_s3_class(Average(trees, edgeLengths = TRUE, method = "nj"), "phylo")
+})
+
+test_that("weights shift the average toward the favoured tree", {
+  t1 <- ape::read.tree(text = "((((A,X),B),C),D);")
+  t2 <- ape::read.tree(text = "(((A,B),C),(D,X));")
+  # all weight on one tree -> that tree's (additive) matrix -> that tree
+  expect_true(unrootedMatch(Average(list(t1, t2), method = "nj",
+                                    weights = c(1, 0)), t1))
+  expect_true(unrootedMatch(Average(list(t1, t2), method = "nj",
+                                    weights = c(0, 1)), t2))
+})
+
+test_that("edgeLengths auto-detection counts edges when lengths are mixed", {
+  withLen <- ape::rtree(6)
+  noLen <- withLen
+  noLen[["edge.length"]] <- NULL
+  # one tree lacks branch lengths, so the default (NA) falls back to edge counts
+  expect_s3_class(Average(list(withLen, noLen), method = "nj"), "phylo")
+  expect_error(Average(list(withLen, noLen), edgeLengths = TRUE),
+               "not every tree has branch lengths")
 })
