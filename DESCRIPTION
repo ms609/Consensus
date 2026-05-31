@@ -1,0 +1,41 @@
+Package: Consensus
+Title: Fast Algorithms for Phylogenetic Consensus Trees
+Version: 0.0.0.9000
+Authors@R: c(
+  person("Martin R.", "Smith", role = c("aut", "cre", "cph"),
+         email = "martin.smith@durham.ac.uk",
+         comment = c(ORCID = "0000-0001-5660-1727")),
+  person("Jesper", "Jansson", role = "cph",
+         comment = "Consensus algorithms (FACT, FACT2, FDCT)"),
+  person("Chuanqi", "Shen", role = "cph",
+         comment = "Consensus algorithms (FACT)"),
+  person("Wing-Kin", "Sung", role = "cph",
+         comment = "Consensus algorithms (FACT, FACT2, FDCT)")
+  )
+License: GPL (>= 3)
+Copyright: Incorporates C++ code from 'FACT' (GPL-3, doi:10.1145/2925985) and,
+  with permission, from 'FACT2' and 'FDCT' by Jesper Jansson and colleagues.
+Description: Efficient construction of phylogenetic consensus trees from a set
+  of input trees.  Methods include strict, majority-rule, majority-rule (+),
+  loose (combinable component / semi-strict), greedy, Adams, frequency
+  difference, R*, and local consensus, computed using asymptotically efficient
+  algorithms.  Builds on 'TreeTools' for the manipulation of trees and splits.
+URL: https://github.com/ms609/Consensus/
+BugReports: https://github.com/ms609/Consensus/issues/
+Depends:
+  R (>= 4.1.0),
+Imports:
+  Rdpack (>= 2.6),
+  TreeTools (>= 2.1.0),
+Suggests:
+  ape,
+  phangorn,
+  spelling,
+  testthat (>= 3.0),
+Config/testthat/edition: 3
+Config/testthat/parallel: false
+Config/roxygen2/version: 8.0.0
+RdMacros: Rdpack
+Encoding: UTF-8
+Language: en-GB
+Roxygen: list(markdown = TRUE)
