@@ -1,0 +1,15 @@
+^Consensus\.Rproj$
+^\.Rproj\.user$
+^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.claude$
+^dev$
+^\.agent.*$
+^.*\.o$
+^.*\.dll$
+^cran-comments\.md$
+^CRAN-SUBMISSION$
+^codemeta\.json$
+^LICENSE\.md$
