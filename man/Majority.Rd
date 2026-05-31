@@ -41,6 +41,7 @@ Majority(trees)
 }
 \seealso{
 Other consensus methods:
+\code{\link[=Average]{Average()}},
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}

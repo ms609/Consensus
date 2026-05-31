@@ -36,6 +36,7 @@ Strict(trees)
 Less conservative summaries: \code{\link[=Majority]{Majority()}}.
 
 Other consensus methods:
+\code{\link[=Average]{Average()}},
 \code{\link[=Majority]{Majority()}}
 }
 \concept{consensus methods}
