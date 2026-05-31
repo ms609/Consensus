@@ -1,0 +1,162 @@
+# For help debugging build failures open an issue on the RStudio community with the 'github-actions' tag.
+# https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * 4'  # Thursdays, 4am
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - "Meta**"
+      - "memcheck**"
+      - "docs**"
+      - "**.git"
+      - "**.json"
+      - "**.md"
+      - "**.yaml"
+      - "**.yml"
+      - "!**R-CMD-check.yml"
+      - "**.R[dD]ata"
+      - "**.Rpro*"
+  pull_request:
+    branches: ["*"]
+    paths-ignore:
+      - "Meta**"
+      - "memcheck**"
+      - "docs**"
+      - "**.git"
+      - "**.json"
+      - "**.md"
+      - "**.yaml"
+      - "**.yml"
+      - "!**R-CMD-check.yml"
+      - "**.R[dD]ata"
+      - "**.Rpro*"
+
+name: R-CMD-check
+
+jobs:
+  check-release:
+    runs-on: ubuntu-24.04
+    name: ubuntu-24.04 (release)
+
+    env:
+      _R_CHECK_CRAN_INCOMING_: true # Seemingly not set by --as-cran
+      _R_CHECK_FORCE_SUGGESTS_: false # CRAN settings
+      R_COMPILE_AND_INSTALL_PACKAGES: 'never'
+      _R_CHECK_THINGS_IN_CHECK_DIR_: false
+      R_REMOTES_STANDALONE: true
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      RSPM: "https://packagemanager.posit.co/cran/__linux__/noble/latest"
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v6
+
+      - name: Temporarily bump package version
+        run: |
+          old_version=$(grep "Version:" DESCRIPTION | awk '{print $2}')
+          if [[ $(echo "$old_version" | tr -cd '.' | wc -c) -eq 2 ]]; then
+            new_version="${old_version}.8888"
+            if [[ "$RUNNER_OS" == "macOS" ]]; then
+              sed -i "" "s/Version: .*/Version: ${new_version}/" DESCRIPTION
+            else
+              sed -i "s/Version: .*/Version: ${new_version}/" DESCRIPTION
+            fi
+          fi
+        shell: bash
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Set up R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          cache-version: 2-${{ runner.arch }}
+          needs: |
+            check
+
+      - name: Check package
+        uses: r-lib/actions/check-r-package@v2
+
+
+  check-all:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest, r: "release"}
+          - {os: macos-15-intel, r: "release"} # Until Intel architecture retired 2027-11
+          - {os: macOS-latest, r: "release"}
+          - {os: ubuntu-24.04-arm, r: "release", rspm: "https://packagemanager.posit.co/cran/__linux__/noble/latest"}
+          - {os: ubuntu-24.04, r: "devel", rspm: "https://packagemanager.posit.co/cran/__linux__/noble/latest"}
+
+    env:
+      _R_CHECK_CRAN_INCOMING_: ${{ github.event_name == 'pull_request' }}
+      _R_CHECK_FORCE_SUGGESTS_: false # CRAN settings
+      R_COMPILE_AND_INSTALL_PACKAGES: 'never'
+      _R_CHECK_THINGS_IN_CHECK_DIR_: false
+      R_REMOTES_STANDALONE: true
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      _R_CHECK_CRAN_INCOMING_USE_ASPELL_: false # Set to true when can figure how to install aspell on Windows
+      RSPM: ${{ matrix.config.rspm }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v6
+
+      - name: Temporarily bump package version
+        run: |
+          old_version=$(grep "Version:" DESCRIPTION | awk '{print $2}')
+          if [[ $(echo "$old_version" | tr -cd '.' | wc -c) -eq 2 ]]; then
+            new_version="${old_version}.9999"
+            if [[ "$RUNNER_OS" == "macOS" ]]; then
+              sed -i "" "s/Version: .*/Version: ${new_version}/" DESCRIPTION
+            else
+              sed -i "s/Version: .*/Version: ${new_version}/" DESCRIPTION
+            fi
+          fi
+          echo "Current package version is now: $(grep "Version:" DESCRIPTION | awk '{print $2}')"
+        shell: bash
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+
+      - name: Install apt packages
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install texlive-latex-base texlive-fonts-recommended
+
+      - name: Set up R dependencies (Windows)
+        if: runner.os == 'Windows'
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: |
+            check
+            coverage
+
+      - name: Set up R dependencies (Non-Windows)
+        if: runner.os != 'Windows'
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: |
+            check
+
+      - name: Check package
+        uses: r-lib/actions/check-r-package@v2
+
+      - name: Code coverage
+        if: runner.os == 'Windows'
+        run: |
+          covr::codecov()
+        shell: Rscript {0}
