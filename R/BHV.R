@@ -18,11 +18,16 @@ NULL
 # a 0/1 split-membership matrix (rows = interior splits, columns = `tipLabels`
 # order), the matching interior-edge lengths, and a per-tip pendant length.
 # BHV treespace is built on bipartitions (Brown & Owen treat trees as rooted by
-# fixing one leaf), so a degree-2 root is suppressed first: its two basal edges
-# induce the same split and are combined into a single coordinate.
-#' @importFrom ape is.rooted unroot
+# fixing one leaf), so degree-2 nodes are suppressed first: an internal singleton
+# or a degree-2 root has two edges inducing the same split, which must be combined
+# into a single coordinate (otherwise the tree lands at the wrong point).
+#' @importFrom ape collapse.singles is.rooted unroot
 #' @importFrom TreeTools as.Splits
 .TreeToBHV <- function(tree, tipLabels) {
+  if (is.null(tree[["edge.length"]])) {
+    stop("Trees must have `edge.length` to compute BHV distances.")
+  }
+  tree <- collapse.singles(tree)
   if (is.rooted(tree)) {
     tree <- unroot(tree)
   }

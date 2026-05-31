@@ -32,8 +32,11 @@ or \code{"sum"} for the total squared distance.}
 }
 \value{
 \code{BHVMean()} returns the mean tree, an object of class \code{phylo}, with
-attributes \code{iterations} (number of steps taken) and \code{converged} (whether the
-Cauchy criterion was met).
+attributes \code{iterations} (number of steps taken) and \code{converged}.  Because the
+step length shrinks as \eqn{1/(k+1)}, \code{converged = TRUE} indicates that
+successive estimates have stopped moving appreciably (the stopping rule was
+met before \code{maxIter}), not a guaranteed bound on the distance to the exact
+mean; tighten \code{tolerance} for greater precision.
 
 \code{BHVVariance()} returns a single non-negative number.
 }

@@ -155,3 +155,29 @@ test_that("mismatched leaf labels are rejected", {
   b <- rtreeBHV(6, letters[2:7])
   expect_error(BHVDistance(a, b), "same")
 })
+
+test_that("a zero-length interior edge is treated as absent (no hang)", {
+  # {1,2} has length 0 in A and is incompatible with {2,3}:1 in B; a 0-length
+  # interior edge is an absent split, so it must not stall the vertex cover.
+  a <- ape::read.tree(text = "(0:1,(1:0,2:0):0,3:1,4:1,5:1);")
+  b <- ape::read.tree(text = "(0:1,(2:1,3:1):1,1:1,4:1,5:1);")
+  d <- BHVDistance(a, b)
+  expect_true(is.finite(d))
+  # equals the limit as the 0-length edge shrinks: same as dropping it
+  aDrop <- ape::read.tree(text = "(0:1,1:0,2:0,3:1,4:1,5:1);")
+  expect_equal(d, BHVDistance(aDrop, b))
+})
+
+test_that("internal singleton nodes do not change the tree's position", {
+  # a tree and its collapse.singles() equivalent are identical in BHV space
+  b <- ape::read.tree(
+    text = "(0:1,((1:1,(2:1,(3:1,(4:1,5:1):1):1):1):2):1,6:1,7:1);")
+  expect_true(any(table(b[["edge"]][, 1]) == 1))   # has a singleton
+  expect_equal(BHVDistance(b, ape::collapse.singles(b)), 0, tolerance = 1e-12)
+})
+
+test_that("trees without edge lengths are rejected", {
+  a <- TreeTools::RandomTree(6, root = FALSE)            # no edge.length
+  b <- rtreeBHV(6, a[["tip.label"]])
+  expect_error(BHVDistance(a, b), "edge.length")
+})

@@ -297,6 +297,7 @@ static Tree from_r(const IntegerMatrix& mem, const NumericVector& len,
   t.leaf.assign(leaf.begin(), leaf.end());
   int nSplit = mem.nrow();
   for (int s = 0; s < nSplit; ++s) {
+    if (len[s] <= TOL) continue;   // a zero-length interior edge is an absent split
     Clade c(t.nBins, 0);
     bool bit0 = (mem(s, 0) != 0);
     for (int tip = 0; tip < t.nTip; ++tip) {
