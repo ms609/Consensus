@@ -141,13 +141,70 @@ test_that("BHVVariance() relates average and sum correctly", {
   expect_equal(va, mean(d2))
 })
 
-test_that("BHVPairwiseDistances() agrees with BHVDistance()", {
+test_that("BHVPairwiseDistances() is deprecated but still agrees with BHVDistance()", {
   set.seed(4)
   trees <- lapply(1:5, function(i) rtreeBHV(7))
-  d <- BHVPairwiseDistances(trees)
+  expect_warning(d <- BHVPairwiseDistances(trees), "deprecated")
   expect_s3_class(d, "dist")
   m <- as.matrix(d)
   expect_equal(m[2, 4], BHVDistance(trees[[2]], trees[[4]]))
+})
+
+test_that("BHVDistance() pairwise (list, NULL) returns the same dist as BHVDistance(trees, trees)", {
+  set.seed(5)
+  trees <- lapply(1:4, function(i) rtreeBHV(7))
+  expect_equal(BHVDistance(trees), BHVDistance(trees, trees))
+})
+
+test_that("BHVDistance() single-vs-list returns a named vector matching scalar calls", {
+  set.seed(6)
+  t0 <- rtreeBHV(6)
+  trees <- setNames(lapply(1:3, function(i) rtreeBHV(6)), c("A", "B", "C"))
+  v <- BHVDistance(t0, trees)
+  expect_length(v, 3)
+  expect_named(v, c("A", "B", "C"))
+  expect_equal(v[["A"]], BHVDistance(t0, trees[["A"]]))
+  expect_equal(v[["C"]], BHVDistance(t0, trees[["C"]]))
+  # list-vs-single is symmetric
+  w <- BHVDistance(trees, t0)
+  expect_equal(unname(v), unname(w))
+  expect_named(w, c("A", "B", "C"))
+})
+
+test_that("BHVDistance() list-vs-list returns a correctly oriented matrix", {
+  set.seed(7)
+  trees1 <- setNames(lapply(1:2, function(i) rtreeBHV(6)), c("r1", "r2"))
+  trees2 <- setNames(lapply(1:3, function(i) rtreeBHV(6)), c("c1", "c2", "c3"))
+  m <- BHVDistance(trees1, trees2)
+  expect_true(is.matrix(m))
+  expect_equal(dim(m), c(2L, 3L))
+  expect_equal(rownames(m), c("r1", "r2"))
+  expect_equal(colnames(m), c("c1", "c2", "c3"))
+  # entries agree with scalar calls
+  expect_equal(m["r1", "c2"], BHVDistance(trees1[["r1"]], trees2[["c2"]]))
+  expect_equal(m["r2", "c3"], BHVDistance(trees1[["r2"]], trees2[["c3"]]))
+})
+
+test_that("BHVDistance() list-vs-same-list returns dist, not matrix", {
+  set.seed(9)
+  trees <- lapply(1:4, function(i) rtreeBHV(6))
+  d <- BHVDistance(trees, trees)
+  expect_s3_class(d, "dist")
+  # identical(tree1, tree2) path agrees with the NULL path
+  expect_equal(d, BHVDistance(trees))
+})
+
+test_that("BHVDistance(single) errors informatively", {
+  t1 <- rtreeBHV(5)
+  expect_error(BHVDistance(t1), "tree2")
+})
+
+test_that("BHVDistance() carries tree names as dist labels", {
+  set.seed(10)
+  trees <- setNames(lapply(1:3, function(i) rtreeBHV(5)), c("X", "Y", "Z"))
+  d <- BHVDistance(trees)
+  m <- as.matrix(d)
+  expect_equal(rownames(m), c("X", "Y", "Z"))
 })
 
 test_that("mismatched leaf labels are rejected", {

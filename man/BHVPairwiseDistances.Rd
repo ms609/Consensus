@@ -11,22 +11,12 @@ BHVPairwiseDistances(trees)
 share the same leaf labels and carry \code{edge.length}.}
 }
 \value{
-\code{BHVPairwiseDistances()} returns a \code{\link[stats:dist]{stats::dist}} object of geodesic
-distances.
+A \code{\link[stats:dist]{stats::dist}} object of geodesic distances.
 }
 \description{
-\code{BHVPairwiseDistances()} returns the geodesic (\code{\link[=BHVDistance]{BHVDistance()}}) between each
-pair of trees in a set, as a \code{dist} object.
-}
-\examples{
-set.seed(0)
-trees <- lapply(1:4, function(i) {
-  tree <- TreeTools::RandomTree(7, root = FALSE)
-  tree$edge.length <- runif(nrow(tree$edge))
-  tree
-})
-BHVPairwiseDistances(trees)
-
+\strong{Deprecated.} \code{BHVPairwiseDistances()} is superseded by \code{BHVDistance(trees)}, which
+handles pairwise, one-vs-many, and cross-set comparisons in a single
+function.
 }
 \references{
 \insertAllCited{}

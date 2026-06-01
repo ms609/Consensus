@@ -4,33 +4,49 @@
 \alias{BHVDistance}
 \alias{BHVDist}
 \alias{BHV}
-\title{Geodesic (BHV) distance between two trees}
+\title{Geodesic (BHV) distance between trees}
 \usage{
-BHVDistance(tree1, tree2)
+BHVDistance(tree1, tree2 = NULL)
 
-BHVDist(tree1, tree2)
+BHVDist(tree1, tree2 = NULL)
 
-BHV(tree1, tree2)
+BHV(tree1, tree2 = NULL)
 }
 \arguments{
-\item{tree1, tree2}{Trees of class \code{phylo}, sharing the same leaf labels and
-carrying \code{edge.length}.}
+\item{tree1, tree2}{A \code{\link[ape:phylo]{phylo}} tree, a \code{multiPhylo} object, or a list of
+\code{phylo} trees, each carrying \code{edge.length}.  All trees across both
+arguments must share the same leaf labels.  \code{tree2} may be omitted when
+\code{tree1} is a collection, in which case all pairwise distances within
+\code{tree1} are returned.}
 }
 \value{
-\code{BHVDistance()} returns a single non-negative number: the length of
-the geodesic between \code{tree1} and \code{tree2} in BHV treespace.
+\itemize{
+\item Both \code{tree1} and \code{tree2} are single trees: a single non-negative
+number.
+\item One argument is a single tree, the other a collection: a named
+numeric vector with one entry per tree in the collection.
+\item \code{tree2} is omitted, or \code{tree1} and \code{tree2} are the same collection:
+a \code{\link[stats:dist]{stats::dist}} object of all pairwise distances.
+\item \code{tree1} and \code{tree2} are different collections: a numeric matrix
+with rows corresponding to \code{tree1} and columns to \code{tree2}.
+}
 }
 \description{
-\code{BHVDistance()} returns the geodesic distance between two phylogenetic trees
+\code{BHVDistance()} returns the geodesic distance between phylogenetic trees
 with edge lengths in the Billera-Holmes-Vogtmann (BHV) treespace
 \insertCite{BilleraHolmesVogtmann2001}{ConsTree}, computed with the
 polynomial-time GTP algorithm of \insertCite{OwenProvan2011;textual}{ConsTree}.
 }
 \examples{
 set.seed(2)
-t1 <- TreeTools::RandomTree(8, root = TRUE, lengths = runif(14))
-t2 <- TreeTools::RandomTree(8, root = TRUE, lengths = runif(14))
-BHVDistance(t1, t2)
+AddEdgeLengths <- function(tree) { tree$edge.length <- runif(nrow(tree$edge)); tree }
+trees <- lapply(1:4, function(i) AddEdgeLengths(TreeTools::RandomTree(8, root = TRUE)))
+t1 <- trees[[1]]; t2 <- trees[[2]]
+
+BHVDistance(t1, t2)               # scalar
+BHVDistance(t1, trees)            # named vector
+BHVDistance(trees)                # dist (pairwise)
+BHVDistance(trees[1:2], trees[3:4])  # matrix
 
 }
 \references{
