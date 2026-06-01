@@ -202,8 +202,13 @@ Average <- function(trees,
   if (!requireNamespace("TreeSearch", quietly = TRUE) ||
       !exists("LeastSquaresTree", where = asNamespace("TreeSearch"),
               mode = "function")) {
+    # nocov start
+    # Defensive guard for installations with a 'TreeSearch' older than the
+    # required (>= 2.0.0) build that provides `LeastSquaresTree()`; unreachable
+    # whenever the declared dependency is satisfied (as in the coverage run).
     stop("`method = \"ls\"` requires a version of 'TreeSearch' that provides ",
          "`LeastSquaresTree()`.")
+    # nocov end
   }
   if (!is.list(lsControl)) {
     stop("`lsControl` must be a named list.")

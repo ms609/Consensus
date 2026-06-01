@@ -77,6 +77,18 @@ test_that("Average('ls') finds the exhaustive optimum on real branch lengths", {
                exhaustive, tolerance = 1e-8)
 })
 
+test_that("Average('ls') honours and validates lsControl", {
+  skip_without_ls()
+  set.seed(1)
+  trees <- list(ape::rtree(6), ape::rtree(6))
+  # A non-empty lsControl is forwarded to TreeSearch::LeastSquaresTree().
+  fit <- Average(trees, method = "ls", lsControl = list(maxHits = 2L))
+  expect_s3_class(fit, "phylo")
+  # lsControl must be a named list.
+  expect_error(Average(trees, method = "ls", lsControl = "nope"),
+               "named list")
+})
+
 test_that("A single tree is its own average", {
   tree <- ape::rtree(6)               # rooted, with branch lengths
   expect_true(unrootedMatch(Average(list(tree)), tree))
@@ -119,6 +131,7 @@ test_that("Average() validates its input", {
   bad  <- ape::read.tree(text = "((A,B),(C,E));")
   expect_error(Average(list(good, bad)), "same leaf labels")
   expect_error(Average("not a tree"), "list of trees")
+  expect_error(Average(list()), "no trees")
 
   trees <- ape::rmtree(2, 6)
   expect_error(Average(trees, weights = c(1, 2, 3)), "one entry per tree")

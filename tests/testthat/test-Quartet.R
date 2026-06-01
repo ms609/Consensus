@@ -106,6 +106,53 @@ test_that("Quartet rejects bad input", {
                "2 trees")
 })
 
+test_that("Quartet validates tip count and tip-label agreement", {
+  library(TreeTools)
+  # >= 2 trees but fewer than 4 tips
+  tr3 <- as.phylo(1, nTip = 3)
+  expect_error(Quartet(structure(list(tr3, tr3), class = "multiPhylo")),
+               "at least 4 tips")
+  # more than 100 tips
+  big <- as.phylo(1, nTip = 101)
+  expect_error(Quartet(structure(list(big, big), class = "multiPhylo")),
+               "at most 100 tips")
+  # mismatched leaf labels (both a missing and an unexpected tip)
+  a <- ape::read.tree(text = "((a,b),(c,d));")
+  b <- ape::read.tree(text = "((a,b),(c,e));")
+  expect_error(Quartet(structure(list(a, b), class = "multiPhylo")),
+               "different tip labels")
+})
+
+test_that("Quartet greedy='first' adds and removes splits", {
+  library(TreeTools)
+  set.seed(1)
+  trees <- as.phylo(1:12, nTip = 8)
+  # init = "empty" forces the add branch of the first-improvement search;
+  empty <- Quartet(trees, init = "empty", greedy = "first")
+  expect_s3_class(empty, "phylo")
+  # init = "extended" starts over-resolved (Greedy has more splits than the
+  # quartet optimum), forcing the remove branch.
+  ext <- Quartet(trees, init = "extended", greedy = "first")
+  expect_s3_class(ext, "phylo")
+  expect_lt(NSplits(ext), NSplits(Greedy(trees)))
+})
+
+test_that("Quartet returns a star when no split is pooled", {
+  library(TreeTools)
+  star <- StarTree(letters[1:5])
+  qc <- Quartet(structure(list(star, star), class = "multiPhylo"))
+  expect_s3_class(qc, "phylo")
+  expect_equal(NSplits(qc), 0)
+})
+
+test_that("the Quartet C++ core enforces its tip-count guards", {
+  # The R wrapper guards these too, but the C++ entry point checks independently.
+  expect_error(ConsTree:::cpp_quartet_consensus(list(), 101L, TRUE, FALSE, TRUE),
+               "at most")
+  expect_error(ConsTree:::cpp_quartet_consensus(list(), 3L, TRUE, FALSE, TRUE),
+               "at least 4 tips")
+})
+
 test_that("Quartet handles non-binary input trees", {
   library(TreeTools)
   # Create a polytomy by using CollapseNode

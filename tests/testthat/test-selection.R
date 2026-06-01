@@ -63,3 +63,19 @@ test_that("A single tree, or fewer than four leaves, returns the input", {
   triplet <- ape::as.phylo(0:1, 3)
   expect_equal(Loose(triplet), triplet[[1]])
 })
+
+test_that("Every selection method short-circuits a bare single tree", {
+  # A bare `phylo` (not a list) takes the `.PoolSplits()` single-tree fast path
+  # and is returned unchanged; exercised for the methods whose trivial branch is
+  # otherwise untested.
+  tree <- ape::as.phylo(1, 9)
+  expect_equal(MajorityPlus(tree), tree)
+  expect_equal(Frequency(tree), tree)
+  expect_equal(Loose(tree), tree)
+  expect_equal(Greedy(tree), tree)
+})
+
+test_that("Selection methods reject non-list input", {
+  expect_error(Loose(5), "list of trees")
+  expect_error(MajorityPlus("not a tree"), "list of trees")
+})

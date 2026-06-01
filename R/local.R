@@ -82,12 +82,18 @@ Local <- function(trees, type = c("rooted", "induced")) {
   nwk <- localConsensus(edgeList, n, minrs)
 
   if (!nzchar(nwk)) {
-    # No valid consensus: return a star tree
+    # nocov start
+    # No-valid-consensus sentinel (empty string from the C++ core): return a
+    # star tree.  Unreachable for valid input -- the common-triplet set is a
+    # subset of the first tree's triplets, hence consistent, so the Aho-graph
+    # decomposition always separates and never reports a single inseparable
+    # full component.  Retained to mirror the reference binary's behaviour.
     star <- ape::read.tree(
       text = paste0("(", paste(seq_len(n), collapse = ","), ");")
     )
     star[["tip.label"]] <- labels
     return(star)
+    # nocov end
   }
 
   tree <- ape::read.tree(text = paste0(nwk, ";"))

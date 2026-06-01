@@ -141,6 +141,43 @@ test_that("BHVVariance() relates average and sum correctly", {
   expect_equal(va, mean(d2))
 })
 
+test_that("BHVVariance() computes its own mean when none is supplied", {
+  set.seed(11)
+  trees <- lapply(1:8, function(i) rtreeBHV(6))
+  v <- BHVVariance(trees)                  # internally calls BHVMean()
+  expect_length(v, 1L)
+  expect_gte(v, 0)
+  # The Fréchet mean is near-optimal, so the self-computed variance closely
+  # matches one based on a separately estimated mean (BHVMean() is stochastic).
+  expect_equal(v, BHVVariance(trees, mean = BHVMean(trees)), tolerance = 1e-2)
+})
+
+test_that("a single-split (four-leaf) tree maps to one BHV coordinate", {
+  # A four-leaf unrooted tree has exactly one interior split, the smallest
+  # non-trivial .TreeToBHV() case; two such trees differ in that one coordinate.
+  q1 <- ape::read.tree(text = "((a:1,b:1):2,(c:1,d:1):1);")
+  q2 <- ape::read.tree(text = "((a:1,c:1):3,(b:1,d:1):1);")
+  expect_true(is.finite(BHVDistance(q1, q2)))
+  expect_equal(BHVDistance(q1, q1), 0)
+})
+
+test_that("BHVMean() accepts a bare phylo and an all-star sample", {
+  # A bare `phylo` takes the single-tree branch of .BHVTreeList().
+  expect_equal(BHVDistance(BHVMean(op_T), op_T), 0, tolerance = 1e-9)
+  # A sample of star trees has no interior splits, so the mean is itself a star,
+  # exercising the empty-membership branch of .BHVToTree().
+  star <- TreeTools::StarTree(letters[1:5])
+  star[["edge.length"]] <- rep(1, nrow(star[["edge"]]))
+  m <- BHVMean(list(star, star))
+  expect_s3_class(m, "phylo")
+  expect_equal(TreeTools::NSplits(m), 0)
+})
+
+test_that("BHVMean() rejects a collection containing a non-tree", {
+  expect_error(BHVMean(list(op_T, "not a tree")),
+               "phylo")
+})
+
 
 test_that("BHVDistance() pairwise (list, NULL) returns the same dist as BHVDistance(trees, trees)", {
   set.seed(5)

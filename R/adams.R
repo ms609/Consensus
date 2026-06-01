@@ -86,10 +86,14 @@ Adams <- function(trees) {
     return(paste0("(", taxa[[1]], ",", taxa[[2]], ")"))
   }
   blocks <- .AdamsPartition(taxa, trees)
+  # nocov start
+  # Unreachable for valid input: within any single tree the kept taxa fall under
+  # >= 2 root-children, so the cross-tree signature always yields >= 2 blocks.
+  # Retained as a defensive guard (a degenerate star node).
   if (length(blocks) < 2L) {
-    # No tree refines the set: an unresolved (star) node.
     return(paste0("(", paste(taxa, collapse = ","), ")"))
   }
+  # nocov end
   parts <- vapply(blocks, .AdamsNewick, character(1), trees = trees)
   # Return:
   paste0("(", paste(parts, collapse = ","), ")")
@@ -116,9 +120,14 @@ Adams <- function(trees) {
     # Block of each requested taxon, in the order of `taxa`:
     blockId[match(taxa, kept[["tip.label"]])]
   }, integer(length(taxa)))
+  # nocov start
+  # Unreachable for valid input: `.AdamsPartition()` is only called with >= 3
+  # taxa (smaller sets short-circuit in `.AdamsNewick()`), so `vapply()` always
+  # returns a matrix.  Retained as a defensive guard for the single-taxon shape.
   if (is.null(dim(sig))) {
     sig <- matrix(sig, nrow = length(taxa))
   }
+  # nocov end
   signature <- apply(sig, 1L, paste, collapse = ",")
   # Return:
   unname(split(taxa, signature))

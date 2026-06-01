@@ -191,4 +191,14 @@ test_that("RStar() errors above the memory guard", {
   big <- ape::rtree(201, rooted = TRUE)
   big$edge.length <- NULL
   expect_error(RStar(c(big, big)), "200 leaves")
+  # The C++ core enforces the same guard independently of the R wrapper.
+  expect_error(ConsTree:::rStarConsensus(list(), 201L), "200 leaves")
+})
+
+test_that("RStar() rejects non-list input and trivial leaf sets", {
+  expect_error(RStar(5), "list of trees")
+  expect_error(RStar("not a tree"), "list of trees")
+  # Fewer than three leaves: the first tree is returned unchanged.
+  twoLeaf <- tt("(a, b);")
+  expect_identical(RStar(c(twoLeaf, twoLeaf)), twoLeaf)
 })

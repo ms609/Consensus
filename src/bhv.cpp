@@ -44,9 +44,13 @@ inline bool cl_disjoint(const Clade& a, const Clade& b) {
   for (size_t w = 0; w < a.size(); ++w) if (a[w] & b[w]) return false;
   return true;
 }
+// # nocov start
+// Only used by the dead common-edge branch of split_on_common() below (see the
+// note there); unreachable for inputs produced by build_geodesic().
 inline bool cl_proper_subset(const Clade& a, const Clade& b) {
   return cl_subset(a, b) && !cl_equal(a, b);
 }
+// # nocov end
 inline bool compatible(const Clade& a, const Clade& b) {
   return cl_subset(a, b) || cl_subset(b, a) || cl_disjoint(a, b);
 }
@@ -208,6 +212,11 @@ static void split_on_common(const std::vector<Clade>& Ac, const std::vector<doub
     if (!Ac.empty() || !Bc.empty()) gtp_no_common(Ac, Al, Bc, Bl, out);
     return;
   }
+  // # nocov start
+  // Unreachable: build_geodesic() extracts every exact-equal clade into the
+  // common-edge list *before* calling split_on_common(), so the Ac/Bc passed
+  // here share no clade and `ci` is always < 0 (handled above).  Kept for
+  // algorithmic completeness, mirroring the reference GTP recursion.
   const Clade& cl = Ac[ci];
   std::vector<Clade> blA, abA, blB, abB;
   std::vector<double> blAl, abAl, blBl, abBl;
@@ -221,6 +230,7 @@ static void split_on_common(const std::vector<Clade>& Ac, const std::vector<doub
   }
   split_on_common(blA, blAl, blB, blBl, out);
   split_on_common(abA, abAl, abB, abBl, out);
+  // # nocov end
 }
 
 static Geodesic build_geodesic(const Tree& A, const Tree& B) {

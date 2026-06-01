@@ -57,6 +57,11 @@ test_that("Adams of a single tree, or fewer than three leaves, returns the input
                twoLeaf)
 })
 
+test_that("Adams rejects non-list input", {
+  expect_error(Adams(5), "list of trees")
+  expect_error(Adams("not a tree"), "list of trees")
+})
+
 test_that("Adams preserves the full leaf set", {
   trees <- ape::as.phylo(0:9, 12)
   ad <- Adams(trees)

@@ -27,6 +27,15 @@ test_that("Local returns input for single-element list", {
   expect_equal(Local(list(tree)), tree)
 })
 
+test_that("Local rejects non-list input", {
+  expect_error(Local(5), "list of trees")
+  expect_error(Local("not a tree"), "list of trees")
+})
+
+test_that("the local-consensus scaffold self-check is wired up", {
+  expect_identical(ConsTree:::consensus_rcpp_selfcheck(), 42L)
+})
+
 # ---------------------------------------------------------------------------
 # Fewer than 3 leaves: return the input tree
 # ---------------------------------------------------------------------------

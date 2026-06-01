@@ -286,12 +286,18 @@ std::string localConsensus(Rcpp::List edgeList, int nTip, bool minrs) {
       comps[Lbitmask] = buildAho(indices, tri, minrs);
       int m = (int)comps[Lbitmask].size();
 
-      // NULL sentinel: inseparable full component
+      // NULL sentinel: inseparable full component.
+      // # nocov start
+      // Unreachable for valid input: the common-triplet set is a subset of the
+      // first tree's triplets and therefore consistent, so the Aho graph always
+      // separates (m >= 2) and never spans the whole component.  Retained to
+      // mirror the reference binary's "No valid consensus found." behaviour.
       if (m == 1 &&
           (int)std::bitset<20>(comps[Lbitmask][0]).count() ==
           (int)std::bitset<20>(Lbitmask).count()) {
         return "";
       }
+      // # nocov end
 
       dpBT[Lbitmask].assign(1 << m, 0);
 

@@ -177,9 +177,14 @@ static std::string assembleRStar(const std::vector<int>& tri, int n) {
       for (int v : kept[j]) { if (mi[v]) inter++; else onlyJ++; }
       int onlyI = (int)kept[i].size() - inter;
       // Overlap with each having a private element => not nested, not disjoint.
+      // # nocov start
+      // Unreachable: the strong clusters of R_maj form a laminar family
+      // (Jansson et al. 2016, Lemma 1.1), so no two overlap partially.
+      // Defensive internal-consistency guard.
       if (inter > 0 && onlyI > 0 && onlyJ > 0) {
         Rcpp::stop("rStarConsensus: non-laminar strong clusters (internal bug).");
       }
+      // # nocov end
     }
   }
 

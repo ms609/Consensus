@@ -39,7 +39,11 @@ NULL
   } else {
     M <- as.logical(sp)
     if (is.null(dim(M))) {
+      # nocov start
+      # Defensive: `as.logical()` on a `Splits` always returns a matrix (1 x nTip
+      # even for a single split), so this dimension-dropping guard is unreached.
       M <- matrix(as.integer(M), nrow = 1L)
+      # nocov end
     } else {
       M <- matrix(as.integer(M), nrow = nrow(M))
     }
