@@ -141,16 +141,7 @@ jobs:
         run: |
           sudo apt-get install texlive-latex-base texlive-fonts-recommended
 
-      - name: Set up R dependencies (Windows)
-        if: runner.os == 'Windows'
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: deps::.
-          needs: |
-            coverage
-
-      - name: Set up R dependencies (Non-Windows)
-        if: runner.os != 'Windows'
+      - name: Set up R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: deps::.
@@ -161,5 +152,6 @@ jobs:
       - name: Code coverage
         if: runner.os == 'Windows'
         run: |
+          install.packages("covr")
           covr::codecov()
         shell: Rscript {0}
