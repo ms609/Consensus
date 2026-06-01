@@ -13,3 +13,15 @@ rStarConsensus <- function(edgeList, nTip) {
     .Call(`_Consensus_rStarConsensus`, edgeList, nTip)
 }
 
+cpp_bhv_distance <- function(memA, lenA, leafA, memB, lenB, leafB) {
+    .Call(`_Consensus_cpp_bhv_distance`, memA, lenA, leafA, memB, lenB, leafB)
+}
+
+cpp_bhv_tree_at <- function(memA, lenA, leafA, memB, lenB, leafB, lambda) {
+    .Call(`_Consensus_cpp_bhv_tree_at`, memA, lenA, leafA, memB, lenB, leafB, lambda)
+}
+
+cpp_bhv_mean <- function(mems, lens, leaves, nTip, maxIter, tol, cauchyLength) {
+    .Call(`_Consensus_cpp_bhv_mean`, mems, lens, leaves, nTip, maxIter, tol, cauchyLength)
+}
+

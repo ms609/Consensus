@@ -12,7 +12,7 @@ Average(
   edgeLengths = NA,
   outgroup = NULL,
   check.labels = TRUE,
-  ...
+  lsControl = list()
 )
 }
 \arguments{
@@ -27,16 +27,16 @@ distance matrix:
 the least-squares tree;
 \item \code{"ls"} searches for the least-squares tree itself -- the criterion under
 which Lapointe & Cucumel's averaging guarantee holds -- using
-\pkg{TreeSearch} and \pkg{phangorn}; slower, and currently a single-start
-rearrangement search;
+\code{\link[TreeSearch:LeastSquaresTree]{TreeSearch::LeastSquaresTree()}}, a compiled non-negative least-squares
+\acronym{NNI}/\acronym{SPR} search;
 \item \code{"nj"}, \code{"bionj"} and \code{"fastme.ols"} return the corresponding distance tree
 \insertCite{SaitouNei1987,Gascuel1997}{Consensus}.
 }}
 
 \item{weights}{Optional numeric vector, one entry per tree, giving the weight
 of each tree in the average (e.g. posterior probabilities).  The default,
-\code{NULL}, weights every tree equally – appropriate for a posterior sample,
-in which a tree's frequency already encodes its probability.}
+\code{NULL}, weights every tree equally -- appropriate for a posterior sample, in
+which a tree's frequency already encodes its probability.}
 
 \item{scale}{Character specifying whether to rescale each tree's distance
 matrix before averaging.  \code{"none"} (the default) leaves matrices unscaled,
@@ -58,8 +58,11 @@ unaffected by rooting, so the method is intrinsically unrooted.}
 describes the same leaves.  The default, \code{TRUE}, is safer; \code{FALSE} is faster
 when the trees are known to share an identical leaf set.}
 
-\item{\dots}{Further arguments (e.g. \code{maxIter}, \code{maxHits}, \code{EdgeSwapper})
-passed to \code{\link[TreeSearch:TreeSearch]{TreeSearch::TreeSearch()}} when \code{method = "ls"}.}
+\item{lsControl}{Optional named list of further arguments for the
+least-squares search (\code{method = "ls"}), passed to
+\code{\link[TreeSearch:LeastSquaresTree]{TreeSearch::LeastSquaresTree()}}; for example
+\code{list(spr = FALSE, maxHits = 5L, weight = "fm")} to use Fitch-Margoliash
+weighting.  Ignored by the other methods.}
 }
 \value{
 \code{Average()} returns the average consensus tree, an object of class
@@ -90,7 +93,12 @@ fit, not an inversion.  By default \code{Average()} approximates it with the fas
 balanced minimum-evolution tree; \code{method = "ls"} instead performs the exact
 least-squares search, which -- being NP-hard \insertCite{Day1987}{Consensus}
 -- uses tree rearrangements, as did the original \acronym{FITCH}
-implementation.
+implementation.  Branch lengths are fitted by non-negative least squares, so
+that the fitted distances are realisable by a tree, as the criterion requires.
+
+A lone input tree is its own average: it is returned (unrooted unless
+\code{outgroup} is given) without refitting, and \code{method}, \code{scale}, \code{weights} and
+\code{edgeLengths} then have no effect.
 }
 \examples{
 trees <- ape::rmtree(5, 8)         # five random eight-leaf trees
@@ -107,14 +115,7 @@ Average(trees, method = "ls")      # faithful least-squares fit (slower)
 Split-based summaries: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}.
 
 Other consensus methods:
-\code{\link[=Adams]{Adams()}},
-\code{\link[=Frequency]{Frequency()}},
-\code{\link[=Greedy]{Greedy()}},
-\code{\link[=Local]{Local()}},
-\code{\link[=Loose]{Loose()}},
 \code{\link[=Majority]{Majority()}},
-\code{\link[=MajorityPlus]{MajorityPlus()}},
-\code{\link[=RStar]{RStar()}},
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}

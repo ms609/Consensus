@@ -35,4 +35,8 @@
 - `MajorityPlus()`: majority-rule (+) consensus.
 - `Frequency()`: frequency-difference consensus.
 - `Average()`: distance-based average consensus.
+- Add Billera-Holmes-Vogtmann (BHV) treespace summaries with branch lengths:
+  `BHVDistance()` (Owen-Provan geodesic distance), `BHVPairwiseDistances()`,
+  `BHVMean()` (iterative Fréchet mean) and `BHVVariance()`.  The geodesic core
+  is implemented in C++.
 - Add `AGENTS.md`, `README.md`, and source-paper references.
