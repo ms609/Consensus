@@ -125,6 +125,14 @@ BHVDistance <- function(tree1, tree2) {
                    b[["membership"]], b[["lengths"]], b[["leaf"]])
 }
 
+#' @rdname BHVDistance
+#' @export
+BHVDist <- BHVDistance
+
+#' @rdname BHVDistance
+#' @export
+BHV <- BHVDistance
+
 # Tree at parameter `lambda` along the geodesic (chiefly for testing/teaching).
 .BHVTreeAt <- function(tree1, tree2, lambda) {
   tl <- .BHVTipLabels(list(tree1, tree2))

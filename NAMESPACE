@@ -2,6 +2,8 @@
 
 export(Adams)
 export(Average)
+export(BHV)
+export(BHVDist)
 export(BHVDistance)
 export(BHVMean)
 export(BHVPairwiseDistances)

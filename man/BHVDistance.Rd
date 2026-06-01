@@ -2,9 +2,15 @@
 % Please edit documentation in R/BHV.R
 \name{BHVDistance}
 \alias{BHVDistance}
+\alias{BHVDist}
+\alias{BHV}
 \title{Geodesic (BHV) distance between two trees}
 \usage{
 BHVDistance(tree1, tree2)
+
+BHVDist(tree1, tree2)
+
+BHV(tree1, tree2)
 }
 \arguments{
 \item{tree1, tree2}{Trees of class \code{phylo}, sharing the same leaf labels and
