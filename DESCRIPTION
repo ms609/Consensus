@@ -32,6 +32,7 @@ Imports:
 Suggests:
   distory,
   phangorn,
+  Quartet,
   spelling,
   testthat (>= 3.0),
 LinkingTo:

@@ -10,6 +10,21 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// cpp_quartet_consensus
+List cpp_quartet_consensus(const List& splits_list, const int n_tips, const bool init_majority, const bool init_extended, const bool greedy_best_flag);
+RcppExport SEXP _Consensus_cpp_quartet_consensus(SEXP splits_listSEXP, SEXP n_tipsSEXP, SEXP init_majoritySEXP, SEXP init_extendedSEXP, SEXP greedy_best_flagSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tips(n_tipsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type init_majority(init_majoritySEXP);
+    Rcpp::traits::input_parameter< const bool >::type init_extended(init_extendedSEXP);
+    Rcpp::traits::input_parameter< const bool >::type greedy_best_flag(greedy_best_flagSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_quartet_consensus(splits_list, n_tips, init_majority, init_extended, greedy_best_flag));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_bhv_distance
 double cpp_bhv_distance(IntegerMatrix memA, NumericVector lenA, NumericVector leafA, IntegerMatrix memB, NumericVector lenB, NumericVector leafB);
 RcppExport SEXP _Consensus_cpp_bhv_distance(SEXP memASEXP, SEXP lenASEXP, SEXP leafASEXP, SEXP memBSEXP, SEXP lenBSEXP, SEXP leafBSEXP) {
@@ -62,6 +77,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_Consensus_cpp_quartet_consensus", (DL_FUNC) &_Consensus_cpp_quartet_consensus, 5},
     {"_Consensus_cpp_bhv_distance", (DL_FUNC) &_Consensus_cpp_bhv_distance, 6},
     {"_Consensus_cpp_bhv_tree_at", (DL_FUNC) &_Consensus_cpp_bhv_tree_at, 7},
     {"_Consensus_cpp_bhv_mean", (DL_FUNC) &_Consensus_cpp_bhv_mean, 7},
