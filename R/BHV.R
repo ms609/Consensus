@@ -94,35 +94,113 @@ NULL
   tree
 }
 
-#' Geodesic (BHV) distance between two trees
+#' Geodesic (BHV) distance between trees
 #'
-#' `BHVDistance()` returns the geodesic distance between two phylogenetic trees
+#' `BHVDistance()` returns the geodesic distance between phylogenetic trees
 #' with edge lengths in the Billera-Holmes-Vogtmann (BHV) treespace
 #' \insertCite{BilleraHolmesVogtmann2001}{ConsTree}, computed with the
 #' polynomial-time GTP algorithm of \insertCite{OwenProvan2011;textual}{ConsTree}.
 #'
-#' @param tree1,tree2 Trees of class `phylo`, sharing the same leaf labels and
-#' carrying `edge.length`.
+#' @param tree1,tree2 A [`phylo`] tree, a `multiPhylo` object, or a list of
+#'   `phylo` trees, each carrying `edge.length`.  All trees across both
+#'   arguments must share the same leaf labels.  `tree2` may be omitted when
+#'   `tree1` is a collection, in which case all pairwise distances within
+#'   `tree1` are returned.
 #'
-#' @return `BHVDistance()` returns a single non-negative number: the length of
-#' the geodesic between `tree1` and `tree2` in BHV treespace.
+#' @return
+#' \itemize{
+#'   \item Both `tree1` and `tree2` are single trees: a single non-negative
+#'     number.
+#'   \item One argument is a single tree, the other a collection: a named
+#'     numeric vector with one entry per tree in the collection.
+#'   \item `tree2` is omitted, or `tree1` and `tree2` are the same collection:
+#'     a [`stats::dist`] object of all pairwise distances.
+#'   \item `tree1` and `tree2` are different collections: a numeric matrix
+#'     with rows corresponding to `tree1` and columns to `tree2`.
+#' }
 #'
 # TODO Update to `lengths = runif` once TreeTools > 2.3.0 is required
 #' @examples
 #' set.seed(2)
-#' t1 <- TreeTools::RandomTree(8, root = TRUE, lengths = runif(14))
-#' t2 <- TreeTools::RandomTree(8, root = TRUE, lengths = runif(14))
-#' BHVDistance(t1, t2)
+#' AddEdgeLengths <- function(tree) { tree$edge.length <- runif(nrow(tree$edge)); tree }
+#' trees <- lapply(1:4, function(i) AddEdgeLengths(TreeTools::RandomTree(8, root = TRUE)))
+#' t1 <- trees[[1]]; t2 <- trees[[2]]
+#'
+#' BHVDistance(t1, t2)               # scalar
+#' BHVDistance(t1, trees)            # named vector
+#' BHVDistance(trees)                # dist (pairwise)
+#' BHVDistance(trees[1:2], trees[3:4])  # matrix
 #'
 #' @references \insertAllCited{}
 #' @family BHV summaries
 #' @export
-BHVDistance <- function(tree1, tree2) {
-  tl <- .BHVTipLabels(list(tree1, tree2))
-  a <- .TreeToBHV(tree1, tl)
-  b <- .TreeToBHV(tree2, tl)
-  cpp_bhv_distance(a[["membership"]], a[["lengths"]], a[["leaf"]],
-                   b[["membership"]], b[["lengths"]], b[["leaf"]])
+BHVDistance <- function(tree1, tree2 = NULL) {
+  single1 <- inherits(tree1, "phylo")
+
+  if (is.null(tree2)) {
+    if (single1) stop("Supply `tree2` when `tree1` is a single tree.")
+    return(.BHVAllPairs(tree1))
+  }
+
+  single2 <- inherits(tree2, "phylo")
+
+  if (single1 && single2) {
+    tl <- .BHVTipLabels(list(tree1, tree2))
+    a <- .TreeToBHV(tree1, tl)
+    b <- .TreeToBHV(tree2, tl)
+    return(cpp_bhv_distance(a[["membership"]], a[["lengths"]], a[["leaf"]],
+                            b[["membership"]], b[["lengths"]], b[["leaf"]]))
+  }
+
+  if (single1) {
+    trees2 <- .BHVTreeList(tree2)
+    tl <- .BHVTipLabels(c(list(tree1), trees2))
+    a <- .TreeToBHV(tree1, tl)
+    reps2 <- lapply(trees2, .TreeToBHV, tipLabels = tl)
+    result <- vapply(reps2, function(b) {
+      cpp_bhv_distance(a[["membership"]], a[["lengths"]], a[["leaf"]],
+                       b[["membership"]], b[["lengths"]], b[["leaf"]])
+    }, numeric(1))
+    names(result) <- names(trees2)
+    return(result)
+  }
+
+  if (single2) {
+    trees1 <- .BHVTreeList(tree1)
+    tl <- .BHVTipLabels(c(trees1, list(tree2)))
+    b <- .TreeToBHV(tree2, tl)
+    reps1 <- lapply(trees1, .TreeToBHV, tipLabels = tl)
+    result <- vapply(reps1, function(a) {
+      cpp_bhv_distance(a[["membership"]], a[["lengths"]], a[["leaf"]],
+                       b[["membership"]], b[["lengths"]], b[["leaf"]])
+    }, numeric(1))
+    names(result) <- names(trees1)
+    return(result)
+  }
+
+  # Both lists
+  trees1 <- .BHVTreeList(tree1)
+  trees2 <- .BHVTreeList(tree2)
+
+  if (identical(tree1, tree2)) {
+    return(.BHVAllPairs(tree1))
+  }
+
+  tl <- .BHVTipLabels(c(trees1, trees2))
+  reps1 <- lapply(trees1, .TreeToBHV, tipLabels = tl)
+  reps2 <- lapply(trees2, .TreeToBHV, tipLabels = tl)
+  n1 <- length(reps1)
+  n2 <- length(reps2)
+  d <- matrix(NA_real_, n1, n2, dimnames = list(names(trees1), names(trees2)))
+  for (i in seq_len(n1)) {
+    a <- reps1[[i]]
+    for (j in seq_len(n2)) {
+      b <- reps2[[j]]
+      d[i, j] <- cpp_bhv_distance(a[["membership"]], a[["lengths"]], a[["leaf"]],
+                                   b[["membership"]], b[["lengths"]], b[["leaf"]])
+    }
+  }
+  d
 }
 
 #' @rdname BHVDistance
@@ -156,36 +234,15 @@ BHV <- BHVDistance
   trees
 }
 
-#' Distances between every pair of trees
-#'
-#' `BHVPairwiseDistances()` returns the geodesic ([BHVDistance()]) between each
-#' pair of trees in a set, as a `dist` object.
-#'
-#' @param trees A list of trees, or a `multiPhylo` object; all entries must
-#' share the same leaf labels and carry `edge.length`.
-#'
-#' @return `BHVPairwiseDistances()` returns a [`stats::dist`] object of geodesic
-#' distances.
-#'
-#' @examples
-#' set.seed(0)
-#' trees <- lapply(1:4, function(i) {
-#'   tree <- TreeTools::RandomTree(7, root = FALSE)
-#'   tree$edge.length <- runif(nrow(tree$edge))
-#'   tree
-#' })
-#' BHVPairwiseDistances(trees)
-#'
-#' @references \insertAllCited{}
-#' @family BHV summaries
+# Private pairwise-distance workhorse used by BHVDistance().
 #' @importFrom stats as.dist
-#' @export
-BHVPairwiseDistances <- function(trees) {
+.BHVAllPairs <- function(trees) {
   trees <- .BHVTreeList(trees)
   tl <- .BHVTipLabels(trees)
   reps <- lapply(trees, .TreeToBHV, tipLabels = tl)
   n <- length(reps)
-  d <- matrix(0, n, n)
+  nms <- names(trees)
+  d <- matrix(0, n, n, dimnames = list(nms, nms))
   for (i in seq_len(n - 1L)) {
     a <- reps[[i]]
     for (j in (i + 1L):n) {
@@ -218,7 +275,8 @@ BHVPairwiseDistances <- function(trees) {
 #' unresolved even when the sample trees are binary
 #' \insertCite{BrownOwen2020}{ConsTree}.
 #'
-#' @inheritParams BHVPairwiseDistances
+#' @param trees A list of trees, or a `multiPhylo` object; all entries must
+#'   share the same leaf labels and carry `edge.length`.
 #' @param tolerance Numeric convergence threshold, _relative_ to the sample
 #' standard deviation: iteration stops once `cauchyLength` consecutive steps
 #' each move the estimate less than `tolerance` times the sample standard
