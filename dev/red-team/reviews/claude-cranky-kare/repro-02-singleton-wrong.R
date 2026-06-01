@@ -15,5 +15,5 @@ cat("has singleton:", any(table(B$edge[,1]) == 1), "\n")
 cat("d(B, collapse.singles(B)) =", BHVDistance(B, Bc), "  (correct answer: 0)\n")
 # Also: tree_at endpoint corruption
 A <- read.tree(text="(0:1,(1:1,((2:1,3:1):2,(4:1,5:1):2):3):1,(6:1,7:1):4);")
-cat("d(.BHVTreeAt(A,B,1), B) =", BHVDistance(Consensus:::.BHVTreeAt(A,B,1), B),
+cat("d(.BHVTreeAt(A,B,1), B) =", BHVDistance(ConsTree:::.BHVTreeAt(A,B,1), B),
     "  (should be 0)\n")

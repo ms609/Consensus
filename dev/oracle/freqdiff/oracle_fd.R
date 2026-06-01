@@ -1,6 +1,6 @@
 # Development-only bridge to the freqdiff oracle binary
 # (dev/oracle/freqdiff/freqdiff.exe).
-# NOT part of the package: used only to cross-validate Consensus::Frequency()
+# NOT part of the package: used only to cross-validate ConsTree::Frequency()
 # against the FDCT_new reference implementation by Jesper Jansson et al.
 #
 # Binary I/O (reverse-engineered from dev/reference/FDCT_new/main_new.cpp,

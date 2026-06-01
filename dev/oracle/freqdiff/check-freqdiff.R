@@ -1,4 +1,4 @@
-# Cross-validate Consensus::Frequency() against the reference FDCT_new freqdiff
+# Cross-validate ConsTree::Frequency() against the reference FDCT_new freqdiff
 # binary on the same fixtures used in dev/oracle/check-oracle.R.
 #
 # Run with:
@@ -108,7 +108,7 @@ for (dn in names(datasets)) {
     # and check if any have the same count.
     all_splits <- union(mine_splits, ref_splits)
     pool <- tryCatch({
-      sp_obj <- Consensus:::.PoolSplits(trees)
+      sp_obj <- ConsTree:::.PoolSplits(trees)
       list(splits = sp_obj$splits, counts = sp_obj$counts,
            members = sp_obj$members, labels = sp_obj$labels)
     }, error = function(e) NULL)

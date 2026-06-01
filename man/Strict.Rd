@@ -48,4 +48,3 @@ Other consensus methods:
 \code{\link[=RStar]{RStar()}}
 }
 \concept{consensus methods}
-

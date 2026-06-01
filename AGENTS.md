@@ -111,7 +111,7 @@ loaded).
 
 ## Method roster & status
 
-| `Consensus::` | Kind | Source | Status |
+| `ConsTree::` | Kind | Source | Status |
 |---|---|---|---|
 | `Strict()` | wrapper → `Consensus(p=1)` | TreeTools | ✅ FACT-exact |
 | `Majority()` / `MajorityRule()` | wrapper → `Consensus(p)` | TreeTools | ✅ FACT-exact |
@@ -174,7 +174,7 @@ order-independent split-string sets (`splitSet()` helper). Idempotence —
 
 - **Functions** `BigCamelCase`; **variables** `camelCase`; **private helpers**
   dot-prefixed (`.PoolSplits`). One exported method per concept; keep public API
-  reachable as `Consensus::<Method>()`.
+  reachable as `ConsTree::<Method>()`.
 - **`@importFrom` in each function's roxygen block** — never a blanket `@import`.
 - **`# Return:` comment** marks the final returned value instead of an explicit
   `return()`; early `return()` for guard clauses is fine (TreeTools precedent).

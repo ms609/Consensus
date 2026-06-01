@@ -100,4 +100,3 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
-

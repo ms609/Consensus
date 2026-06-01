@@ -80,4 +80,3 @@ Other BHV summaries:
 \code{\link[=BHVPairwiseDistances]{BHVPairwiseDistances()}}
 }
 \concept{BHV summaries}
-

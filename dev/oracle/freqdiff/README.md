@@ -1,7 +1,7 @@
 # dev/oracle/freqdiff — frequency-difference oracle
 
 Dev-only tooling.  Not part of the package (covered by `.Rbuildignore`).
-Cross-validates `Consensus::Frequency()` against the FDCT_new reference
+Cross-validates `ConsTree::Frequency()` against the FDCT_new reference
 binary by Jesper Jansson et al. (<https://github.com/tswddd2/FDCT_new>).
 
 ## Files

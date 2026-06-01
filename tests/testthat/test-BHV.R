@@ -17,7 +17,7 @@ rtreeBHV <- function(n, labels = letters[seq_len(n)]) {
 test_that(".TreeToBHV() maps splits to their edge lengths", {
   tree <- ape::read.tree(text = "(a:0,(((b:0,c:0):4,(d:0,e:0):10):3,f:0):0);")
   tl <- sort(tree[["tip.label"]])
-  rep <- Consensus:::.TreeToBHV(tree, tl)
+  rep <- ConsTree:::.TreeToBHV(tree, tl)
   # three interior splits with lengths 4, 10, 3
   cladeSizes <- rowSums(rep[["membership"]])
   lenBySize <- stats::setNames(rep[["lengths"]], cladeSizes)
@@ -30,8 +30,8 @@ test_that(".BHVToTree() inverts .TreeToBHV() (round-trip)", {
   set.seed(7)
   tree <- rtreeBHV(9)
   tl <- sort(tree[["tip.label"]])
-  rep <- Consensus:::.TreeToBHV(tree, tl)
-  back <- Consensus:::.BHVToTree(
+  rep <- ConsTree:::.TreeToBHV(tree, tl)
+  back <- ConsTree:::.BHVToTree(
     list(membership = rep[["membership"]], lengths = rep[["lengths"]],
          leaf = rep[["leaf"]]), tl)
   expect_equal(BHVDistance(tree, back), 0, tolerance = 1e-9)
@@ -79,23 +79,23 @@ test_that("compatible split changes use the shared orthant, not the cone", {
 })
 
 test_that("geodesic interpolation matches the Owen-Provan midpoint", {
-  mid <- Consensus:::.BHVTreeAt(op_T, op_Tp, 0.5)
+  mid <- ConsTree:::.BHVTreeAt(op_T, op_Tp, 0.5)
   interior <- mid[["edge.length"]][mid[["edge"]][, 2] > length(mid[["tip.label"]])]
   expect_equal(sort(interior), c(2.5, 2.5))
   # midpoint is equidistant, half the geodesic length
   expect_equal(BHVDistance(op_T, mid), 15 * sqrt(2) / 2, tolerance = 1e-9)
   expect_equal(BHVDistance(mid, op_Tp), 15 * sqrt(2) / 2, tolerance = 1e-9)
   # endpoints reproduce the input trees
-  expect_equal(BHVDistance(op_T,  Consensus:::.BHVTreeAt(op_T, op_Tp, 0)), 0,
+  expect_equal(BHVDistance(op_T,  ConsTree:::.BHVTreeAt(op_T, op_Tp, 0)), 0,
                tolerance = 1e-9)
-  expect_equal(BHVDistance(op_Tp, Consensus:::.BHVTreeAt(op_T, op_Tp, 1)), 0,
+  expect_equal(BHVDistance(op_Tp, ConsTree:::.BHVTreeAt(op_T, op_Tp, 1)), 0,
                tolerance = 1e-9)
 })
 
 test_that("BHVMean() of two trees converges to their geodesic midpoint", {
   set.seed(1)
   m <- BHVMean(list(op_T, op_Tp))
-  mid <- Consensus:::.BHVTreeAt(op_T, op_Tp, 0.5)
+  mid <- ConsTree:::.BHVTreeAt(op_T, op_Tp, 0.5)
   expect_true(attr(m, "converged"))
   expect_lt(BHVDistance(m, mid), 1e-2)
   expect_equal(BHVDistance(m, op_T), BHVDistance(m, op_Tp), tolerance = 1e-2)
