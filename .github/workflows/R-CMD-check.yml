@@ -75,6 +75,7 @@ jobs:
       - name: Set up R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          extra-repositories: 'https://ms609.github.io/packages/'
           cache-version: 2-${{ runner.arch }}
           needs: |
             check
@@ -141,6 +142,7 @@ jobs:
         if: runner.os == 'Windows'
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          extra-repositories: 'https://ms609.github.io/packages/'
           needs: |
             check
             coverage
@@ -149,6 +151,7 @@ jobs:
         if: runner.os != 'Windows'
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          extra-repositories: 'https://ms609.github.io/packages/'
           needs: |
             check
 
