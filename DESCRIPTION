@@ -39,6 +39,7 @@ Suggests:
   TreeSearch (>= 2.0.0),
 Remotes: ms609/TreeSearch@cpp-search,
 Config/needs/check: rcmdcheck
+Config/needs/coverage: covr
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Config/roxygen2/version: 8.0.0

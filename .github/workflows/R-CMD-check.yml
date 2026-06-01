@@ -76,7 +76,6 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache-version: 2-${{ runner.arch }}
-          extra-packages: any::rcmdcheck
           needs: |
             check
 
@@ -142,7 +141,6 @@ jobs:
         if: runner.os == 'Windows'
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck, any::covr
           needs: |
             check
             coverage
@@ -151,7 +149,6 @@ jobs:
         if: runner.os != 'Windows'
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
           needs: |
             check
 
