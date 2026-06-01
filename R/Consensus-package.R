@@ -8,6 +8,8 @@
 #' \insertCite{JanssonShenSung2016}{Consensus}.
 #'
 #' @keywords internal
+#' @useDynLib Consensus, .registration = TRUE
+#' @importFrom Rcpp sourceCpp
 "_PACKAGE"
 
 # Suppress "NOTE: Nothing imported from Rdpack":

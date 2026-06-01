@@ -48,3 +48,10 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 /.agent*
+
+# Compiled objects
+src/*.o
+src/*.so
+src/*.dll
+*.o
+*.dll

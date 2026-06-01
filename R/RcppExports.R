@@ -16,6 +16,18 @@ cpp_quartet_consensus <- function(splits_list, n_tips, init_majority, init_exten
     .Call(`_Consensus_cpp_quartet_consensus`, splits_list, n_tips, init_majority, init_extended, greedy_best_flag)
 }
 
+localConsensus <- function(edgeList, nTip, minrs) {
+    .Call(`_Consensus_localConsensus`, edgeList, nTip, minrs)
+}
+
+consensus_rcpp_selfcheck <- function() {
+    .Call(`_Consensus_consensus_rcpp_selfcheck`)
+}
+
+rStarConsensus <- function(edgeList, nTip) {
+    .Call(`_Consensus_rStarConsensus`, edgeList, nTip)
+}
+
 cpp_bhv_distance <- function(memA, lenA, leafA, memB, lenB, leafB) {
     .Call(`_Consensus_cpp_bhv_distance`, memA, lenA, leafA, memB, lenB, leafB)
 }
