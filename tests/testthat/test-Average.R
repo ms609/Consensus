@@ -1,11 +1,12 @@
-# Two trees share an unrooted topology iff they induce the same set of splits;
-# a TreeTools-native stand-in for `ape::dist.topo()` that stays off the
-# polarity-buggy as.character() path.  `%in%` on `Splits` objects is
-# polarity-invariant: trees built by different methods still compare equal.
+# Two trees share an unrooted topology iff they induce the same set of splits.
+# PolarizeSplits() normalises each split so that tip 1 is always on the
+# zero-side, giving a canonical form that makes %in% on Splits polarity-safe.
+# Without it, as.Splits() can encode the same bipartition with opposite polarity
+# depending on the tree's internal rooting, causing false negatives.
 unrootedMatch <- function(a, b) {
   labels <- TreeTools::TipLabels(a)
-  sA <- TreeTools::as.Splits(a, tipLabels = labels)
-  sB <- TreeTools::as.Splits(b, tipLabels = labels)
+  sA <- TreeTools::PolarizeSplits(TreeTools::as.Splits(a, tipLabels = labels))
+  sB <- TreeTools::PolarizeSplits(TreeTools::as.Splits(b, tipLabels = labels))
   length(sA) == length(sB) && all(sA %in% sB)
 }
 
