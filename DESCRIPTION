@@ -40,7 +40,6 @@ Suggests:
   TreeSearch (>= 2.0.0),
 Additional_repositories: https://ms609.github.io/packages/
 VignetteBuilder: knitr
-Config/needs/check: rcmdcheck
 Config/needs/coverage: covr
 Config/testthat/edition: 3
 Config/testthat/parallel: false
