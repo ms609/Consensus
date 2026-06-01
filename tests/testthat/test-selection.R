@@ -63,19 +63,3 @@ test_that("A single tree, or fewer than four leaves, returns the input", {
   triplet <- ape::as.phylo(0:1, 3)
   expect_equal(Loose(triplet), triplet[[1]])
 })
-
-test_that("Greedy matches phangorn's greedy consensus (allCompat)", {
-  # `phangorn::allCompat()` triggers an R-devel/phangorn ABI mismatch that is
-  # undefined behaviour: it sometimes throws a catchable error and sometimes
-  # segfaults (which `tryCatch()` cannot intercept), so it must not run in the
-  # default suite.  Greedy is already validated exactly against the FACT
-  # reference binary (dev/oracle), so this is an optional redundant cross-check;
-  # enable it in a healthy environment with CONSENSUS_PHANGORN_TESTS=1.
-  skip_if_not(identical(Sys.getenv("CONSENSUS_PHANGORN_TESTS"), "1"),
-              "phangorn allCompat cross-check disabled (R-devel/phangorn ABI)")
-  skip_if_not_installed("phangorn")
-  trees <- ape::as.phylo(0:30, 10)
-  labels <- TreeTools::TipLabels(trees[[1]])
-  expect_setequal(splitSet(Greedy(trees), labels),
-                  splitSet(phangorn::allCompat(trees), labels))
-})
