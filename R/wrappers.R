@@ -61,3 +61,7 @@ Majority <- function(trees, p = 0.5) {
 #' @export
 MajorityRule <- Majority
 
+#' @rdname Majority
+#' @export
+MR <- Majority
+

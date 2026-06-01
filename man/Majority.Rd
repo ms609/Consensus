@@ -3,11 +3,14 @@
 \name{Majority}
 \alias{Majority}
 \alias{MajorityRule}
+\alias{MR}
 \title{Majority-rule consensus tree}
 \usage{
 Majority(trees, p = 0.5)
 
 MajorityRule(trees, p = 0.5)
+
+MR(trees, p = 0.5)
 }
 \arguments{
 \item{trees}{A list of trees, or a \code{multiPhylo} object; all entries must
