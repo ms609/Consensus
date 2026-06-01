@@ -66,7 +66,7 @@
 #' )
 #' RStar(trees) # (a, b) wins {a,b,c} by plurality (3 vs 1 vs 1)
 #'
-#' @seealso Other consensus methods: [`Strict()`], [`Majority()`], [`Adams()`],
+#' @seealso Closely related: [`Strict()`], [`Majority()`], [`Adams()`],
 #' [`Local()`].
 #' @family consensus methods
 #' @references \insertAllCited{}

@@ -67,8 +67,8 @@ trees <- lapply(1:25, function(i) {
   tree$edge.length <- runif(nrow(tree$edge))
   tree
 })
-mean <- BHVMean(trees)
-BHVVariance(trees, mean = mean)
+meanTree <- BHVMean(trees)
+BHVVariance(trees, mean = meanTree)
 
 }
 \references{

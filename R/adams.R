@@ -36,7 +36,7 @@
 #'            ape::read.tree(text = "(((a, b), d), c);"))
 #' Adams(trees) # keeps the clade (a, b); leaves c, d unresolved at the root
 #'
-#' @seealso Other consensus methods: [`Strict()`], [`Majority()`], [`Loose()`],
+#' @seealso Closely related: [`Strict()`], [`Majority()`], [`Loose()`],
 #' [`Greedy()`], [`MajorityPlus()`], [`Frequency()`].
 #' @family consensus methods
 #' @references \insertAllCited{}

@@ -84,7 +84,7 @@ RStar(trees) # (a, b) wins {a,b,c} by plurality (3 vs 1 vs 1)
 \insertAllCited{}
 }
 \seealso{
-Other consensus methods: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}, \code{\link[=Adams]{Adams()}},
+Closely related: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}, \code{\link[=Adams]{Adams()}},
 \code{\link[=Local]{Local()}}.
 
 Other consensus methods:

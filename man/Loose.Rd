@@ -37,7 +37,7 @@ Loose(trees)
 \insertAllCited{}
 }
 \seealso{
-Other consensus methods: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}, \code{\link[=Greedy]{Greedy()}}.
+Closely related: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}, \code{\link[=Greedy]{Greedy()}}.
 
 Other consensus methods:
 \code{\link[=Adams]{Adams()}},

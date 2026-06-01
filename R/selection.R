@@ -93,7 +93,7 @@
 #' trees <- ape::as.phylo(0:5, 8)
 #' Loose(trees)
 #'
-#' @seealso Other consensus methods: [`Strict()`], [`Majority()`], [`Greedy()`].
+#' @seealso Closely related: [`Strict()`], [`Majority()`], [`Greedy()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
 #' @export
@@ -130,7 +130,7 @@ Loose <- function(trees) {
 #' trees <- ape::as.phylo(0:5, 8)
 #' Greedy(trees)
 #'
-#' @seealso Other consensus methods: [`Strict()`], [`Majority()`], [`Loose()`].
+#' @seealso Closely related: [`Strict()`], [`Majority()`], [`Loose()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
 #' @export
@@ -178,7 +178,7 @@ Greedy <- function(trees) {
 #' trees <- ape::as.phylo(0:5, 8)
 #' MajorityPlus(trees)
 #'
-#' @seealso Other consensus methods: [`Majority()`], [`Greedy()`], [`Loose()`].
+#' @seealso Closely related: [`Majority()`], [`Greedy()`], [`Loose()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
 #' @export
@@ -228,7 +228,7 @@ MajorityPlus <- function(trees) {
 #' trees <- ape::as.phylo(0:5, 8)
 #' Frequency(trees)
 #'
-#' @seealso Other consensus methods: [`Majority()`], [`MajorityPlus()`],
+#' @seealso Closely related: [`Majority()`], [`MajorityPlus()`],
 #' [`Greedy()`].
 #' @family consensus methods
 #' @references \insertAllCited{}

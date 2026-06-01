@@ -58,7 +58,7 @@ Local(list(t1, t2), "rooted")  # keeps clade {2,3,4} only
 \insertAllCited{}
 }
 \seealso{
-Other consensus methods: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}, \code{\link[=Adams]{Adams()}}.
+Closely related: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}, \code{\link[=Adams]{Adams()}}.
 
 Other consensus methods:
 \code{\link[=Adams]{Adams()}},

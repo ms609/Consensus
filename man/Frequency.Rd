@@ -40,7 +40,7 @@ Frequency(trees)
 \insertAllCited{}
 }
 \seealso{
-Other consensus methods: \code{\link[=Majority]{Majority()}}, \code{\link[=MajorityPlus]{MajorityPlus()}},
+Closely related: \code{\link[=Majority]{Majority()}}, \code{\link[=MajorityPlus]{MajorityPlus()}},
 \code{\link[=Greedy]{Greedy()}}.
 
 Other consensus methods:

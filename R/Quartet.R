@@ -41,7 +41,7 @@
 #' @return `Quartet()` returns a consensus tree, an object of class `phylo`,
 #' unrooted.
 #'
-#' @seealso Other consensus methods: [`Strict()`], [`Majority()`], [`Greedy()`].
+#' @seealso Closely related: [`Strict()`], [`Majority()`], [`Greedy()`].
 #' @family consensus methods
 #' @references
 #' \insertAllCited{}

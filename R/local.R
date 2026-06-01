@@ -41,7 +41,7 @@
 #' t2 <- ape::read.tree(text = "(1,((2,4),3));")
 #' Local(list(t1, t2), "rooted")  # keeps clade {2,3,4} only
 #'
-#' @seealso Other consensus methods: [`Strict()`], [`Majority()`], [`Adams()`].
+#' @seealso Closely related: [`Strict()`], [`Majority()`], [`Adams()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
 #' @importFrom ape read.tree write.tree

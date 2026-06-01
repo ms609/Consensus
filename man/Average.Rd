@@ -103,7 +103,11 @@ A lone input tree is its own average: it is returned (unrooted unless
 trees <- ape::rmtree(5, 8)         # five random eight-leaf trees
 Average(trees)                     # fast (balanced minimum evolution) default
 \donttest{
-Average(trees, method = "ls")      # faithful least-squares fit (slower)
+if (requireNamespace("TreeSearch", quietly = TRUE) &&
+    exists("LeastSquaresTree", where = asNamespace("TreeSearch"),
+           mode = "function")) {
+  Average(trees, method = "ls")    # faithful least-squares fit (slower)
+}
 }
 
 }

@@ -237,8 +237,8 @@ BHVPairwiseDistances <- function(trees) {
 #'   tree$edge.length <- runif(nrow(tree$edge))
 #'   tree
 #' })
-#' mean <- BHVMean(trees)
-#' BHVVariance(trees, mean = mean)
+#' meanTree <- BHVMean(trees)
+#' BHVVariance(trees, mean = meanTree)
 #'
 #' @references \insertAllCited{}
 #' @family BHV summaries

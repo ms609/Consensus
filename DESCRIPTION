@@ -1,6 +1,6 @@
 Package: ConsTree
 Title: Fast Algorithms for Phylogenetic Consensus Trees
-Version: 0.0.0.9005
+Version: 1.0.0
 Authors@R: c(
   person("Martin R.", "Smith", role = c("aut", "cre", "cph"),
          email = "martin.smith@durham.ac.uk",
@@ -32,14 +32,13 @@ Imports:
 LinkingTo:
   Rcpp
 Suggests:
-  distory,
   knitr,
   Quartet,
   rmarkdown,
   spelling,
   testthat (>= 3.0),
   TreeSearch (>= 2.0.0),
-Remotes: ms609/TreeSearch@cpp-search,
+Additional_repositories: https://ms609.github.io/packages/
 VignetteBuilder: knitr
 Config/needs/check: rcmdcheck
 Config/needs/coverage: covr

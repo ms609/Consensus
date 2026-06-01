@@ -44,7 +44,7 @@ Adams(trees) # keeps the clade (a, b); leaves c, d unresolved at the root
 \insertAllCited{}
 }
 \seealso{
-Other consensus methods: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}, \code{\link[=Loose]{Loose()}},
+Closely related: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}, \code{\link[=Loose]{Loose()}},
 \code{\link[=Greedy]{Greedy()}}, \code{\link[=MajorityPlus]{MajorityPlus()}}, \code{\link[=Frequency]{Frequency()}}.
 
 Other consensus methods:
