@@ -27,7 +27,7 @@ distance matrix:
 the least-squares tree;
 \item \code{"ls"} searches for the least-squares tree itself -- the criterion under
 which Lapointe & Cucumel's averaging guarantee holds -- using
-\code{\link[TreeSearch:LeastSquaresTree]{TreeSearch::LeastSquaresTree()}}, a compiled non-negative least-squares
+\code{TreeSearch::LeastSquaresTree()}, a compiled non-negative least-squares
 \acronym{NNI}/\acronym{SPR} search;
 \item \code{"nj"}, \code{"bionj"} and \code{"fastme.ols"} return the corresponding distance tree
 \insertCite{SaitouNei1987,Gascuel1997}{ConsTree}.
@@ -59,7 +59,7 @@ describes the same leaves.  The default, \code{TRUE}, is safer; \code{FALSE} is 
 when the trees are known to share an identical leaf set.}
 
 \item{lsControl}{Named list of further arguments for the least-squares
-search (\code{method = "ls"}), passed to \code{\link[TreeSearch:LeastSquaresTree]{TreeSearch::LeastSquaresTree()}}; for
+search (\code{method = "ls"}), passed to \code{TreeSearch::LeastSquaresTree()}; for
 example \code{list(spr = FALSE, maxHits = 5L, weight = "fm")} to use
 Fitch-Margoliash weighting.  Defaults to \code{list()}; ignored by other methods.}
 }

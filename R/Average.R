@@ -37,7 +37,7 @@
 #'   the least-squares tree;
 #' - `"ls"` searches for the least-squares tree itself -- the criterion under
 #'   which Lapointe & Cucumel's averaging guarantee holds -- using
-#'   [`TreeSearch::LeastSquaresTree()`], a compiled non-negative least-squares
+#'   `TreeSearch::LeastSquaresTree()`, a compiled non-negative least-squares
 #'   \acronym{NNI}/\acronym{SPR} search;
 #' - `"nj"`, `"bionj"` and `"fastme.ols"` return the corresponding distance tree
 #'   \insertCite{SaitouNei1987,Gascuel1997}{ConsTree}.
@@ -62,7 +62,7 @@
 #' describes the same leaves.  The default, `TRUE`, is safer; `FALSE` is faster
 #' when the trees are known to share an identical leaf set.
 #' @param lsControl Named list of further arguments for the least-squares
-#' search (`method = "ls"`), passed to [`TreeSearch::LeastSquaresTree()`]; for
+#' search (`method = "ls"`), passed to `TreeSearch::LeastSquaresTree()`; for
 #' example `list(spr = FALSE, maxHits = 5L, weight = "fm")` to use
 #' Fitch-Margoliash weighting.  Defaults to `list()`; ignored by other methods.
 #'
