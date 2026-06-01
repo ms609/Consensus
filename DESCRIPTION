@@ -32,7 +32,8 @@ Imports:
 Suggests:
   spelling,
   testthat (>= 3.0),
-  TreeSearch,
+  TreeSearch (>= 2.0.0),
+Remotes: ms609/TreeSearch,
 LinkingTo:
   Rcpp,
 Config/testthat/edition: 3
