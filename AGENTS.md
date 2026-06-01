@@ -123,7 +123,7 @@ loaded).
 | `Adams()` | refinement to fixpoint (**not** split-selection) | FACT `adams.cpp` | ✅ FACT clade-oracle (exact) |
 | `Local(type=)` | triplet + Aho-BUILD + 2^n DP (MinRLC/MinILC) | FACT2/FDCT `local_consensus.h` | ✅ compiled C++ (Rcpp); FDCT oracle exact (38); ≤20 leaves |
 | `RStar()` | plurality triplets → strong clusters (Lemma 1.1; polynomial) | Jansson et al. 2016 (def.) | ✅ compiled C++ (Rcpp); definition-exact (brute-force strong-cluster oracle 60/60) + majority refinement + congruent `aho-build` oracle; ≤200 leaves (memory) |
-| `Quartet()` | migrate from Quartet pkg | `QuartetConsensus()` | ⏳ Phase 4 |
+| `Quartet()` | greedy add-and-prune; minimizes sum of symmetric quartet distances (Takazawa et al. 2026) | Quartet pkg (ported) | ✅ compiled C++ (Rcpp); brute-force oracle (n=5); ≤100 tips |
 
 **Status (resume anchor).** Adams, Local, and **R\*** are all done and validated.
 The package contains compiled C++ (Rcpp, no Boost — `src/local_consensus.cpp`,

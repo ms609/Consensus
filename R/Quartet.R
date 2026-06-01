@@ -4,7 +4,7 @@
 #' distances to a set of input trees, using a greedy add-and-prune heuristic.
 #'
 #' The majority-rule consensus minimizes the sum of Robinson-Foulds distances
-#' to the input trees.  Analogously, `QuartetConsensus()` finds an approximate
+#' to the input trees.  Analogously, `Quartet()` finds an approximate
 #' median tree under the symmetric quartet distance
 #' \insertCite{Takazawa2026}{Consensus}, which counts
 #' both false-positive and false-negative resolved quartets equally.
@@ -50,7 +50,7 @@
 #' trees <- as.phylo(1:30, nTip = 8)
 #'
 #' # Quartet consensus
-#' qc <- QuartetConsensus(trees)
+#' qc <- Quartet(trees)
 #' plot(qc)
 #'
 #' # Compare resolution with majority-rule
@@ -61,9 +61,9 @@
 #' @importFrom ape as.phylo
 #' @importFrom TreeTools as.Splits TipLabels NSplits Consensus StarTree
 #' @export
-QuartetConsensus <- function(trees,
-                             init = c("majority", "empty", "extended"),
-                             greedy = c("best", "first")) {
+Quartet <- function(trees,
+                    init = c("majority", "empty", "extended"),
+                    greedy = c("best", "first")) {
   init <- match.arg(init)
   greedy <- match.arg(greedy)
 
@@ -78,7 +78,7 @@ QuartetConsensus <- function(trees,
 
   if (nTip < 4L) stop("Need at least 4 tips for quartet consensus.")
   if (nTip > 100L) {
-    stop("QuartetConsensus supports at most 100 tips. ",
+    stop("Quartet() supports at most 100 tips. ",
          "The explicit quartet enumeration is O(n^4).")
   }
 

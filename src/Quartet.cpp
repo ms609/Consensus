@@ -1,6 +1,6 @@
-/* QuartetConsensus.cpp
+/* Quartet.cpp
  *
- * C++ core for the QuartetConsensus algorithm (Takazawa et al. 2026).
+ * C++ core for the Quartet() consensus algorithm (Takazawa et al. 2026).
  *
  * Finds the tree minimizing the sum of symmetric quartet distances
  * to a set of input trees via a greedy add-and-prune heuristic.
@@ -812,7 +812,7 @@ List cpp_quartet_consensus(
     const bool greedy_best_flag
 ) {
   if (n_tips > QC_MAX_TIPS) {
-    Rcpp::stop("QuartetConsensus supports at most %d tips.", QC_MAX_TIPS);
+    Rcpp::stop("Quartet() supports at most %d tips.", QC_MAX_TIPS);
   }
   if (n_tips < 4) {
     Rcpp::stop("Need at least 4 tips for quartet consensus.");
