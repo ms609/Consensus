@@ -41,6 +41,14 @@ Majority(trees)
 }
 \seealso{
 Other consensus methods:
+\code{\link[=Adams]{Adams()}},
+\code{\link[=Average]{Average()}},
+\code{\link[=Frequency]{Frequency()}},
+\code{\link[=Greedy]{Greedy()}},
+\code{\link[=Local]{Local()}},
+\code{\link[=Loose]{Loose()}},
+\code{\link[=MajorityPlus]{MajorityPlus()}},
+\code{\link[=RStar]{RStar()}},
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}

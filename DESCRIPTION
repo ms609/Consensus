@@ -1,6 +1,6 @@
 Package: Consensus
 Title: Fast Algorithms for Phylogenetic Consensus Trees
-Version: 0.0.0.9000
+Version: 0.0.0.9005
 Authors@R: c(
   person("Martin R.", "Smith", role = c("aut", "cre", "cph"),
          email = "martin.smith@durham.ac.uk",
@@ -25,16 +25,21 @@ BugReports: https://github.com/ms609/Consensus/issues/
 Depends:
   R (>= 4.1.0),
 Imports:
+  ape (>= 5.6),
+  phangorn (>= 2.8.0),
+  Rcpp (>= 1.0.0),
   Rdpack (>= 2.6),
   TreeTools (>= 2.1.0),
+LinkingTo:
+  Rcpp
 Suggests:
-  ape,
-  phangorn,
   spelling,
   testthat (>= 3.0),
+  TreeSearch (>= 2.0.0),
+Config/needs/check: rcmdcheck
+Config/roxygen2/version: 8.0.0
 Config/testthat/edition: 3
 Config/testthat/parallel: false
-Config/roxygen2/version: 8.0.0
 RdMacros: Rdpack
 Encoding: UTF-8
 Language: en-GB

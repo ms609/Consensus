@@ -27,25 +27,31 @@ trees is necessarily more frequent than any conflicting split -- and is
 contained within the greedy consensus (\code{\link[=Greedy]{Greedy()}}).  The retained splits
 are mutually compatible, so they define a valid tree.
 
-A fast O(kn log n) algorithm for this consensus was given by Jansson and
-colleagues (STACS 2024; journal version in JCSS).  This implementation
-computes the same consensus directly from split frequencies.
+An efficient algorithm for constructing this consensus was given by
+\insertCite{Jansson2024}{Consensus}; the present implementation computes the
+same tree directly from pooled split frequencies.
 }
 \examples{
 trees <- ape::as.phylo(0:5, 8)
 Frequency(trees)
 
 }
+\references{
+\insertAllCited{}
+}
 \seealso{
 Other consensus methods: \code{\link[=Majority]{Majority()}}, \code{\link[=MajorityPlus]{MajorityPlus()}},
 \code{\link[=Greedy]{Greedy()}}.
 
 Other consensus methods:
+\code{\link[=Adams]{Adams()}},
 \code{\link[=Average]{Average()}},
 \code{\link[=Greedy]{Greedy()}},
+\code{\link[=Local]{Local()}},
 \code{\link[=Loose]{Loose()}},
 \code{\link[=Majority]{Majority()}},
 \code{\link[=MajorityPlus]{MajorityPlus()}},
+\code{\link[=RStar]{RStar()}},
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
