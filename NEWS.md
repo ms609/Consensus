@@ -4,7 +4,7 @@
   [TreeTools](https://ms609.github.io/TreeTools/).
 - Add `Strict()` and `Majority()` / `MajorityRule()`: thin, consistently named
   wrappers around `TreeTools::Consensus()`.
-- Add `QuartetConsensus()`: an information-maximizing quartet consensus tree,
+- Add `Quartet()`: an information-maximizing quartet consensus tree,
   found with a greedy add-and-prune heuristic that can also drop rogue taxa
   via `neverDrop` and tune the misinformation `penalty` (Takazawa et al. 2026).
   The C++ core is self-contained.  (Experimental: rogue-dropping is a

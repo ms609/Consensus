@@ -1,8 +1,8 @@
-# QuartetConsensus never resolves a "centroid" split
+# Quartet never resolves a "centroid" split
 
 **Claim (no-centroid theorem).** Run with the default `neverDrop = TRUE`, every
-non-trivial split in the tree returned by `QuartetConsensus(trees)` is present
-in **at least one** input tree. Consequently `QuartetConsensus` can never assert
+non-trivial split in the tree returned by `Quartet(trees)` is present
+in **at least one** input tree. Consequently `Quartet` can never assert
 a relationship (bipartition) that *no* input tree contains — there is no
 "centroid" / averaged placement that all input trees contradict.
 
@@ -18,10 +18,10 @@ and the greedy search only ever toggles membership of candidates in that set; it
 never synthesises a new bipartition.
 
 1. **The candidate pool is the deduplicated union of input-tree splits.**
-   `R/QuartetConsensus.R` converts each input tree to its split matrix
-   (`splitsList <- lapply(trees, as.Splits)`, `QuartetConsensus.R:157-160`) and
+   `R/Quartet.R` converts each input tree to its split matrix
+   (`splitsList <- lapply(trees, as.Splits)`, `Quartet.R:157-160`) and
    passes the list to `cpp_quartet_consensus`. In C++,
-   `pool_splits()` (`src/QuartetConsensus.cpp:181-284`) iterates over every
+   `pool_splits()` (`src/Quartet.cpp:181-284`) iterates over every
    tree `t` and every split `s` of that tree, canonicalises it, and inserts it
    into the pool, incrementing `pool.count[idx]`. A pool entry is created
    *only* from some tree's split (`canon_buf` is copied from `mat(s, ·)`,
@@ -37,7 +37,7 @@ never synthesises a new bipartition.
 
 3. **The returned splits are the included pooled splits.** The main routine
    returns `res$splits` = the matrix of currently-included pooled splits, which
-   `R/QuartetConsensus.R:172-183` turns into the output tree via `as.phylo`.
+   `R/Quartet.R:172-183` turns into the output tree via `as.phylo`.
 
 Combining (1)–(3): output splits ⊆ pooled splits ⊆ {splits occurring in ≥1 input
 tree}. ∎
@@ -117,7 +117,7 @@ reading a barely-supported relationship as firm.
 
 Because QC's topology is already centroid-free and never centres a taxon, a
 "dispersion correction" that *changes the topology* adds nothing over the
-existing `QuartetConsensus`: the tree it would produce is the tree QC already
+existing `Quartet`: the tree it would produce is the tree QC already
 produces. The honest-uncertainty contribution therefore lives **not** in moving
 taxa but in **calibrating / reporting confidence on the (unchanged) QC tree** —
 controlling or flagging the marginal minority splits above (via the `penalty`

@@ -1,6 +1,6 @@
-# Adversarial search for a "centroid" in QuartetConsensus output
+# Adversarial search for a "centroid" in Quartet output
 # =============================================================================
-# Question (the PI's "can QC ever centroid?"): can QuartetConsensus resolve a
+# Question (the PI's "can QC ever centroid?"): can Quartet resolve a
 # split (a relationship) that is present in NO input tree -- i.e. place a
 # grouping that every input tree contradicts?
 #
@@ -49,7 +49,7 @@ canonKeys <- function(tr) {
 
 # Minimum frequency, among the input trees, of any split QC resolves.
 minSplitFreq <- function(ins) {
-  qc <- try(ape::collapse.singles(Consensus::QuartetConsensus(ins)), silent = TRUE)
+  qc <- try(ape::collapse.singles(Consensus::Quartet(ins)), silent = TRUE)
   if (inherits(qc, "try-error")) return(NA_real_)
   qk <- canonKeys(qc); if (!length(qk)) return(1)
   inKeys <- lapply(ins, canonKeys)
