@@ -26,6 +26,12 @@ jobs:
 
     steps:
       - uses: ms609/actions/pkgdown@main
+        with:
+          # pak resolves Suggests (incl. TreeSearch >= 2.0.0) but does not read
+          # DESCRIPTION's Additional_repositories; the pkgdown action's empty
+          # default for this input also suppresses setup-r's auto-detection, so
+          # pass the drat explicitly (mirrors what R-CMD-check picks up).
+          extra-repositories: https://ms609.github.io/packages/
 
       - name: Check if release version
         id: version-check
