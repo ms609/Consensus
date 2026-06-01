@@ -158,6 +158,22 @@ The phangorn `allCompat` cross-check is gated behind `CONSENSUS_PHANGORN_TESTS=1
 — R-devel/phangorn ABI mismatch can **SIGSEGV** (which `tryCatch()` cannot catch),
 so it must be opt-in rather than wrapped.
 
+## Dev directory protocol
+
+`dev/` is excluded from the shipped R package (`.Rbuildignore: ^dev$`) and must
+never be imported or loaded by package code.  Git tracks everything in `dev/`
+**except** files whose names begin with `_` — those are ephemeral artefacts
+(coverage logs, error dumps, scratch NEXUS fixtures, etc.) and are `.gitignore`d
+via the pattern `dev/**/_*`.
+
+**Convention:** if you create a file in `dev/` that you would not want to open in
+a future session, prefix its name with `_`.  Scripts, notes, oracle sources, and
+oracle binaries are tracked; build logs, intermediate outputs, and debug dumps are
+not.
+
+Agent worktrees (`git worktree add`) will contain everything git-tracked in `dev/`,
+including the oracle binaries — the oracle can therefore be run from any worktree.
+
 ## Dev oracle (reference-grade validation)
 
 `dev/oracle/` shells out to patched **FACT/FACT2/FDCT** binaries to diff each
@@ -172,8 +188,8 @@ check available.
 - `dev/oracle/check-oracle.R` — cross-validation driver
   (`Rscript.exe dev/oracle/check-oracle.R`). Per-method harnesses also live under
   `dev/oracle/{freqdiff,local,rstar}/`.
-- The oracle binaries are untracked (`dev/` is `.Rbuildignore`d and absent in
-  worktrees) — run the oracle from the main checkout.
+- Oracle binaries (`fact.exe`, `freqdiff/freqdiff.exe`, `local/local.exe`) are
+  git-tracked so any worktree can run the oracle without a rebuild.
 
 ### Rebuilding FACT oracle binaries (MinGW)
 FACT's *generation*-only path uses POSIX bits absent on MinGW; the patched build

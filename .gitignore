@@ -55,3 +55,9 @@ src/*.so
 src/*.dll
 *.o
 *.dll
+
+# dev/ temporary artefacts — logs, intermediate outputs, scratch nexus files.
+# Convention: any file whose name begins with _ inside dev/ is an artefact and
+# must NOT be committed.  Persistent notes, oracle scripts, and oracle binaries
+# are tracked.
+dev/**/_*
