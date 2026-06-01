@@ -28,12 +28,11 @@ rooted as in the first entry of `trees`.
 
 The frequency-difference consensus is at least as resolved as the
 majority-rule consensus
-([`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md))
-– a split in more than half the trees is necessarily more frequent than
-any conflicting split – and is contained within the greedy consensus
-([`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md)).
-The retained splits are mutually compatible, so they define a valid
-tree.
+([`Majority()`](https://constree.github.io/reference/Majority.md)) – a
+split in more than half the trees is necessarily more frequent than any
+conflicting split – and is contained within the greedy consensus
+([`Greedy()`](https://constree.github.io/reference/Greedy.md)). The
+retained splits are mutually compatible, so they define a valid tree.
 
 An efficient algorithm for constructing this consensus was given by
 (Jansson et al. 2024) ; the present implementation computes the same
@@ -53,21 +52,21 @@ volume 289 of *Leibniz International Proceedings in Informatics
 ## See also
 
 Closely related:
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md),
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md).
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md),
+[`Greedy()`](https://constree.github.io/reference/Greedy.md).
 
 Other consensus methods:
-[`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md),
-[`Average()`](https://ms609.github.io/ConsTree/reference/Average.md),
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md),
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md),
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md),
-[`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md),
-[`RStar()`](https://ms609.github.io/ConsTree/reference/RStar.md),
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md)
+[`Adams()`](https://constree.github.io/reference/Adams.md),
+[`Average()`](https://constree.github.io/reference/Average.md),
+[`Greedy()`](https://constree.github.io/reference/Greedy.md),
+[`Local()`](https://constree.github.io/reference/Local.md),
+[`Loose()`](https://constree.github.io/reference/Loose.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md),
+[`Quartet()`](https://constree.github.io/reference/Quartet.md),
+[`RStar()`](https://constree.github.io/reference/RStar.md),
+[`Strict()`](https://constree.github.io/reference/Strict.md)
 
 ## Examples
 

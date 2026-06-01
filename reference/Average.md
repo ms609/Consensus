@@ -6,8 +6,8 @@ the average of the path-length distances of the input trees. Informally,
 it places each leaf at its mean position across the input trees, making
 it a natural distance-based summary of a posterior sample –
 complementing the split-based
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md) and
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md)
+[`Strict()`](https://constree.github.io/reference/Strict.md) and
+[`Majority()`](https://constree.github.io/reference/Majority.md)
 methods.
 
 ## Usage
@@ -160,20 +160,20 @@ reconstructing phylogenetic trees.” *Molecular Biology and Evolution*,
 ## See also
 
 Split-based summaries:
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md).
+[`Strict()`](https://constree.github.io/reference/Strict.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md).
 
 Other consensus methods:
-[`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md),
-[`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md),
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md),
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md),
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md),
-[`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md),
-[`RStar()`](https://ms609.github.io/ConsTree/reference/RStar.md),
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md)
+[`Adams()`](https://constree.github.io/reference/Adams.md),
+[`Frequency()`](https://constree.github.io/reference/Frequency.md),
+[`Greedy()`](https://constree.github.io/reference/Greedy.md),
+[`Local()`](https://constree.github.io/reference/Local.md),
+[`Loose()`](https://constree.github.io/reference/Loose.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md),
+[`Quartet()`](https://constree.github.io/reference/Quartet.md),
+[`RStar()`](https://constree.github.io/reference/RStar.md),
+[`Strict()`](https://constree.github.io/reference/Strict.md)
 
 ## Examples
 

@@ -31,13 +31,13 @@ ancestor of the full leaf set. Each block becomes a child of the
 consensus root, and the construction repeats within each block.
 
 Unlike the split-based methods
-([`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md),
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md),
-[`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md),
-[`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md)),
-the Adams consensus can contain a cluster that appears in no individual
+([`Strict()`](https://constree.github.io/reference/Strict.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`Loose()`](https://constree.github.io/reference/Loose.md),
+[`Greedy()`](https://constree.github.io/reference/Greedy.md),
+[`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md),
+[`Frequency()`](https://constree.github.io/reference/Frequency.md)), the
+Adams consensus can contain a cluster that appears in no individual
 input tree, and it depends on how the input trees are rooted: it is a
 statement about nesting, not about unrooted bipartitions. Input trees
 are treated as rooted on their current root; root the trees as you
@@ -52,24 +52,24 @@ trees.” *Systematic Zoology*, **21**(4), 390–397.
 ## See also
 
 Closely related:
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md),
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md),
-[`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md),
-[`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md).
+[`Strict()`](https://constree.github.io/reference/Strict.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`Loose()`](https://constree.github.io/reference/Loose.md),
+[`Greedy()`](https://constree.github.io/reference/Greedy.md),
+[`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md),
+[`Frequency()`](https://constree.github.io/reference/Frequency.md).
 
 Other consensus methods:
-[`Average()`](https://ms609.github.io/ConsTree/reference/Average.md),
-[`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md),
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md),
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md),
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md),
-[`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md),
-[`RStar()`](https://ms609.github.io/ConsTree/reference/RStar.md),
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md)
+[`Average()`](https://constree.github.io/reference/Average.md),
+[`Frequency()`](https://constree.github.io/reference/Frequency.md),
+[`Greedy()`](https://constree.github.io/reference/Greedy.md),
+[`Local()`](https://constree.github.io/reference/Local.md),
+[`Loose()`](https://constree.github.io/reference/Loose.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md),
+[`Quartet()`](https://constree.github.io/reference/Quartet.md),
+[`RStar()`](https://constree.github.io/reference/RStar.md),
+[`Strict()`](https://constree.github.io/reference/Strict.md)
 
 ## Examples
 

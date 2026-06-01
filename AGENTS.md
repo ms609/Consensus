@@ -55,9 +55,9 @@ Every split-based method shares one validated pipeline in
 2.  **`.CompatibilityMatrix(prep)`** — pairwise split-compatibility
     matrix, `as.matrix(CompatibleSplits(prep$splits, prep$splits))`. Its
     negation is the *conflict* matrix used by
-    [`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md)
+    [`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md)
     /
-    [`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md).
+    [`Frequency()`](https://constree.github.io/reference/Frequency.md).
 3.  **Selection** — a method-specific rule produces a logical `keep`
     over `prep$splits`.
 4.  **`.SelectedConsensus(keep, prep)`** — rebuild via
@@ -84,33 +84,33 @@ loaded).
 
 | `ConsTree::` | File | Source | Status / limits |
 |----|----|----|----|
-| [`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md) | wrappers.R | TreeTools | FACT-exact |
-| [`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md) / [`MajorityRule()`](https://ms609.github.io/ConsTree/reference/Majority.md) | wrappers.R | TreeTools | FACT-exact |
-| [`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md) | selection.R | FACT `loose.cpp` | FACT-exact |
-| [`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md) | selection.R | FACT `greedy.cpp` | FACT-match up to tie-break (documented) |
-| [`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md) | selection.R | FACT `majorityplus.cpp` | FACT-exact |
-| [`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md) | selection.R | FACT2/FDCT `freqdiff.h` | property-validated (`dev/oracle/freqdiff/`) |
-| [`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md) | adams.R | FACT `adams.cpp` | FACT clade-oracle exact |
+| [`Strict()`](https://constree.github.io/reference/Strict.md) | wrappers.R | TreeTools | FACT-exact |
+| [`Majority()`](https://constree.github.io/reference/Majority.md) / [`MajorityRule()`](https://constree.github.io/reference/Majority.md) | wrappers.R | TreeTools | FACT-exact |
+| [`Loose()`](https://constree.github.io/reference/Loose.md) | selection.R | FACT `loose.cpp` | FACT-exact |
+| [`Greedy()`](https://constree.github.io/reference/Greedy.md) | selection.R | FACT `greedy.cpp` | FACT-match up to tie-break (documented) |
+| [`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md) | selection.R | FACT `majorityplus.cpp` | FACT-exact |
+| [`Frequency()`](https://constree.github.io/reference/Frequency.md) | selection.R | FACT2/FDCT `freqdiff.h` | property-validated (`dev/oracle/freqdiff/`) |
+| [`Adams()`](https://constree.github.io/reference/Adams.md) | adams.R | FACT `adams.cpp` | FACT clade-oracle exact |
 | `Local(type=)` | local.R (Rcpp) | FACT2/FDCT `local_consensus.h` | FDCT-oracle exact; **≤20 leaves**; see runtime caveat |
-| [`RStar()`](https://ms609.github.io/ConsTree/reference/RStar.md) | rstar.R (Rcpp) | Jansson et al. 2016 | definition-exact (strong-cluster oracle); **≤200 leaves** (memory) |
-| [`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md) | Quartet.R (Rcpp) | Quartet pkg (ported) | brute-force oracle (n=5); ≤100 tips |
-| [`Average()`](https://ms609.github.io/ConsTree/reference/Average.md) | Average.R | Lapointe & Cucumel | user-authored (path-length LS / BME) |
+| [`RStar()`](https://constree.github.io/reference/RStar.md) | rstar.R (Rcpp) | Jansson et al. 2016 | definition-exact (strong-cluster oracle); **≤200 leaves** (memory) |
+| [`Quartet()`](https://constree.github.io/reference/Quartet.md) | Quartet.R (Rcpp) | Quartet pkg (ported) | brute-force oracle (n=5); ≤100 tips |
+| [`Average()`](https://constree.github.io/reference/Average.md) | Average.R | Lapointe & Cucumel | user-authored (path-length LS / BME) |
 | `BHV…()` | BHV.R (Rcpp) | BHV geodesic | distance / Fréchet-mean utilities |
 
-**[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md)
-runtime caveat.** Exact-exponential. The ≤20-leaf guard bounds *memory*,
-but runtime also depends on input congruence — incongruent
+**[`Local()`](https://constree.github.io/reference/Local.md) runtime
+caveat.** Exact-exponential. The ≤20-leaf guard bounds *memory*, but
+runtime also depends on input congruence — incongruent
 `type = "induced"` can be intractable even at n ≤ 20. The call is
 interruptible (Ctrl-C).
 
 ## Open decisions (unresolved — surface to the user, don’t silently pick)
 
-- **[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md)
+- **[`Local()`](https://constree.github.io/reference/Local.md)
   citation**: currently `\insertCite{JanssonShenSung2016}` but likely
   wrong for MinRLC/MinILC. Confirm the correct reference before release.
-- **[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md)
-  hard runtime guard**: none yet (only interruptible) — decide whether
-  to add one.
+- **[`Local()`](https://constree.github.io/reference/Local.md) hard
+  runtime guard**: none yet (only interruptible) — decide whether to add
+  one.
 
 ## The consensus lattice (invariants the tests enforce)
 
@@ -182,6 +182,23 @@ The phangorn `allCompat` cross-check is gated behind
 [`tryCatch()`](https://rdrr.io/r/base/conditions.html) cannot catch), so
 it must be opt-in rather than wrapped.
 
+## Dev directory protocol
+
+`dev/` is excluded from the shipped R package (`.Rbuildignore: ^dev$`)
+and must never be imported or loaded by package code. Git tracks
+everything in `dev/` **except** files whose names begin with `_` — those
+are ephemeral artefacts (coverage logs, error dumps, scratch NEXUS
+fixtures, etc.) and are `.gitignore`d via the pattern `dev/**/_*`.
+
+**Convention:** if you create a file in `dev/` that you would not want
+to open in a future session, prefix its name with `_`. Scripts, notes,
+oracle sources, and oracle binaries are tracked; build logs,
+intermediate outputs, and debug dumps are not.
+
+Agent worktrees (`git worktree add`) will contain everything git-tracked
+in `dev/`, including the oracle binaries — the oracle can therefore be
+run from any worktree.
+
 ## Dev oracle (reference-grade validation)
 
 `dev/oracle/` shells out to patched **FACT/FACT2/FDCT** binaries to diff
@@ -197,8 +214,9 @@ the strongest check available.
 - `dev/oracle/check-oracle.R` — cross-validation driver
   (`Rscript.exe dev/oracle/check-oracle.R`). Per-method harnesses also
   live under `dev/oracle/{freqdiff,local,rstar}/`.
-- The oracle binaries are untracked (`dev/` is `.Rbuildignore`d and
-  absent in worktrees) — run the oracle from the main checkout.
+- Oracle binaries (`fact.exe`, `freqdiff/freqdiff.exe`,
+  `local/local.exe`) are git-tracked so any worktree can run the oracle
+  without a rebuild.
 
 ### Rebuilding FACT oracle binaries (MinGW)
 

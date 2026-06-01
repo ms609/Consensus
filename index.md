@@ -21,15 +21,15 @@ or clusters) they retain:
 
 | Function | Retains a grouping when… |
 |----|----|
-| [`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md) | it occurs in **every** tree |
-| [`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md) / [`MajorityRule()`](https://ms609.github.io/ConsTree/reference/Majority.md) | it occurs in **\> half** the trees (tunable via `p`) |
-| [`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md) | **no** tree contradicts it (semi-strict / combinable-component) |
-| [`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md) | **more** trees display it than contradict it |
-| [`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md) | it is **more frequent than every** grouping that conflicts with it (frequency-difference) |
-| [`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md) | added greedily, most frequent first, if compatible with those already kept (extended majority-rule) |
-| [`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md) | constructed from the finest root-level partition shared by **every** tree (may introduce novel groupings; rooted) |
-| [`Local()`](https://ms609.github.io/ConsTree/reference/Local.md) | based on rooted triplets shared by **every** tree (minimum rooted/induced local consensus; ≤ 20 leaves) |
-| [`RStar()`](https://ms609.github.io/ConsTree/reference/RStar.md) | each rooted triplet grouping that wins a **plurality** against each alternative separately |
+| [`Strict()`](https://constree.github.io/reference/Strict.md) | it occurs in **every** tree |
+| [`Majority()`](https://constree.github.io/reference/Majority.md) / [`MajorityRule()`](https://constree.github.io/reference/Majority.md) | it occurs in **\> half** the trees (tunable via `p`) |
+| [`Loose()`](https://constree.github.io/reference/Loose.md) | **no** tree contradicts it (semi-strict / combinable-component) |
+| [`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md) | **more** trees display it than contradict it |
+| [`Frequency()`](https://constree.github.io/reference/Frequency.md) | it is **more frequent than every** grouping that conflicts with it (frequency-difference) |
+| [`Greedy()`](https://constree.github.io/reference/Greedy.md) | added greedily, most frequent first, if compatible with those already kept (extended majority-rule) |
+| [`Adams()`](https://constree.github.io/reference/Adams.md) | constructed from the finest root-level partition shared by **every** tree (may introduce novel groupings; rooted) |
+| [`Local()`](https://constree.github.io/reference/Local.md) | based on rooted triplets shared by **every** tree (minimum rooted/induced local consensus; ≤ 20 leaves) |
+| [`RStar()`](https://constree.github.io/reference/RStar.md) | each rooted triplet grouping that wins a **plurality** against each alternative separately |
 
 ### Distance and branch-length summaries
 
@@ -38,9 +38,9 @@ criterion rather than by selecting groupings:
 
 | Function | Summary |
 |----|----|
-| [`Average()`](https://ms609.github.io/ConsTree/reference/Average.md) | the tree best fitting the **mean path-length** (patristic) distances of the inputs |
-| [`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md) | an approximate median minimizing the total **quartet distance** to the inputs; often more resolved than majority-rule |
-| [`BHVMean()`](https://ms609.github.io/ConsTree/reference/BHVMean.md) | the Fréchet **mean tree** in Billera–Holmes–Vogtmann treespace, with branch lengths; [`BHVDistance()`](https://ms609.github.io/ConsTree/reference/BHVDistance.md), `BHVPairwiseDistances()` and [`BHVVariance()`](https://ms609.github.io/ConsTree/reference/BHVMean.md) provide the supporting geodesic distances and dispersion |
+| [`Average()`](https://constree.github.io/reference/Average.md) | the tree best fitting the **mean path-length** (patristic) distances of the inputs |
+| [`Quartet()`](https://constree.github.io/reference/Quartet.md) | an approximate median minimizing the total **quartet distance** to the inputs; often more resolved than majority-rule |
+| [`BHVMean()`](https://constree.github.io/reference/BHVMean.md) | the Fréchet **mean tree** in Billera–Holmes–Vogtmann treespace, with branch lengths; [`BHVDistance()`](https://constree.github.io/reference/BHVDistance.md), `BHVPairwiseDistances()` and [`BHVVariance()`](https://constree.github.io/reference/BHVMean.md) provide the supporting geodesic distances and dispersion |
 
 ## Usage
 
@@ -87,10 +87,10 @@ a sample that has the lowest median clustering-information distance
 than a constructed consensus.
 
 The quartet machinery underlying
-[`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md)
-builds on the [‘Quartet’](https://ms609.github.io/Quartet/) package,
-which counts the resolved- and shared-quartet statistics between trees;
-and the BHV summaries relate to
+[`Quartet()`](https://constree.github.io/reference/Quartet.md) builds on
+the [‘Quartet’](https://ms609.github.io/Quartet/) package, which counts
+the resolved- and shared-quartet statistics between trees; and the BHV
+summaries relate to
 [‘distory’](https://cran.r-project.org/package=distory), which computes
 geodesic distances in the same treespace.
 

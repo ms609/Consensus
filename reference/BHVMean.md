@@ -93,7 +93,7 @@ Metric Spaces*, volume 338 of *Contemporary Mathematics*, 357–390.
 ## See also
 
 Other BHV summaries:
-[`BHVDistance()`](https://ms609.github.io/ConsTree/reference/BHVDistance.md)
+[`BHVDistance()`](https://constree.github.io/reference/BHVDistance.md)
 
 ## Examples
 

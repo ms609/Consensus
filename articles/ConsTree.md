@@ -64,39 +64,38 @@ plot(Greedy(trees),    main = "Greedy (extended majority)")
 par(oldPar)
 ```
 
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md) keeps
-only the two groupings present in every tree;
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md)
-adds those in more than half;
-[`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md)
-keeps a grouping that beats every grouping it conflicts with; and
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md) adds
+[`Strict()`](https://constree.github.io/reference/Strict.md) keeps only
+the two groupings present in every tree;
+[`Majority()`](https://constree.github.io/reference/Majority.md) adds
+those in more than half;
+[`Frequency()`](https://constree.github.io/reference/Frequency.md) keeps
+a grouping that beats every grouping it conflicts with; and
+[`Greedy()`](https://constree.github.io/reference/Greedy.md) adds
 compatible groupings most frequent first, giving the most resolved
 summary.
 
 Two further rules apply different conflict criteria rather than a
 frequency threshold.
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md) (the
+[`Loose()`](https://constree.github.io/reference/Loose.md) (the
 semi-strict, or combinable-component, consensus) keeps every grouping
 that *no* tree contradicts, and
-[`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md)
+[`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md)
 keeps a grouping displayed by more trees than contradict it. Because the
-default
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md)
+default [`Majority()`](https://constree.github.io/reference/Majority.md)
 threshold (`p = 0.5`) admits a grouping seen in exactly half the trees,
 even when the other half contradict it,
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md)
-is *not* always a subset of
-[`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md).
+[`Majority()`](https://constree.github.io/reference/Majority.md) is
+*not* always a subset of
+[`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md).
 
 ## Rooted methods
 
-[`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md),
-[`RStar()`](https://ms609.github.io/ConsTree/reference/RStar.md) and
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md) treat
-the input as **rooted** and reason about clusters and rooted triplets
-rather than unrooted splits. They can therefore recover structure that
-the unrooted strict consensus collapses:
+[`Adams()`](https://constree.github.io/reference/Adams.md),
+[`RStar()`](https://constree.github.io/reference/RStar.md) and
+[`Local()`](https://constree.github.io/reference/Local.md) treat the
+input as **rooted** and reason about clusters and rooted triplets rather
+than unrooted splits. They can therefore recover structure that the
+unrooted strict consensus collapses:
 
 ``` r
 
@@ -119,24 +118,23 @@ data.frame(
 #> 4  Local      3
 ```
 
-[`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md) may
-introduce groupings present in no input tree;
-[`RStar()`](https://ms609.github.io/ConsTree/reference/RStar.md) keeps
-each rooted triplet that wins a plurality over both alternatives; and
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md) returns
-the minimum local consensus of the shared triplets (limited to 20
-leaves, and best suited to congruent samples).
+[`Adams()`](https://constree.github.io/reference/Adams.md) may introduce
+groupings present in no input tree;
+[`RStar()`](https://constree.github.io/reference/RStar.md) keeps each
+rooted triplet that wins a plurality over both alternatives; and
+[`Local()`](https://constree.github.io/reference/Local.md) returns the
+minimum local consensus of the shared triplets (limited to 20 leaves,
+and best suited to congruent samples).
 
 ## Distance and branch-length summaries
 
 A second family ignores grouping frequencies and instead seeks a tree
 close to the sample under a chosen criterion.
 
-[`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md)
-finds an approximate median minimizing the total quartet distance to the
-inputs. Because the quartet distance gives extra weight to deep
-branches, the result is often *more* resolved than the majority-rule
-tree:
+[`Quartet()`](https://constree.github.io/reference/Quartet.md) finds an
+approximate median minimizing the total quartet distance to the inputs.
+Because the quartet distance gives extra weight to deep branches, the
+result is often *more* resolved than the majority-rule tree:
 
 ``` r
 
@@ -148,15 +146,15 @@ c(majority = NSplits(Majority(trees)),
 
 When the trees carry **branch lengths**, two further summaries become
 available.
-[`Average()`](https://ms609.github.io/ConsTree/reference/Average.md)
-returns the tree whose path-length (patristic) distances best match the
-average of the input distance matrices, while
-[`BHVMean()`](https://ms609.github.io/ConsTree/reference/BHVMean.md)
-computes the Fréchet mean in Billera–Holmes–Vogtmann treespace, with
-branch lengths;
-[`BHVDistance()`](https://ms609.github.io/ConsTree/reference/BHVDistance.md),
+[`Average()`](https://constree.github.io/reference/Average.md) returns
+the tree whose path-length (patristic) distances best match the average
+of the input distance matrices, while
+[`BHVMean()`](https://constree.github.io/reference/BHVMean.md) computes
+the Fréchet mean in Billera–Holmes–Vogtmann treespace, with branch
+lengths;
+[`BHVDistance()`](https://constree.github.io/reference/BHVDistance.md),
 `BHVPairwiseDistances()` and
-[`BHVVariance()`](https://ms609.github.io/ConsTree/reference/BHVMean.md)
+[`BHVVariance()`](https://constree.github.io/reference/BHVMean.md)
 provide the underlying geodesic distances and dispersion.
 
 ``` r
@@ -178,18 +176,18 @@ plot(meanTree)
 ## Choosing a method
 
 As a rule of thumb:
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md) and
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md) when
-you want only well-supported groupings;
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md)
-for the familiar bootstrap summary;
-[`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md),
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md) or
-[`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md) for
-a more resolved picture; the rooted methods when a root is meaningful;
-and [`Average()`](https://ms609.github.io/ConsTree/reference/Average.md)
-or [`BHVMean()`](https://ms609.github.io/ConsTree/reference/BHVMean.md)
-when branch lengths matter.
+[`Strict()`](https://constree.github.io/reference/Strict.md) and
+[`Loose()`](https://constree.github.io/reference/Loose.md) when you want
+only well-supported groupings;
+[`Majority()`](https://constree.github.io/reference/Majority.md) for the
+familiar bootstrap summary;
+[`Frequency()`](https://constree.github.io/reference/Frequency.md),
+[`Greedy()`](https://constree.github.io/reference/Greedy.md) or
+[`Quartet()`](https://constree.github.io/reference/Quartet.md) for a
+more resolved picture; the rooted methods when a root is meaningful; and
+[`Average()`](https://constree.github.io/reference/Average.md) or
+[`BHVMean()`](https://constree.github.io/reference/BHVMean.md) when
+branch lengths matter.
 
 Where no constructed consensus is wanted, the
 [‘TreeDist’](https://ms609.github.io/TreeDist/) package offers a

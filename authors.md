@@ -21,12 +21,12 @@ Source:
 [`DESCRIPTION`](https://github.com/ms609/ConsTree/blob/main/DESCRIPTION)
 
 Smith M (2026). *ConsTree: Fast Algorithms for Phylogenetic Consensus
-Trees*. R package version 1.0.0, <https://github.com/ms609/ConsTree/>.
+Trees*. R package version 1.0.0, <https://constree.github.io/>.
 
     @Manual{,
       title = {ConsTree: Fast Algorithms for Phylogenetic Consensus Trees},
       author = {Martin R. Smith},
       year = {2026},
       note = {R package version 1.0.0},
-      url = {https://github.com/ms609/ConsTree/},
+      url = {https://constree.github.io/},
     }

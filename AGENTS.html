@@ -214,13 +214,19 @@ majority ∥ loose            (incomparable)</code></pre>
 <p>The phangorn <code>allCompat</code> cross-check is gated behind <code>CONSENSUS_PHANGORN_TESTS=1</code> — R-devel/phangorn ABI mismatch can <strong>SIGSEGV</strong> (which <code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch()</a></code> cannot catch), so it must be opt-in rather than wrapped.</p>
 </div>
 <div class="section level2">
+<h2 id="dev-directory-protocol">Dev directory protocol<a class="anchor" aria-label="anchor" href="#dev-directory-protocol"></a></h2>
+<p><code>dev/</code> is excluded from the shipped R package (<code>.Rbuildignore: ^dev$</code>) and must never be imported or loaded by package code. Git tracks everything in <code>dev/</code> <strong>except</strong> files whose names begin with <code>_</code> — those are ephemeral artefacts (coverage logs, error dumps, scratch NEXUS fixtures, etc.) and are <code>.gitignore</code>d via the pattern <code>dev/**/_*</code>.</p>
+<p><strong>Convention:</strong> if you create a file in <code>dev/</code> that you would not want to open in a future session, prefix its name with <code>_</code>. Scripts, notes, oracle sources, and oracle binaries are tracked; build logs, intermediate outputs, and debug dumps are not.</p>
+<p>Agent worktrees (<code>git worktree add</code>) will contain everything git-tracked in <code>dev/</code>, including the oracle binaries — the oracle can therefore be run from any worktree.</p>
+</div>
+<div class="section level2">
 <h2 id="dev-oracle-reference-grade-validation">Dev oracle (reference-grade validation)<a class="anchor" aria-label="anchor" href="#dev-oracle-reference-grade-validation"></a></h2>
 <p><code>dev/oracle/</code> shells out to patched <strong>FACT/FACT2/FDCT</strong> binaries to diff each ported method against the original C++ on shared random fixtures — the strongest check available.</p>
 <ul><li>
 <code>dev/oracle/oracle.R</code> — <code>FactConsensus(trees, method, rooted)</code> writes FACT-dialect NEXUS (integer labels, literal <code>translate</code> line), invokes <code>fact.exe</code> over stdin (<code>file rule rooted</code>), and parses integer-labelled Newick back to <code>phylo</code>. <code>FACT_RULE</code> maps method → algorithm bitmask: <code>strict=1, majority=8, greedy=32, loose=128, majorityPlus=256, adams=1024</code>.</li>
 <li>
 <code>dev/oracle/check-oracle.R</code> — cross-validation driver (<code>Rscript.exe dev/oracle/check-oracle.R</code>). Per-method harnesses also live under <code>dev/oracle/{freqdiff,local,rstar}/</code>.</li>
-<li>The oracle binaries are untracked (<code>dev/</code> is <code>.Rbuildignore</code>d and absent in worktrees) — run the oracle from the main checkout.</li>
+<li>Oracle binaries (<code>fact.exe</code>, <code>freqdiff/freqdiff.exe</code>, <code>local/local.exe</code>) are git-tracked so any worktree can run the oracle without a rebuild.</li>
 </ul><div class="section level3">
 <h3 id="rebuilding-fact-oracle-binaries-mingw">Rebuilding FACT oracle binaries (MinGW)<a class="anchor" aria-label="anchor" href="#rebuilding-fact-oracle-binaries-mingw"></a></h3>
 <p>FACT’s <em>generation</em>-only path uses POSIX bits absent on MinGW; the patched build drops them: remove <code>#include &lt;sys/resource.h&gt;</code> and <code>set_stack</code>, map <code>rand_r(&amp;seed_)</code> → <code>rand()</code>, <code>#define M_PI</code> (compile <code>-D_USE_MATH_DEFINES</code>). The consensus paths are untouched. FACT2/FDCT additionally need <code>boost::dynamic_bitset</code> headers at build time — fine for the dev oracle, never for the shipped package.</p>

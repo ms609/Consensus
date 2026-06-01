@@ -6,8 +6,8 @@ in decreasing order of their frequency across the input trees; each is
 added to the growing consensus if it is compatible with every split
 already accepted. The result is typically more resolved than the
 majority-rule consensus
-([`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md)),
-and contains it.
+([`Majority()`](https://constree.github.io/reference/Majority.md)), and
+contains it.
 
 ## Usage
 
@@ -46,21 +46,21 @@ American Mathematical Society.
 ## See also
 
 Closely related:
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md).
+[`Strict()`](https://constree.github.io/reference/Strict.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`Loose()`](https://constree.github.io/reference/Loose.md).
 
 Other consensus methods:
-[`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md),
-[`Average()`](https://ms609.github.io/ConsTree/reference/Average.md),
-[`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md),
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md),
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md),
-[`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md),
-[`RStar()`](https://ms609.github.io/ConsTree/reference/RStar.md),
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md)
+[`Adams()`](https://constree.github.io/reference/Adams.md),
+[`Average()`](https://constree.github.io/reference/Average.md),
+[`Frequency()`](https://constree.github.io/reference/Frequency.md),
+[`Local()`](https://constree.github.io/reference/Local.md),
+[`Loose()`](https://constree.github.io/reference/Loose.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md),
+[`Quartet()`](https://constree.github.io/reference/Quartet.md),
+[`RStar()`](https://constree.github.io/reference/RStar.md),
+[`Strict()`](https://constree.github.io/reference/Strict.md)
 
 ## Examples
 

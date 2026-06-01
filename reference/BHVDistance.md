@@ -55,7 +55,7 @@ Biology and Bioinformatics*, **8**(1), 2–13.
 ## See also
 
 Other BHV summaries:
-[`BHVMean()`](https://ms609.github.io/ConsTree/reference/BHVMean.md)
+[`BHVMean()`](https://constree.github.io/reference/BHVMean.md)
 
 ## Examples
 

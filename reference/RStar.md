@@ -42,16 +42,16 @@ tree that displays no resolved triplet outside \\R\_{maj}\\.
 R\* is always a *refinement* of the majority-rule consensus (every
 majority clade also appears in `RStar()`) and is a statistically
 consistent estimator of a species tree from gene trees. Unlike
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md) it is
+[`Local()`](https://constree.github.io/reference/Local.md) it is
 **polynomial**, so it is not restricted to small leaf counts; `RStar()`
 caps `n` at 200 purely as a memory safeguard on its dense triplet tensor
 (a limit quite different in nature from
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md)'s
+[`Local()`](https://constree.github.io/reference/Local.md)'s
 exact-exponential 20-leaf bound).
 
-Like [`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md),
-R\* is a rooted method: triplet states depend on the rooting, so input
-trees are treated as rooted on their current root. Root the trees as you
+Like [`Adams()`](https://constree.github.io/reference/Adams.md), R\* is
+a rooted method: triplet states depend on the rooting, so input trees
+are treated as rooted on their current root. Root the trees as you
 intend before calling `RStar()`.
 
 ## Construction and conventions
@@ -92,22 +92,22 @@ the R\* consensus tree.” *Algorithmica*, **76**(4), 1224–1244.
 ## See also
 
 Closely related:
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md),
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md).
+[`Strict()`](https://constree.github.io/reference/Strict.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`Adams()`](https://constree.github.io/reference/Adams.md),
+[`Local()`](https://constree.github.io/reference/Local.md).
 
 Other consensus methods:
-[`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md),
-[`Average()`](https://ms609.github.io/ConsTree/reference/Average.md),
-[`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md),
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md),
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md),
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`MajorityPlus()`](https://ms609.github.io/ConsTree/reference/MajorityPlus.md),
-[`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md),
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md)
+[`Adams()`](https://constree.github.io/reference/Adams.md),
+[`Average()`](https://constree.github.io/reference/Average.md),
+[`Frequency()`](https://constree.github.io/reference/Frequency.md),
+[`Greedy()`](https://constree.github.io/reference/Greedy.md),
+[`Local()`](https://constree.github.io/reference/Local.md),
+[`Loose()`](https://constree.github.io/reference/Loose.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`MajorityPlus()`](https://constree.github.io/reference/MajorityPlus.md),
+[`Quartet()`](https://constree.github.io/reference/Quartet.md),
+[`Strict()`](https://constree.github.io/reference/Strict.md)
 
 ## Examples
 

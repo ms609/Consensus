@@ -30,8 +30,8 @@ rooted as in the first entry of `trees`.
 Every majority-rule split is retained (a split in more than half the
 trees is contradicted by fewer than half), so `MajorityPlus()` contains
 the majority-rule consensus
-([`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md))
-and may add further splits that are supported more often than they are
+([`Majority()`](https://constree.github.io/reference/Majority.md)) and
+may add further splits that are supported more often than they are
 contradicted. The retained splits are necessarily mutually compatible,
 so they define a valid tree.
 
@@ -44,21 +44,21 @@ consensus trees.” *Journal of the ACM*, **63**(3), 1–24.
 ## See also
 
 Closely related:
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md),
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md).
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`Greedy()`](https://constree.github.io/reference/Greedy.md),
+[`Loose()`](https://constree.github.io/reference/Loose.md).
 
 Other consensus methods:
-[`Adams()`](https://ms609.github.io/ConsTree/reference/Adams.md),
-[`Average()`](https://ms609.github.io/ConsTree/reference/Average.md),
-[`Frequency()`](https://ms609.github.io/ConsTree/reference/Frequency.md),
-[`Greedy()`](https://ms609.github.io/ConsTree/reference/Greedy.md),
-[`Local()`](https://ms609.github.io/ConsTree/reference/Local.md),
-[`Loose()`](https://ms609.github.io/ConsTree/reference/Loose.md),
-[`Majority()`](https://ms609.github.io/ConsTree/reference/Majority.md),
-[`Quartet()`](https://ms609.github.io/ConsTree/reference/Quartet.md),
-[`RStar()`](https://ms609.github.io/ConsTree/reference/RStar.md),
-[`Strict()`](https://ms609.github.io/ConsTree/reference/Strict.md)
+[`Adams()`](https://constree.github.io/reference/Adams.md),
+[`Average()`](https://constree.github.io/reference/Average.md),
+[`Frequency()`](https://constree.github.io/reference/Frequency.md),
+[`Greedy()`](https://constree.github.io/reference/Greedy.md),
+[`Local()`](https://constree.github.io/reference/Local.md),
+[`Loose()`](https://constree.github.io/reference/Loose.md),
+[`Majority()`](https://constree.github.io/reference/Majority.md),
+[`Quartet()`](https://constree.github.io/reference/Quartet.md),
+[`RStar()`](https://constree.github.io/reference/RStar.md),
+[`Strict()`](https://constree.github.io/reference/Strict.md)
 
 ## Examples
 
