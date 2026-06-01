@@ -26,12 +26,15 @@ Depends:
   R (>= 4.1.0),
 Imports:
   ape (>= 5.6),
+  Rcpp,
   Rdpack (>= 2.6),
   TreeTools (>= 2.1.0),
 Suggests:
   spelling,
   testthat (>= 3.0),
   TreeSearch,
+LinkingTo:
+  Rcpp,
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Config/roxygen2/version: 8.0.0
