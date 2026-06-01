@@ -39,13 +39,12 @@ polynomial-time GTP algorithm of \insertCite{OwenProvan2011;textual}{ConsTree}.
 }
 \examples{
 set.seed(2)
-AddEdgeLengths <- function(tree) { tree$edge.length <- runif(nrow(tree$edge)); tree }
-trees <- lapply(1:4, function(i) AddEdgeLengths(TreeTools::RandomTree(8, root = TRUE)))
+trees <- lapply(1:4, function(i) TreeTools::RandomTree(8, root = TRUE, lengths = runif(14)))
 t1 <- trees[[1]]; t2 <- trees[[2]]
 
-BHVDistance(t1, t2)               # scalar
-BHVDistance(t1, trees)            # named vector
-BHVDistance(trees)                # dist (pairwise)
+BHVDistance(t1, t2)                  # scalar
+BHVDistance(t1, trees)               # named vector
+BHVDistance(trees)                   # dist (pairwise)
 BHVDistance(trees[1:2], trees[3:4])  # matrix
 
 }
