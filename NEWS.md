@@ -28,6 +28,5 @@ Distance- and branch-length-based summaries:
   geodesic distance), `BHVPairwiseDistances()`, `BHVMean()` (Fréchet mean) and
   `BHVVariance()`.
 
-Compiled methods (`RStar()`, `Local()`, `Quartet()`, BHV summaries) are
-implemented in self-contained C++ via Rcpp. An introductory vignette
-(`ConsTree`) demonstrates each method family on worked exemplars.
+An introductory vignette (`ConsTree`) demonstrates each method family on worked
+exemplars.
