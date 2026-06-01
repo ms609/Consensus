@@ -5,7 +5,7 @@
 #   Rscript.exe dev/oracle/local/check-local.R
 
 .libPaths(c("C:/Users/pjjg18/GitHub/Consensus/.agent-cons", .libPaths()))
-library(Consensus)
+library(ConsTree)
 library(TreeTools)
 source("dev/oracle/local/oracle_local.R")
 source("dev/oracle/oracle.R")

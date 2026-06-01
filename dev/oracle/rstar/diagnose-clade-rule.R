@@ -17,7 +17,7 @@
 # Run:  Rscript.exe dev/oracle/rstar/diagnose-clade-rule.R
 
 .libPaths(c("C:/Users/pjjg18/GitHub/Consensus/.agent-cons", .libPaths()))
-suppressMessages(library(Consensus))
+suppressMessages(library(ConsTree))
 suppressMessages(library(TreeTools))
 suppressMessages(library(ape))
 source("dev/oracle/oracle.R")  # CladeSet

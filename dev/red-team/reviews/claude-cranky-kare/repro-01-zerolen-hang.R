@@ -8,7 +8,7 @@
 # RUN: Rscript repro-01-zerolen-hang.R   (will NOT return; wrap in `timeout`)
 # STATUS: RAN under `timeout 20` -> process killed (EXIT 143), i.e. confirmed hang.
 .libPaths(c('.agent-rev', .libPaths()))
-suppressMessages(library(Consensus))
+suppressMessages(library(ConsTree))
 A <- ape::read.tree(text="(0:1,(1:0,2:0):0,3:1,4:1,5:1);")  # interior split {1,2}, length 0
 B <- ape::read.tree(text="(0:1,(2:1,3:1):1,1:1,4:1,5:1);")  # {2,3}:1 incompatible with {1,2}
 cat("calling BHVDistance (expect hang) ...\n"); flush.console()

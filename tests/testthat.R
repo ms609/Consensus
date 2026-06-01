@@ -1,4 +1,4 @@
 library(testthat)
-library(Consensus)
+library(ConsTree)
 
-test_check("Consensus")
+test_check("ConsTree")

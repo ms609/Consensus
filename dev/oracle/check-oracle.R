@@ -1,7 +1,7 @@
 # Cross-validate the R consensus methods against the reference FACT binary.
 # Run with: Rscript dev/oracle/check-oracle.R
 .libPaths(c("C:/Users/pjjg18/GitHub/Consensus/.agent-cons", .libPaths()))
-suppressMessages(library(Consensus))
+suppressMessages(library(ConsTree))
 suppressMessages(library(TreeTools))
 source("C:/Users/pjjg18/GitHub/Consensus/dev/oracle/oracle.R")
 

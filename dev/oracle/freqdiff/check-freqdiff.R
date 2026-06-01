@@ -17,7 +17,7 @@
 setTimeLimit(elapsed = 55, transient = FALSE)
 
 .libPaths(c("C:/Users/pjjg18/GitHub/Consensus/.agent-cons", .libPaths()))
-suppressMessages(library(Consensus))
+suppressMessages(library(ConsTree))
 suppressMessages(library(TreeTools))
 source("C:/Users/pjjg18/GitHub/Consensus/dev/oracle/freqdiff/oracle_fd.R")
 

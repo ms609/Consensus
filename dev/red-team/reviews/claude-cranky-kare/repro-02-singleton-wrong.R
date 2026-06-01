@@ -8,7 +8,7 @@
 # Reachable in practice via ape::drop.tip(..., collapse.singles = FALSE).
 # STATUS: RAN -> prints 2.828427 (should be 0).
 .libPaths(c('.agent-rev', .libPaths()))
-suppressMessages(library(Consensus)); suppressMessages(library(ape))
+suppressMessages(library(ConsTree)); suppressMessages(library(ape))
 B  <- read.tree(text="(0:1,((1:1,(2:1,(3:1,(4:1,5:1):1):1):1):2):1,6:1,7:1);")  # singleton node
 Bc <- collapse.singles(B)                                                        # identical tree
 cat("has singleton:", any(table(B$edge[,1]) == 1), "\n")
