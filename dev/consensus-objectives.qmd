@@ -1,0 +1,159 @@
+---
+title: "Quartet consensus: objective function design journal"
+author: "Martin R. Smith"
+format: html
+---
+
+## Problem
+
+`QuartetConsensus()` uses a greedy heuristic to find an approximate median
+tree under the symmetric quartet distance.
+When the algorithm allows **taxon dropping** (`neverDrop = FALSE`), it must
+evaluate split additions/removals and taxon drops on a common scale.
+This document records the objective functions considered and tested.
+
+## Notation
+
+For a single quartet, comparing the consensus tree to an input tree
+(Estabrook _et al._ notation, as in `QuartetStatus()`):
+
+| Symbol | Meaning |
+|--------|---------|
+| _s_ | Same resolution in both trees |
+| _d_ | Different resolution (both resolved) |
+| _r_~1~ | Resolved in input tree only |
+| _r_~2~ | Resolved in consensus only |
+| _u_ | Unresolved in both |
+| _N_ | Total quartet _statements_, = 2 _Q_ |
+| _Q_ | Total quartets = C(_n_, 4) |
+
+Aggregating over _k_ input trees, the per-quartet profile stores:
+
+- `count_j` (_j_ = 1, 2, 3): number of trees resolving as topology _j_
+- `count_0`: number of trees leaving the quartet unresolved
+
+
+## Approaches
+
+### 1. S2R with fixed _Q_~total~ (current implementation)
+<!-- Branch: consensus-rogues, commit a5bdc33 onwards -->
+
+**Objective:** maximize mean chance-corrected Similarity to Reference (S2R)
+across input trees.
+
+Per-quartet 3×-scaled value:
+
+- Unresolved in consensus: _k_ (the chance baseline)
+- Resolved as state _j_: 3 × `count_j` + `count_0`
+
+Overall S2R score:
+
+$$
+\text{S2R} = \frac{\sum_q v_q - k \cdot Q_\text{total}}{2\,k\,Q_\text{total}}
+$$
+
+where $v_q$ is the 3×-scaled value for quartet $q$.
+
+**Taxon dropping:** dropped quartets are _removed_ from `total_value_3x`
+(their 3×-value is subtracted out), and _Q_~active~ shrinks.
+The `drop_benefit` is computed exactly as `new_score − old_score`:
+both the numerator and the denominator change, so a drop is beneficial
+when the taxon's quartets pull the mean S2R below its post-drop value.
+
+**Observation:** this is the same "shrinking denominator" approach used
+in approach 3 (divergence), but with chance-corrected S2R values.
+Dropping always improves the score when the removed quartets have
+below-mean S2R.
+Risk of over-dropping exists in principle.
+
+
+### 2. Normalized S2R (analysis only — not implemented)
+
+Normalize S2R with reference to the maximum possible similarity
+(see `?SimilarityToReference`, `normalize = TRUE`):
+
+$$
+\text{max} = \frac{s + d + r_2 + (r_1 + u)/3}{Q}
+$$
+
+$$
+\text{normalized} = \frac{\text{S2R} - 1/3}{\text{max} - 1/3}
+$$
+
+The maximum possible S2R depends only on the **input tree profile** (for each
+quartet, the best the consensus could do is resolve it as the plurality state).
+Since the profile is fixed throughout optimization, `max` is a constant.
+The normalization is therefore a **monotonic (affine) transformation** of S2R:
+
+$$
+\text{normalized} = \frac{\text{S2R}}{\text{max} - 1/3}
+$$
+
+(after noting the $-1/3$ terms cancel in the numerator).
+
+**Conclusion:** identical greedy ranking to approach 1.
+No implementation needed; the two objectives always select the same action.
+
+
+### 3. Quartet divergence with _Q_~active~ normalization (proposed)
+
+**Objective:** minimize mean quartet divergence across active quartets.
+
+The quartet divergence between two trees is:
+
+$$
+\text{QD} = \frac{2d + r_1 + r_2}{N}
+$$
+
+which is the `QuartetDivergence` metric in the package.
+
+Summed over _k_ input trees, the total divergence contribution for a single
+quartet resolved as state _j_ in the consensus is:
+
+$$
+L_q = 2(k - \text{count}_j - \text{count}_0) + \text{count}_0
+    = 2k - 2\,\text{count}_j - \text{count}_0
+$$
+
+For an unresolved quartet: $L_q = k - \text{count}_0$.
+
+This is exactly what the current distance-mode `total_loss` tracks
+(the symmetric quartet distance, summed over all input trees).
+
+**Taxon dropping variant:** score dropped quartets as 0 divergence
+(exclude from numerator), and normalize by $Q_\text{active}$ (exclude from
+denominator).
+
+$$
+\text{objective} = \frac{\text{total\_loss\_active}}{Q_\text{active}}
+$$
+
+- **Split add/remove** ($Q_\text{active}$ constant):
+  benefit = $-\Delta L / Q_\text{active}$.
+  Equivalent to the existing distance mode, rescaled.
+- **Taxon drop** ($Q_\text{active}$ shrinks):
+  benefit = $\bar{L}_\text{before} - \bar{L}_\text{after}$, which is positive
+  only when the dropped taxon's quartets have above-average divergence.
+
+The shrinking denominator provides a _natural penalty_ for dropping:
+you can only improve the mean by removing below-average quartets.
+
+**Difference from S2R (approach 1):** the per-quartet benefit for resolving
+a quartet uses $2\,\text{count}_j - k$ (distance mode) rather than
+$3\,\text{count}_j + \text{count}_0 - k$ (S2R mode).
+This means splits are ranked differently — the distance mode gives no extra
+credit for `count_0` (input trees that leave the quartet unresolved).
+The two objectives can therefore produce different consensus trees.
+
+**Status:** implemented (`objective = "divergence"`).
+
+**Concerns:**
+
+- The shrinking-denominator approach could still over-drop in adversarial
+  cases (if most quartets are bad, the mean stays high and dropping remains
+  attractive).
+  In practice, the greedy heuristic should prefer split
+  additions (which improve many quartets at once) over drops.
+- No chance correction: a star tree scores $\bar{L} = (k - \text{count}_0)$
+  per quartet, not zero.
+  The absolute scale is less interpretable than S2R.

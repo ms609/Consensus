@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // cpp_quartet_consensus
-List cpp_quartet_consensus(const List& splits_list, const int n_tips, const bool init_majority, const bool init_extended, const bool greedy_best_flag);
-RcppExport SEXP _Consensus_cpp_quartet_consensus(SEXP splits_listSEXP, SEXP n_tipsSEXP, SEXP init_majoritySEXP, SEXP init_extendedSEXP, SEXP greedy_best_flagSEXP) {
+List cpp_quartet_consensus(const List& splits_list, const int n_tips, const bool init_majority, const bool init_extended, const bool greedy_best_flag, Rcpp::Nullable<Rcpp::IntegerVector> never_drop_r, const double penalty_r);
+RcppExport SEXP _Consensus_cpp_quartet_consensus(SEXP splits_listSEXP, SEXP n_tipsSEXP, SEXP init_majoritySEXP, SEXP init_extendedSEXP, SEXP greedy_best_flagSEXP, SEXP never_drop_rSEXP, SEXP penalty_rSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,7 +21,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type init_majority(init_majoritySEXP);
     Rcpp::traits::input_parameter< const bool >::type init_extended(init_extendedSEXP);
     Rcpp::traits::input_parameter< const bool >::type greedy_best_flag(greedy_best_flagSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_quartet_consensus(splits_list, n_tips, init_majority, init_extended, greedy_best_flag));
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::IntegerVector> >::type never_drop_r(never_drop_rSEXP);
+    Rcpp::traits::input_parameter< const double >::type penalty_r(penalty_rSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_quartet_consensus(splits_list, n_tips, init_majority, init_extended, greedy_best_flag, never_drop_r, penalty_r));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -77,7 +79,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_Consensus_cpp_quartet_consensus", (DL_FUNC) &_Consensus_cpp_quartet_consensus, 5},
+    {"_Consensus_cpp_quartet_consensus", (DL_FUNC) &_Consensus_cpp_quartet_consensus, 7},
     {"_Consensus_cpp_bhv_distance", (DL_FUNC) &_Consensus_cpp_bhv_distance, 6},
     {"_Consensus_cpp_bhv_tree_at", (DL_FUNC) &_Consensus_cpp_bhv_tree_at, 7},
     {"_Consensus_cpp_bhv_mean", (DL_FUNC) &_Consensus_cpp_bhv_mean, 7},

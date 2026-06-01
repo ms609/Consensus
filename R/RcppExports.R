@@ -8,12 +8,19 @@
 #' @param init_majority Logical: TRUE to start from majority-rule splits.
 #' @param init_extended Logical: TRUE to start from extended majority splits.
 #' @param greedy_best_flag Logical: TRUE for "best", FALSE for "first".
+#' @param never_drop_r Integer vector (1-based) of tip indices that must not
+#'   be dropped, or integer(0) to allow all drops.  If NULL, taxon dropping
+#'   is disabled.
+#' @param penalty_r Double: the misinformation penalty b/a.  A quartet is
+#'   resolved when its support among resolving input trees exceeds
+#'   penalty / (1 + penalty); the default 1 gives a majority threshold.
 #'
-#' @return A list with `included` (logical), `raw_splits` (raw matrix),
-#'   and `light_side` (integer).
+#' @return A list with `splits` (raw matrix of non-trivial splits remapped
+#'   to active tips), `n_active` (integer), `active_tips` (logical),
+#'   `dropped_tips` (integer, 1-based), and `drop_scores` (double).
 #' @keywords internal
-cpp_quartet_consensus <- function(splits_list, n_tips, init_majority, init_extended, greedy_best_flag) {
-    .Call(`_Consensus_cpp_quartet_consensus`, splits_list, n_tips, init_majority, init_extended, greedy_best_flag)
+cpp_quartet_consensus <- function(splits_list, n_tips, init_majority, init_extended, greedy_best_flag, never_drop_r = NULL, penalty_r = 1.0) {
+    .Call(`_Consensus_cpp_quartet_consensus`, splits_list, n_tips, init_majority, init_extended, greedy_best_flag, never_drop_r, penalty_r)
 }
 
 cpp_bhv_distance <- function(memA, lenA, leafA, memB, lenB, leafB) {
