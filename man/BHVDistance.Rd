@@ -22,12 +22,12 @@ polynomial-time GTP algorithm of \insertCite{OwenProvan2011;textual}{ConsTree}.
 }
 \examples{
 set.seed(0)
-edged <- function(tree) {
+AddEdgeLengths <- function(tree) {
   tree$edge.length <- runif(nrow(tree$edge))
   tree
 }
-t1 <- edged(TreeTools::RandomTree(8, root = FALSE))
-t2 <- edged(TreeTools::RandomTree(t1$tip.label, root = FALSE))
+t1 <- AddEdgeLengths(TreeTools::RandomTree(8, root = FALSE))
+t2 <- AddEdgeLengths(TreeTools::RandomTree(t1$tip.label, root = FALSE))
 BHVDistance(t1, t2)
 
 }
