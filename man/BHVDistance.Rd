@@ -21,13 +21,9 @@ with edge lengths in the Billera-Holmes-Vogtmann (BHV) treespace
 polynomial-time GTP algorithm of \insertCite{OwenProvan2011;textual}{ConsTree}.
 }
 \examples{
-set.seed(0)
-AddEdgeLengths <- function(tree) {
-  tree$edge.length <- runif(nrow(tree$edge))
-  tree
-}
-t1 <- AddEdgeLengths(TreeTools::RandomTree(8, root = FALSE))
-t2 <- AddEdgeLengths(TreeTools::RandomTree(t1$tip.label, root = FALSE))
+set.seed(2)
+t1 <- TreeTools::RandomTree(8, root = TRUE, lengths = runif(14))
+t2 <- TreeTools::RandomTree(8, root = TRUE, lengths = runif(14))
 BHVDistance(t1, t2)
 
 }

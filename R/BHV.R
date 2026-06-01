@@ -107,14 +107,11 @@ NULL
 #' @return `BHVDistance()` returns a single non-negative number: the length of
 #' the geodesic between `tree1` and `tree2` in BHV treespace.
 #'
+# TODO Update to `lengths = runif` once TreeTools > 2.3.0 is required
 #' @examples
-#' set.seed(0)
-#' AddEdgeLengths <- function(tree) {
-#'   tree$edge.length <- runif(nrow(tree$edge))
-#'   tree
-#' }
-#' t1 <- AddEdgeLengths(TreeTools::RandomTree(8, root = FALSE))
-#' t2 <- AddEdgeLengths(TreeTools::RandomTree(t1$tip.label, root = FALSE))
+#' set.seed(2)
+#' t1 <- TreeTools::RandomTree(8, root = TRUE, lengths = runif(14))
+#' t2 <- TreeTools::RandomTree(8, root = TRUE, lengths = runif(14))
 #' BHVDistance(t1, t2)
 #'
 #' @references \insertAllCited{}
