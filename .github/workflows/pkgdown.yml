@@ -27,6 +27,7 @@ jobs:
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      CONSTREE_TOKEN: ${{ secrets.CONSTREE_DEPLOY_TOKEN }}
 
     steps:
       - uses: ms609/actions/pkgdown@main
@@ -90,5 +91,71 @@ jobs:
           git commit -m "Replace dev/ docs with redirects to release" || true
           git push origin gh-pages
 
+          rm -rf "$TMPDIR"
+        shell: bash
+
+      - name: Push built site to constree.github.io
+        run: |
+          TMPDIR=$(mktemp -d)
+          git clone --single-branch --branch gh-pages \
+            "https://x-access-token:${GITHUB_PAT}@github.com/${GITHUB_REPOSITORY}.git" \
+            "$TMPDIR"
+          cd "$TMPDIR"
+          git remote add constree \
+            "https://x-access-token:${CONSTREE_TOKEN}@github.com/constree/constree.github.io.git"
+          git push constree gh-pages:gh-pages --force
+          rm -rf "$TMPDIR"
+        shell: bash
+
+      - name: Replace ms609 gh-pages with redirect to constree.github.io
+        run: |
+          TMPDIR=$(mktemp -d)
+          git clone --single-branch --branch gh-pages \
+            "https://x-access-token:${GITHUB_PAT}@github.com/${GITHUB_REPOSITORY}.git" \
+            "$TMPDIR"
+          cd "$TMPDIR"
+
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git rm -rf .
+
+          cat > index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>ConsTree</title>
+            <link rel="canonical" href="https://constree.github.io/">
+            <meta http-equiv="refresh" content="0; url=https://constree.github.io/">
+          </head>
+          <body>
+            <p>The ConsTree documentation has moved to
+              <a href="https://constree.github.io/">constree.github.io</a>.</p>
+          </body>
+          </html>
+          EOF
+
+          # 404.html catches deep links, strips the /ConsTree prefix and redirects
+          cat > 404.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>ConsTree – Redirecting</title>
+            <link rel="canonical" href="https://constree.github.io/">
+            <script>
+              var p = window.location.pathname.replace(/^\/ConsTree/, '') || '/';
+              window.location.replace('https://constree.github.io' + p + window.location.search + window.location.hash);
+            </script>
+          </head>
+          <body>
+            <p>Redirecting to <a href="https://constree.github.io/">constree.github.io</a>…</p>
+          </body>
+          </html>
+          EOF
+
+          git add .
+          git commit -m "Redirect to constree.github.io"
+          git push origin gh-pages
           rm -rf "$TMPDIR"
         shell: bash
