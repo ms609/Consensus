@@ -19,16 +19,16 @@ each move the estimate less than \code{tolerance} times the sample standard
 deviation.  Smaller values give a more precise mean at the cost of more
 iterations.}
 
-\item{maxIter}{Integer maximum number of iterations.}
+\item{maxIter}{Integer specifying the maximum number of iterations.}
 
-\item{cauchyLength}{Integer number of consecutive small steps required to
-declare convergence.}
+\item{cauchyLength}{Integer specifying the number of consecutive small steps
+required to declare convergence.}
 
-\item{mean}{Optional \code{phylo} giving a pre-computed mean tree; if \code{NULL}
-(default), \code{\link[=BHVMean]{BHVMean()}} is called on \code{trees}.}
+\item{mean}{Object of class \code{phylo} specifying a pre-computed mean tree;
+computed via \code{\link[=BHVMean]{BHVMean()}} if \code{NULL} (the default).}
 
-\item{type}{Either \code{"average"} (the default) for the mean squared distance,
-or \code{"sum"} for the total squared distance.}
+\item{type}{Character specifying whether to return the mean squared distance
+(\code{"average"}, the default) or the total squared distance (\code{"sum"}).}
 }
 \value{
 \code{BHVMean()} returns the mean tree, an object of class \code{phylo}, with

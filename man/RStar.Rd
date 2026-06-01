@@ -96,6 +96,7 @@ Other consensus methods:
 \code{\link[=Loose]{Loose()}},
 \code{\link[=Majority]{Majority()}},
 \code{\link[=MajorityPlus]{MajorityPlus()}},
+\code{\link[=Quartet]{Quartet()}},
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}

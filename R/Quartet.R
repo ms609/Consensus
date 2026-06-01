@@ -13,7 +13,7 @@
 #' resolve more quartets), quartet consensus trees tend to be more resolved
 #' than majority-rule trees, especially when phylogenetic signal is low.
 #'
-#' @param trees An object of class `multiPhylo`: the input trees.
+#' @param trees Object of class `multiPhylo` specifying the input trees.
 #'   All trees must share the same tip labels.
 #'   Trees may be non-binary (polytomies are handled correctly).
 #' @param init Character string specifying the initial tree:
@@ -38,8 +38,11 @@
 #' The function supports trees with up to 100 tips.  For larger trees,
 #' the explicit quartet enumeration becomes prohibitively expensive.
 #'
-#' @return A tree of class `phylo`.
+#' @return `Quartet()` returns a consensus tree, an object of class `phylo`,
+#' unrooted.
 #'
+#' @seealso Other consensus methods: [`Strict()`], [`Majority()`], [`Greedy()`].
+#' @family consensus methods
 #' @references
 #' \insertAllCited{}
 #'
@@ -83,10 +86,10 @@ Quartet <- function(trees,
   }
 
   for (i in seq_len(nTree)[-1]) {
-    labs_i <- TipLabels(trees[[i]])
-    if (!setequal(labs_i, tipLabels)) {
-      extra   <- setdiff(labs_i, tipLabels)
-      missing <- setdiff(tipLabels, labs_i)
+    labsI <- TipLabels(trees[[i]])
+    if (!setequal(labsI, tipLabels)) {
+      extra   <- setdiff(labsI, tipLabels)
+      missing <- setdiff(tipLabels, labsI)
       stop("Tree ", i, " has different tip labels from tree 1.",
            if (length(missing)) paste0("\n  Missing in tree ", i, ": ",
                                        paste(missing, collapse = ", ")),
@@ -116,5 +119,6 @@ Quartet <- function(trees,
   rawSplits <- res$raw_splits[included, , drop = FALSE]
   sp <- structure(rawSplits, nTip = nTip, tip.label = tipLabels,
                   class = "Splits")
+  # Return:
   as.phylo(sp)
 }

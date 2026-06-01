@@ -28,9 +28,9 @@
 #' you intend before calling `Local()`.
 #'
 #' @inheritParams Strict
-#' @param type Character; `"rooted"` (default) for MinRLC (minimum rooted
-#'   local consensus), or `"induced"` for MinILC (minimum induced local
-#'   consensus).
+#' @param type Character specifying whether to compute the minimum rooted local
+#'   consensus (`"rooted"`, the default; MinRLC) or the minimum induced local
+#'   consensus (`"induced"`; MinILC).
 #'
 #' @return `Local()` returns the consensus tree, an object of class `phylo`,
 #'   rooted by construction.

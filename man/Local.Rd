@@ -10,9 +10,9 @@ Local(trees, type = c("rooted", "induced"))
 \item{trees}{A list of trees, or a \code{multiPhylo} object; all entries must
 share the same leaf labels.}
 
-\item{type}{Character; \code{"rooted"} (default) for MinRLC (minimum rooted
-local consensus), or \code{"induced"} for MinILC (minimum induced local
-consensus).}
+\item{type}{Character specifying whether to compute the minimum rooted local
+consensus (\code{"rooted"}, the default; MinRLC) or the minimum induced local
+consensus (\code{"induced"}; MinILC).}
 }
 \value{
 \code{Local()} returns the consensus tree, an object of class \code{phylo},
@@ -68,6 +68,7 @@ Other consensus methods:
 \code{\link[=Loose]{Loose()}},
 \code{\link[=Majority]{Majority()}},
 \code{\link[=MajorityPlus]{MajorityPlus()}},
+\code{\link[=Quartet]{Quartet()}},
 \code{\link[=RStar]{RStar()}},
 \code{\link[=Strict]{Strict()}}
 }

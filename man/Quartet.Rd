@@ -11,7 +11,7 @@ Quartet(
 )
 }
 \arguments{
-\item{trees}{An object of class \code{multiPhylo}: the input trees.
+\item{trees}{Object of class \code{multiPhylo} specifying the input trees.
 All trees must share the same tip labels.
 Trees may be non-binary (polytomies are handled correctly).}
 
@@ -31,7 +31,8 @@ may give a slightly worse result).
 }}
 }
 \value{
-A tree of class \code{phylo}.
+\code{Quartet()} returns a consensus tree, an object of class \code{phylo},
+unrooted.
 }
 \description{
 Construct a consensus tree that minimizes the sum of symmetric quartet
@@ -78,3 +79,19 @@ cat("Quartet consensus splits:", NSplits(qc), "\n")
 \references{
 \insertAllCited{}
 }
+\seealso{
+Other consensus methods: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}, \code{\link[=Greedy]{Greedy()}}.
+
+Other consensus methods:
+\code{\link[=Adams]{Adams()}},
+\code{\link[=Average]{Average()}},
+\code{\link[=Frequency]{Frequency()}},
+\code{\link[=Greedy]{Greedy()}},
+\code{\link[=Local]{Local()}},
+\code{\link[=Loose]{Loose()}},
+\code{\link[=Majority]{Majority()}},
+\code{\link[=MajorityPlus]{MajorityPlus()}},
+\code{\link[=RStar]{RStar()}},
+\code{\link[=Strict]{Strict()}}
+}
+\concept{consensus methods}

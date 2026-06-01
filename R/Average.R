@@ -41,10 +41,10 @@
 #'   \acronym{NNI}/\acronym{SPR} search;
 #' - `"nj"`, `"bionj"` and `"fastme.ols"` return the corresponding distance tree
 #'   \insertCite{SaitouNei1987,Gascuel1997}{Consensus}.
-#' @param weights Optional numeric vector, one entry per tree, giving the weight
-#' of each tree in the average (e.g. posterior probabilities).  The default,
-#' `NULL`, weights every tree equally -- appropriate for a posterior sample, in
-#' which a tree's frequency already encodes its probability.
+#' @param weights Numeric vector specifying the weight of each tree in the
+#' average (e.g. posterior probabilities), with one entry per tree.  Defaults
+#' to `NULL`, which weights every tree equally -- appropriate for a posterior
+#' sample, in which a tree's frequency already encodes its probability.
 #' @param scale Character specifying whether to rescale each tree's distance
 #' matrix before averaging.  `"none"` (the default) leaves matrices unscaled,
 #' appropriate when the trees are already commensurable (e.g. a single posterior
@@ -55,17 +55,16 @@
 #' computing path-length distances.  The default, `NA`, uses branch lengths when
 #' *every* tree has them and otherwise counts edges; `TRUE` requires branch
 #' lengths; `FALSE` always counts edges (a topology-only summary).
-#' @param outgroup Optional tip label(s) on which to root the result.  The
-#' default, `NULL`, returns an unrooted tree: path-length distances are
-#' unaffected by rooting, so the method is intrinsically unrooted.
+#' @param outgroup Character vector specifying tip label(s) on which to root
+#' the result.  Defaults to `NULL`, which returns an unrooted tree: path-length
+#' distances are unaffected by rooting, so the method is intrinsically unrooted.
 #' @param check.labels Logical specifying whether to confirm that every tree
 #' describes the same leaves.  The default, `TRUE`, is safer; `FALSE` is faster
 #' when the trees are known to share an identical leaf set.
-#' @param lsControl Optional named list of further arguments for the
-#' least-squares search (`method = "ls"`), passed to
-#' [`TreeSearch::LeastSquaresTree()`]; for example
-#' `list(spr = FALSE, maxHits = 5L, weight = "fm")` to use Fitch-Margoliash
-#' weighting.  Ignored by the other methods.
+#' @param lsControl Named list of further arguments for the least-squares
+#' search (`method = "ls"`), passed to [`TreeSearch::LeastSquaresTree()`]; for
+#' example `list(spr = FALSE, maxHits = 5L, weight = "fm")` to use
+#' Fitch-Margoliash weighting.  Defaults to `list()`; ignored by other methods.
 #'
 #' @return `Average()` returns the average consensus tree, an object of class
 #' `phylo` with fitted branch lengths, unrooted unless `outgroup` is given.
@@ -105,6 +104,7 @@ Average <- function(trees,
   averageDist <- .AverageDistance(trees, labs, weights, scale, edgeLengths)
   tree <- .FitTree(averageDist, method, lsControl)
 
+  # Return:
   .RootResult(tree, outgroup)
 }
 
@@ -134,6 +134,7 @@ Average <- function(trees,
     trees <- RenumberTips(trees, labs1)
   }
 
+  # Return:
   trees
 }
 
@@ -222,5 +223,6 @@ Average <- function(trees,
     }
     return(tree)
   }
+  # Return:
   root(tree, outgroup = outgroup, resolve.root = TRUE)
 }

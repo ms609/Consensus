@@ -67,7 +67,6 @@ NULL
   if (is.null(nrow(membership)) || nrow(membership) == 0L) {
     tree <- StarTree(tipLabels)
     tree[["edge.length"]] <- rep[["leaf"]][match(tree[["tip.label"]], tipLabels)]
-    # Return:
     return(tree)
   }
   spl <- as.Splits(membership > 0, tipLabels = tipLabels)
@@ -148,6 +147,7 @@ BHVDistance <- function(tree1, tree2) {
   if (!all(vapply(trees, inherits, logical(1), "phylo"))) {
     stop("`trees` must be a `phylo`, a `multiPhylo`, or a list of `phylo`.")
   }
+  # Return:
   trees
 }
 
@@ -219,9 +219,9 @@ BHVPairwiseDistances <- function(trees) {
 #' each move the estimate less than `tolerance` times the sample standard
 #' deviation.  Smaller values give a more precise mean at the cost of more
 #' iterations.
-#' @param maxIter Integer maximum number of iterations.
-#' @param cauchyLength Integer number of consecutive small steps required to
-#' declare convergence.
+#' @param maxIter Integer specifying the maximum number of iterations.
+#' @param cauchyLength Integer specifying the number of consecutive small steps
+#' required to declare convergence.
 #'
 #' @return `BHVMean()` returns the mean tree, an object of class `phylo`, with
 #' attributes `iterations` (number of steps taken) and `converged`.  Because the
@@ -261,10 +261,10 @@ BHVMean <- function(trees, tolerance = 1e-4, maxIter = 100000L,
 }
 
 #' @rdname BHVMean
-#' @param mean Optional `phylo` giving a pre-computed mean tree; if `NULL`
-#' (default), [BHVMean()] is called on `trees`.
-#' @param type Either `"average"` (the default) for the mean squared distance,
-#' or `"sum"` for the total squared distance.
+#' @param mean Object of class `phylo` specifying a pre-computed mean tree;
+#' computed via [BHVMean()] if `NULL` (the default).
+#' @param type Character specifying whether to return the mean squared distance
+#' (`"average"`, the default) or the total squared distance (`"sum"`).
 #' @return `BHVVariance()` returns a single non-negative number.
 #' @export
 BHVVariance <- function(trees, mean = NULL, type = c("average", "sum")) {

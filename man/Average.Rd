@@ -33,10 +33,10 @@ which Lapointe & Cucumel's averaging guarantee holds -- using
 \insertCite{SaitouNei1987,Gascuel1997}{Consensus}.
 }}
 
-\item{weights}{Optional numeric vector, one entry per tree, giving the weight
-of each tree in the average (e.g. posterior probabilities).  The default,
-\code{NULL}, weights every tree equally -- appropriate for a posterior sample, in
-which a tree's frequency already encodes its probability.}
+\item{weights}{Numeric vector specifying the weight of each tree in the
+average (e.g. posterior probabilities), with one entry per tree.  Defaults
+to \code{NULL}, which weights every tree equally -- appropriate for a posterior
+sample, in which a tree's frequency already encodes its probability.}
 
 \item{scale}{Character specifying whether to rescale each tree's distance
 matrix before averaging.  \code{"none"} (the default) leaves matrices unscaled,
@@ -50,19 +50,18 @@ computing path-length distances.  The default, \code{NA}, uses branch lengths wh
 \emph{every} tree has them and otherwise counts edges; \code{TRUE} requires branch
 lengths; \code{FALSE} always counts edges (a topology-only summary).}
 
-\item{outgroup}{Optional tip label(s) on which to root the result.  The
-default, \code{NULL}, returns an unrooted tree: path-length distances are
-unaffected by rooting, so the method is intrinsically unrooted.}
+\item{outgroup}{Character vector specifying tip label(s) on which to root
+the result.  Defaults to \code{NULL}, which returns an unrooted tree: path-length
+distances are unaffected by rooting, so the method is intrinsically unrooted.}
 
 \item{check.labels}{Logical specifying whether to confirm that every tree
 describes the same leaves.  The default, \code{TRUE}, is safer; \code{FALSE} is faster
 when the trees are known to share an identical leaf set.}
 
-\item{lsControl}{Optional named list of further arguments for the
-least-squares search (\code{method = "ls"}), passed to
-\code{\link[TreeSearch:LeastSquaresTree]{TreeSearch::LeastSquaresTree()}}; for example
-\code{list(spr = FALSE, maxHits = 5L, weight = "fm")} to use Fitch-Margoliash
-weighting.  Ignored by the other methods.}
+\item{lsControl}{Named list of further arguments for the least-squares
+search (\code{method = "ls"}), passed to \code{\link[TreeSearch:LeastSquaresTree]{TreeSearch::LeastSquaresTree()}}; for
+example \code{list(spr = FALSE, maxHits = 5L, weight = "fm")} to use
+Fitch-Margoliash weighting.  Defaults to \code{list()}; ignored by other methods.}
 }
 \value{
 \code{Average()} returns the average consensus tree, an object of class
@@ -122,6 +121,7 @@ Other consensus methods:
 \code{\link[=Loose]{Loose()}},
 \code{\link[=Majority]{Majority()}},
 \code{\link[=MajorityPlus]{MajorityPlus()}},
+\code{\link[=Quartet]{Quartet()}},
 \code{\link[=RStar]{RStar()}},
 \code{\link[=Strict]{Strict()}}
 }

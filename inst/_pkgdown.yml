@@ -1,0 +1,34 @@
+url: https://ms609.github.io/Consensus
+
+home:
+  title: An R package for fast phylogenetic consensus tree algorithms.
+
+authors:
+  Martin R. Smith:
+    href: https://smithlabdurham.github.io/
+
+development:
+  mode: auto
+
+reference:
+  - title: "Consensus methods"
+    desc: >
+      Functions for computing consensus trees from a set of input trees.
+    contents:
+      - has_concept("consensus methods")
+
+  - title: "BHV tree space"
+    desc: >
+      Functions for computing distances and means in the
+      Billera–Holmes–Vogtmann tree space.
+    contents:
+      - has_concept("BHV summaries")
+      - BHVVariance
+
+template:
+  bootstrap: 5
+  bslib:
+    danger: "#A6081A" # Accessibility suggestion
+  params:
+    bootswatch: simplex
+    ganalytics: G-93LNK4JKY4

@@ -48,6 +48,7 @@ Other consensus methods:
 \code{\link[=Local]{Local()}},
 \code{\link[=Loose]{Loose()}},
 \code{\link[=MajorityPlus]{MajorityPlus()}},
+\code{\link[=Quartet]{Quartet()}},
 \code{\link[=RStar]{RStar()}},
 \code{\link[=Strict]{Strict()}}
 }
