@@ -17,8 +17,8 @@ the geodesic between \code{tree1} and \code{tree2} in BHV treespace.
 \description{
 \code{BHVDistance()} returns the geodesic distance between two phylogenetic trees
 with edge lengths in the Billera-Holmes-Vogtmann (BHV) treespace
-\insertCite{BilleraHolmesVogtmann2001}{Consensus}, computed with the
-polynomial-time GTP algorithm of \insertCite{OwenProvan2011;textual}{Consensus}.
+\insertCite{BilleraHolmesVogtmann2001}{ConsTree}, computed with the
+polynomial-time GTP algorithm of \insertCite{OwenProvan2011;textual}{ConsTree}.
 }
 \examples{
 set.seed(0)
@@ -40,3 +40,4 @@ Other BHV summaries:
 \code{\link[=BHVPairwiseDistances]{BHVPairwiseDistances()}}
 }
 \concept{BHV summaries}
+

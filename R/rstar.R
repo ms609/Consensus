@@ -1,6 +1,6 @@
 #' R* consensus tree
 #'
-#' `RStar()` returns the R* consensus \insertCite{Degnan2009}{Consensus} of a set
+#' `RStar()` returns the R* consensus \insertCite{Degnan2009}{ConsTree} of a set
 #' of **rooted** trees.
 #'
 #' The R* consensus is a rooted-triplet method.  For every set of three leaves it
@@ -13,7 +13,7 @@
 #' unresolved.  The kept triplets form the set of *majority resolved triplets*,
 #' \eqn{R_{maj}}.  The R* tree is then the unique tree whose clades are exactly
 #' the **strong clusters** of \eqn{R_{maj}}
-#' \insertCite{Degnan2009,Jansson2016a}{Consensus}: a leaf set `A` is a clade if
+#' \insertCite{Degnan2009,Jansson2016a}{ConsTree}: a leaf set `A` is a clade if
 #' and only if, for *every* pair of leaves in `A` and *every* leaf `x` outside
 #' `A`, the triplet grouping that pair against `x` is uniquely favoured.
 #' Equivalently, R* is the most resolved tree that displays no resolved triplet
@@ -36,17 +36,17 @@
 #'   \item *Fans.*  When a non-binary input tree leaves three leaves unresolved
 #'     (a fan), that tree does not count toward any resolution of that triplet;
 #'     fans have no impact on \eqn{R_{maj}}
-#'     \insertCite{Jansson2016a}{Consensus}.
+#'     \insertCite{Jansson2016a}{ConsTree}.
 #'   \item *Ties.*  If no resolution of a triple is uniquely favoured, that
 #'     triple contributes nothing, leaving the affected taxa unresolved.
 #'   \item *Existence and uniqueness.*  The strong-cluster construction always
 #'     yields a single, well-defined tree (Lemma 1.1 of
-#'     \insertCite{Jansson2016a}{Consensus}); there is no incompatibility or
+#'     \insertCite{Jansson2016a}{ConsTree}); there is no incompatibility or
 #'     "build-failure" case to resolve.
 #'   \item *Algorithm.*  This implementation is correctness-first: an
 #'     \eqn{O(kn^3)} triplet tally followed by an \eqn{O(n^4)} strong-cluster
 #'     assembly.  The sub-cubic and near-quadratic algorithms of
-#'     \insertCite{Jansson2013a,Jansson2016a}{Consensus} are a deferred speed
+#'     \insertCite{Jansson2013a,Jansson2016a}{ConsTree} are a deferred speed
 #'     optimisation.
 #' }
 #'
@@ -116,3 +116,4 @@ RStar <- function(trees) {
   # Return:
   tree
 }
+

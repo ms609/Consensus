@@ -1,14 +1,14 @@
 #' Fast algorithms for phylogenetic consensus trees
 #'
-#' `Consensus` provides a comprehensive and efficient suite of methods for
+#' `ConsTree` provides a comprehensive and efficient suite of methods for
 #' summarizing a set of phylogenetic trees as a single consensus tree.
 #' It builds on the tree and split infrastructure of
 #' [\pkg{TreeTools}](https://ms609.github.io/TreeTools/), and implements
 #' asymptotically efficient consensus algorithms
-#' \insertCite{JanssonShenSung2016}{Consensus}.
+#' \insertCite{JanssonShenSung2016}{ConsTree}.
 #'
 #' @keywords internal
-#' @useDynLib Consensus, .registration = TRUE
+#' @useDynLib ConsTree, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 "_PACKAGE"
 

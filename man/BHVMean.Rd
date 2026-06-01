@@ -43,10 +43,10 @@ mean; tighten \code{tolerance} for greater precision.
 \description{
 \code{BHVMean()} returns the Fréchet (Karcher) mean of a set of trees in BHV
 treespace: the tree that minimizes the sum of squared geodesic distances to
-the sample \insertCite{BrownOwen2020}{Consensus}.  As there is no known
+the sample \insertCite{BrownOwen2020}{ConsTree}.  As there is no known
 closed form, it is approximated by the iterative law-of-large-numbers
-algorithm of \insertCite{Sturm2003;textual}{Consensus} and
-\insertCite{MillerOwenProvan2015;textual}{Consensus}: starting from a sample
+algorithm of \insertCite{Sturm2003;textual}{ConsTree} and
+\insertCite{MillerOwenProvan2015;textual}{ConsTree}: starting from a sample
 tree, each step walks a fraction \eqn{1/(k+1)} of the way along the geodesic
 towards a randomly chosen sample tree.
 }
@@ -58,7 +58,7 @@ T, T_i)^2}; with \code{type = "sum"}, the total \eqn{\sum_i d(\bar T, T_i)^2}.
 The mean is "sticky": perturbing one sample tree need not move it, and it is
 pulled towards lower-dimensional (less resolved) orthants, so it may be
 unresolved even when the sample trees are binary
-\insertCite{BrownOwen2020}{Consensus}.
+\insertCite{BrownOwen2020}{ConsTree}.
 }
 \examples{
 set.seed(0)
@@ -80,3 +80,4 @@ Other BHV summaries:
 \code{\link[=BHVPairwiseDistances]{BHVPairwiseDistances()}}
 }
 \concept{BHV summaries}
+

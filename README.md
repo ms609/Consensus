@@ -1,12 +1,12 @@
-# Consensus
+# ConsTree
 
 <!-- badges: start -->
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![R-CMD-check](https://github.com/ms609/Consensus/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/ms609/Consensus/actions/workflows/R-CMD-check.yml)
-[![codecov](https://codecov.io/gh/ms609/Consensus/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ms609/Consensus)
+[![R-CMD-check](https://github.com/ms609/ConsTree/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/ms609/ConsTree/actions/workflows/R-CMD-check.yml)
+[![codecov](https://codecov.io/gh/ms609/ConsTree/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ms609/ConsTree)
 <!-- badges: end -->
 
-'Consensus' is an R package providing a comprehensive, efficient suite of
+'ConsTree' is an R package providing a comprehensive, efficient suite of
 methods for summarizing a collection of phylogenetic trees — for example a
 bootstrap or Bayesian posterior sample — as a single **consensus tree**.
 
@@ -41,7 +41,7 @@ otherwise readily available in R.
 ## Usage
 
 ```r
-library("Consensus")
+library("ConsTree")
 
 trees <- ape::as.phylo(1:100, 8)   # 100 eight-leaf trees
 
@@ -58,28 +58,29 @@ Install the development version from GitHub:
 
 ```r
 if (!require("remotes")) install.packages("remotes")
-remotes::install_github("ms609/Consensus")
+remotes::install_github("ms609/ConsTree")
 ```
 
-'Consensus' is not yet on CRAN.
+'ConsTree' is not yet on CRAN.
 
 ## Relationship to other packages
 
-'Consensus' is the front-end consensus toolkit for the
+'ConsTree' is the front-end consensus toolkit for the
 [TreeTools](https://ms609.github.io/TreeTools/) ecosystem, which also includes
 ['TreeDist'](https://ms609.github.io/TreeDist/) (tree distances and
 information-theoretic consensus) and
 ['TreeSearch'](https://ms609.github.io/TreeSearch/) (phylogenetic search).
 TreeTools itself remains the fast engine for the strict and majority-rule
-consensus, which 'Consensus' exposes through consistently-named wrappers.
+consensus, which 'ConsTree' exposes through consistently-named wrappers.
 
 ## Citation and attribution
 
 The algorithms repackaged here originate in the FACT, FACT2 and FDCT prototypes
 of Jesper Jansson and colleagues, incorporated with permission; see
 `inst/REFERENCES.bib` for the source papers, and `DESCRIPTION` for copyright
-attribution. 'Consensus' is released under GPL (≥ 3).
+attribution. 'ConsTree' is released under GPL (≥ 3).
 
 Please note that this project is released with a
 [Contributor Code of Conduct](https://ms609.github.io/TreeTools/CODE_OF_CONDUCT.html).
 By contributing, you agree to abide by its terms.
+

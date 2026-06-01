@@ -2,7 +2,7 @@
 #'
 #' `Strict()` returns the strict consensus of a set of trees: the tree that
 #' contains exactly those splits (clades) present in _every_ input tree
-#' \insertCite{Day1985}{Consensus}.
+#' \insertCite{Day1985}{ConsTree}.
 #'
 #' This is a thin wrapper around [`TreeTools::Consensus()`] with `p = 1`,
 #' provided so that every consensus method in this package is reachable through
@@ -30,7 +30,7 @@ Strict <- function(trees) {
 #' Majority-rule consensus tree
 #'
 #' `Majority()` returns the majority-rule consensus
-#' \insertCite{MargushMcMorris1981}{Consensus}: the tree containing each split
+#' \insertCite{MargushMcMorris1981}{ConsTree}: the tree containing each split
 #' that occurs in more than half of the input trees.  Raising `p` retains only
 #' splits present in a greater proportion of trees, up to the strict consensus
 #' at `p = 1`.
@@ -60,3 +60,4 @@ Majority <- function(trees, p = 0.5) {
 #' @rdname Majority
 #' @export
 MajorityRule <- Majority
+

@@ -1,7 +1,7 @@
 #' Local consensus tree
 #'
 #' `Local()` returns the local consensus
-#' \insertCite{JanssonShenSung2016}{Consensus} of a set of **rooted** trees.
+#' \insertCite{JanssonShenSung2016}{ConsTree} of a set of **rooted** trees.
 #'
 #' The local consensus is the most conservative tree consistent with the rooted
 #' triplets shared by *every* input tree.  Two variants are offered: the minimum
@@ -95,3 +95,4 @@ Local <- function(trees, type = c("rooted", "induced")) {
   # Return:
   tree
 }
+

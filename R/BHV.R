@@ -1,4 +1,4 @@
-#' @useDynLib Consensus, .registration = TRUE
+#' @useDynLib ConsTree, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 NULL
 
@@ -98,8 +98,8 @@ NULL
 #'
 #' `BHVDistance()` returns the geodesic distance between two phylogenetic trees
 #' with edge lengths in the Billera-Holmes-Vogtmann (BHV) treespace
-#' \insertCite{BilleraHolmesVogtmann2001}{Consensus}, computed with the
-#' polynomial-time GTP algorithm of \insertCite{OwenProvan2011;textual}{Consensus}.
+#' \insertCite{BilleraHolmesVogtmann2001}{ConsTree}, computed with the
+#' polynomial-time GTP algorithm of \insertCite{OwenProvan2011;textual}{ConsTree}.
 #'
 #' @param tree1,tree2 Trees of class `phylo`, sharing the same leaf labels and
 #' carrying `edge.length`.
@@ -197,10 +197,10 @@ BHVPairwiseDistances <- function(trees) {
 #'
 #' `BHVMean()` returns the Fréchet (Karcher) mean of a set of trees in BHV
 #' treespace: the tree that minimizes the sum of squared geodesic distances to
-#' the sample \insertCite{BrownOwen2020}{Consensus}.  As there is no known
+#' the sample \insertCite{BrownOwen2020}{ConsTree}.  As there is no known
 #' closed form, it is approximated by the iterative law-of-large-numbers
-#' algorithm of \insertCite{Sturm2003;textual}{Consensus} and
-#' \insertCite{MillerOwenProvan2015;textual}{Consensus}: starting from a sample
+#' algorithm of \insertCite{Sturm2003;textual}{ConsTree} and
+#' \insertCite{MillerOwenProvan2015;textual}{ConsTree}: starting from a sample
 #' tree, each step walks a fraction \eqn{1/(k+1)} of the way along the geodesic
 #' towards a randomly chosen sample tree.
 #'
@@ -211,7 +211,7 @@ BHVPairwiseDistances <- function(trees) {
 #' The mean is "sticky": perturbing one sample tree need not move it, and it is
 #' pulled towards lower-dimensional (less resolved) orthants, so it may be
 #' unresolved even when the sample trees are binary
-#' \insertCite{BrownOwen2020}{Consensus}.
+#' \insertCite{BrownOwen2020}{ConsTree}.
 #'
 #' @inheritParams BHVPairwiseDistances
 #' @param tolerance Numeric convergence threshold, _relative_ to the sample
@@ -277,3 +277,4 @@ BHVVariance <- function(trees, mean = NULL, type = c("average", "sum")) {
   # Return:
   if (type == "average") ss / length(trees) else ss
 }
+

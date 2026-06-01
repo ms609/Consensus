@@ -23,7 +23,7 @@ rooted as in the first entry of \code{trees}.
 }
 \description{
 \code{Majority()} returns the majority-rule consensus
-\insertCite{MargushMcMorris1981}{Consensus}: the tree containing each split
+\insertCite{MargushMcMorris1981}{ConsTree}: the tree containing each split
 that occurs in more than half of the input trees.  Raising \code{p} retains only
 splits present in a greater proportion of trees, up to the strict consensus
 at \code{p = 1}.
@@ -53,3 +53,4 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
+

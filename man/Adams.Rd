@@ -15,7 +15,7 @@ share the same leaf labels.}
 rooted by construction.
 }
 \description{
-\code{Adams()} returns the Adams consensus \insertCite{Adams1972}{Consensus}, a
+\code{Adams()} returns the Adams consensus \insertCite{Adams1972}{ConsTree}, a
 summary of a set of \strong{rooted} trees.
 }
 \details{
@@ -60,3 +60,4 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
+

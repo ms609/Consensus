@@ -42,7 +42,7 @@ distances to a set of input trees, using a greedy add-and-prune heuristic.
 The majority-rule consensus minimizes the sum of Robinson-Foulds distances
 to the input trees.  Analogously, \code{Quartet()} finds an approximate
 median tree under the symmetric quartet distance
-\insertCite{Takazawa2026}{Consensus}, which counts
+\insertCite{Takazawa2026}{ConsTree}, which counts
 both false-positive and false-negative resolved quartets equally.
 
 Because the quartet distance gives greater weight to deep branches (which
@@ -95,3 +95,4 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
+

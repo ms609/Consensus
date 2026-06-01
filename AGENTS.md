@@ -3,11 +3,11 @@
 > **Cross-package coordination** (worktree discipline, commit attribution, GHA
 > dispatch, CPU limits, multi-agent protocol) lives in
 > [`../AGENTS.md`](../AGENTS.md). That file is authoritative for anything that
-> spans packages. This file covers conventions specific to **Consensus**.
+> spans packages. This file covers conventions specific to **ConsTree**.
 
 ## Project overview
 
-**Consensus** is an R package (GPL ≥ 3) providing a comprehensive suite of
+**ConsTree** is an R package (GPL ≥ 3) providing a comprehensive suite of
 phylogenetic consensus-tree methods, built on
 [**TreeTools**](https://ms609.github.io/TreeTools/). It is the *front-end*
 consensus toolkit; TreeTools remains the fast engine for the two methods it
@@ -254,3 +254,4 @@ for a dev oracle, never for the shipped package.
 | `as.phylo.default(...)` on a subset | `[` dropped the `Splits` S4 class | logical-matrix round-trip |
 | `INTEGER() ... not 'integer'` from phangorn | R-devel/phangorn ABI mismatch in this env | gate the cross-check behind an opt-in env var (`CONSENSUS_PHANGORN_TESTS=1`); **not** `tryCatch()` — the failure can be a SIGSEGV, which `tryCatch()` cannot catch |
 | oracle binary missing | `dev/` is untracked → absent in worktrees | run oracle from the main checkout |
+

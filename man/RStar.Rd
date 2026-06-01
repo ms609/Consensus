@@ -15,7 +15,7 @@ share the same leaf labels.}
 rooted by construction.
 }
 \description{
-\code{RStar()} returns the R* consensus \insertCite{Degnan2009}{Consensus} of a set
+\code{RStar()} returns the R* consensus \insertCite{Degnan2009}{ConsTree} of a set
 of \strong{rooted} trees.
 }
 \details{
@@ -29,7 +29,7 @@ votes (e.g. a 2--1--1 split among four trees), and any tie leaves those taxa
 unresolved.  The kept triplets form the set of \emph{majority resolved triplets},
 \eqn{R_{maj}}.  The R* tree is then the unique tree whose clades are exactly
 the \strong{strong clusters} of \eqn{R_{maj}}
-\insertCite{Degnan2009,Jansson2016a}{Consensus}: a leaf set \code{A} is a clade if
+\insertCite{Degnan2009,Jansson2016a}{ConsTree}: a leaf set \code{A} is a clade if
 and only if, for \emph{every} pair of leaves in \code{A} and \emph{every} leaf \code{x} outside
 \code{A}, the triplet grouping that pair against \code{x} is uniquely favoured.
 Equivalently, R* is the most resolved tree that displays no resolved triplet
@@ -53,17 +53,17 @@ trees as you intend before calling \code{RStar()}.
 \item \emph{Fans.}  When a non-binary input tree leaves three leaves unresolved
 (a fan), that tree does not count toward any resolution of that triplet;
 fans have no impact on \eqn{R_{maj}}
-\insertCite{Jansson2016a}{Consensus}.
+\insertCite{Jansson2016a}{ConsTree}.
 \item \emph{Ties.}  If no resolution of a triple is uniquely favoured, that
 triple contributes nothing, leaving the affected taxa unresolved.
 \item \emph{Existence and uniqueness.}  The strong-cluster construction always
 yields a single, well-defined tree (Lemma 1.1 of
-\insertCite{Jansson2016a}{Consensus}); there is no incompatibility or
+\insertCite{Jansson2016a}{ConsTree}); there is no incompatibility or
 "build-failure" case to resolve.
 \item \emph{Algorithm.}  This implementation is correctness-first: an
 \eqn{O(kn^3)} triplet tally followed by an \eqn{O(n^4)} strong-cluster
 assembly.  The sub-cubic and near-quadratic algorithms of
-\insertCite{Jansson2013a,Jansson2016a}{Consensus} are a deferred speed
+\insertCite{Jansson2013a,Jansson2016a}{ConsTree} are a deferred speed
 optimisation.
 }
 }
@@ -100,3 +100,4 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
+

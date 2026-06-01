@@ -23,14 +23,14 @@ share the same leaf labels.}
 distance matrix:
 \itemize{
 \item \code{"fastme.bal"} (the default) returns the balanced minimum-evolution tree
-\insertCite{DesperGascuel2002}{Consensus}: a fast, accurate approximation of
+\insertCite{DesperGascuel2002}{ConsTree}: a fast, accurate approximation of
 the least-squares tree;
 \item \code{"ls"} searches for the least-squares tree itself -- the criterion under
 which Lapointe & Cucumel's averaging guarantee holds -- using
 \code{\link[TreeSearch:LeastSquaresTree]{TreeSearch::LeastSquaresTree()}}, a compiled non-negative least-squares
 \acronym{NNI}/\acronym{SPR} search;
 \item \code{"nj"}, \code{"bionj"} and \code{"fastme.ols"} return the corresponding distance tree
-\insertCite{SaitouNei1987,Gascuel1997}{Consensus}.
+\insertCite{SaitouNei1987,Gascuel1997}{ConsTree}.
 }}
 
 \item{weights}{Numeric vector specifying the weight of each tree in the
@@ -69,7 +69,7 @@ Fitch-Margoliash weighting.  Defaults to \code{list()}; ignored by other methods
 }
 \description{
 \code{Average()} returns the \emph{average consensus}
-\insertCite{LapointeCucumel1997}{Consensus}: the tree whose path-length
+\insertCite{LapointeCucumel1997}{ConsTree}: the tree whose path-length
 (patristic) distances most closely match the average of the path-length
 distances of the input trees.  Informally, it places each leaf at its mean
 position across the input trees, making it a natural distance-based summary of
@@ -77,7 +77,7 @@ a posterior sample -- complementing the split-based \code{\link[=Strict]{Strict(
 \code{\link[=Majority]{Majority()}} methods.
 }
 \details{
-The procedure has two steps \insertCite{LapointeCucumel1997}{Consensus}:
+The procedure has two steps \insertCite{LapointeCucumel1997}{ConsTree}:
 \enumerate{
 \item Compute the path-length distance matrix of each input tree (using branch
 lengths where present, otherwise counting edges), optionally rescaling each
@@ -90,7 +90,7 @@ Because the average of several path-length matrices is usually not itself
 realisable by any tree (it violates the four-point condition), step 2 is a
 fit, not an inversion.  By default \code{Average()} approximates it with the fast
 balanced minimum-evolution tree; \code{method = "ls"} instead performs the exact
-least-squares search, which -- being NP-hard \insertCite{Day1987}{Consensus}
+least-squares search, which -- being NP-hard \insertCite{Day1987}{ConsTree}
 -- uses tree rearrangements, as did the original \acronym{FITCH}
 implementation.  Branch lengths are fitted by non-negative least squares, so
 that the fitted distances are realisable by a tree, as the criterion requires.
@@ -126,3 +126,4 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
+

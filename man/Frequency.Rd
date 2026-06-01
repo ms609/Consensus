@@ -28,7 +28,7 @@ contained within the greedy consensus (\code{\link[=Greedy]{Greedy()}}).  The re
 are mutually compatible, so they define a valid tree.
 
 An efficient algorithm for constructing this consensus was given by
-\insertCite{Jansson2024}{Consensus}; the present implementation computes the
+\insertCite{Jansson2024}{ConsTree}; the present implementation computes the
 same tree directly from pooled split frequencies.
 }
 \examples{
@@ -56,3 +56,4 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
+

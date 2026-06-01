@@ -73,7 +73,7 @@
 #' Loose consensus tree
 #'
 #' `Loose()` returns the loose consensus, also known as the semi-strict or
-#' combinable-component consensus \insertCite{Bremer1990}{Consensus}.  It
+#' combinable-component consensus \insertCite{Bremer1990}{ConsTree}.  It
 #' contains every split that is contradicted by none of the input trees;
 #' equivalently, every split that is compatible with each input tree.
 #'
@@ -110,7 +110,7 @@ Loose <- function(trees) {
 #' Greedy (extended majority-rule) consensus tree
 #'
 #' `Greedy()` returns the greedy consensus, also termed the extended
-#' majority-rule consensus \insertCite{Bryant2003}{Consensus}.  Distinct splits
+#' majority-rule consensus \insertCite{Bryant2003}{ConsTree}.  Distinct splits
 #' are considered in decreasing order of their frequency across the input trees;
 #' each is added to the growing consensus if it is compatible with every split
 #' already accepted.  The result is typically more resolved than the
@@ -157,7 +157,7 @@ Greedy <- function(trees) {
 #' Majority-rule (+) consensus tree
 #'
 #' `MajorityPlus()` returns the majority-rule (+) consensus
-#' \insertCite{JanssonShenSung2016}{Consensus}: a clade is retained when it
+#' \insertCite{JanssonShenSung2016}{ConsTree}: a clade is retained when it
 #' occurs in more input trees than contradict it -- i.e. when the number of
 #' trees displaying the clade exceeds the number of trees incompatible with it.
 #' A tree that is compatible with a clade without displaying it counts neither
@@ -216,7 +216,7 @@ MajorityPlus <- function(trees) {
 #' are mutually compatible, so they define a valid tree.
 #'
 #' An efficient algorithm for constructing this consensus was given by
-#' \insertCite{Jansson2024}{Consensus}; the present implementation computes the
+#' \insertCite{Jansson2024}{ConsTree}; the present implementation computes the
 #' same tree directly from pooled split frequencies.
 #'
 #' @inheritParams Strict
@@ -247,3 +247,4 @@ Frequency <- function(trees) {
   # Return:
   .SelectedConsensus(keep, prep)
 }
+

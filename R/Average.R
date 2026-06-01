@@ -1,14 +1,14 @@
 #' Average consensus tree
 #'
 #' `Average()` returns the *average consensus*
-#' \insertCite{LapointeCucumel1997}{Consensus}: the tree whose path-length
+#' \insertCite{LapointeCucumel1997}{ConsTree}: the tree whose path-length
 #' (patristic) distances most closely match the average of the path-length
 #' distances of the input trees.  Informally, it places each leaf at its mean
 #' position across the input trees, making it a natural distance-based summary of
 #' a posterior sample -- complementing the split-based [`Strict()`] and
 #' [`Majority()`] methods.
 #'
-#' The procedure has two steps \insertCite{LapointeCucumel1997}{Consensus}:
+#' The procedure has two steps \insertCite{LapointeCucumel1997}{ConsTree}:
 #'
 #' 1. Compute the path-length distance matrix of each input tree (using branch
 #'    lengths where present, otherwise counting edges), optionally rescaling each
@@ -20,7 +20,7 @@
 #' realisable by any tree (it violates the four-point condition), step 2 is a
 #' fit, not an inversion.  By default `Average()` approximates it with the fast
 #' balanced minimum-evolution tree; `method = "ls"` instead performs the exact
-#' least-squares search, which -- being NP-hard \insertCite{Day1987}{Consensus}
+#' least-squares search, which -- being NP-hard \insertCite{Day1987}{ConsTree}
 #' -- uses tree rearrangements, as did the original \acronym{FITCH}
 #' implementation.  Branch lengths are fitted by non-negative least squares, so
 #' that the fitted distances are realisable by a tree, as the criterion requires.
@@ -33,14 +33,14 @@
 #' @param method Character specifying how to build the tree from the average
 #' distance matrix:
 #' - `"fastme.bal"` (the default) returns the balanced minimum-evolution tree
-#'   \insertCite{DesperGascuel2002}{Consensus}: a fast, accurate approximation of
+#'   \insertCite{DesperGascuel2002}{ConsTree}: a fast, accurate approximation of
 #'   the least-squares tree;
 #' - `"ls"` searches for the least-squares tree itself -- the criterion under
 #'   which Lapointe & Cucumel's averaging guarantee holds -- using
 #'   [`TreeSearch::LeastSquaresTree()`], a compiled non-negative least-squares
 #'   \acronym{NNI}/\acronym{SPR} search;
 #' - `"nj"`, `"bionj"` and `"fastme.ols"` return the corresponding distance tree
-#'   \insertCite{SaitouNei1987,Gascuel1997}{Consensus}.
+#'   \insertCite{SaitouNei1987,Gascuel1997}{ConsTree}.
 #' @param weights Numeric vector specifying the weight of each tree in the
 #' average (e.g. posterior probabilities), with one entry per tree.  Defaults
 #' to `NULL`, which weights every tree equally -- appropriate for a posterior
@@ -226,3 +226,4 @@ Average <- function(trees,
   # Return:
   root(tree, outgroup = outgroup, resolve.root = TRUE)
 }
+

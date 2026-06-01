@@ -17,7 +17,7 @@ rooted as in the first entry of \code{trees}.
 \description{
 \code{Strict()} returns the strict consensus of a set of trees: the tree that
 contains exactly those splits (clades) present in \emph{every} input tree
-\insertCite{Day1985}{Consensus}.
+\insertCite{Day1985}{ConsTree}.
 }
 \details{
 This is a thin wrapper around \code{\link[TreeTools:Consensus]{TreeTools::Consensus()}} with \code{p = 1},
@@ -48,3 +48,4 @@ Other consensus methods:
 \code{\link[=RStar]{RStar()}}
 }
 \concept{consensus methods}
+

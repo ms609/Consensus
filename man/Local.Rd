@@ -20,7 +20,7 @@ rooted by construction.
 }
 \description{
 \code{Local()} returns the local consensus
-\insertCite{JanssonShenSung2016}{Consensus} of a set of \strong{rooted} trees.
+\insertCite{JanssonShenSung2016}{ConsTree} of a set of \strong{rooted} trees.
 }
 \details{
 The local consensus is the most conservative tree consistent with the rooted
@@ -73,3 +73,4 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
+

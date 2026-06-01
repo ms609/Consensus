@@ -1,11 +1,11 @@
 {
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
-  "identifier": "Consensus",
+  "identifier": "ConsTree",
   "description": "Efficient construction of phylogenetic consensus trees from a set of input trees. Methods include strict, majority-rule, majority-rule (+), loose (combinable component / semi-strict), greedy, Adams, frequency difference, R*, and local consensus, computed using asymptotically efficient algorithms. Builds on 'TreeTools' for the manipulation of trees and splits.",
-  "name": "Consensus: Fast Algorithms for Phylogenetic Consensus Trees",
-  "codeRepository": "https://github.com/ms609/Consensus/",
-  "issueTracker": "https://github.com/ms609/Consensus/issues/",
+  "name": "ConsTree: Fast Algorithms for Phylogenetic Consensus Trees",
+  "codeRepository": "https://github.com/ms609/ConsTree/",
+  "issueTracker": "https://github.com/ms609/ConsTree/issues/",
   "license": "https://spdx.org/licenses/GPL-3.0",
   "version": "0.0.0.9005",
   "programmingLanguage": {

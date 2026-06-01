@@ -16,7 +16,7 @@ rooted as in the first entry of \code{trees}.
 }
 \description{
 \code{Greedy()} returns the greedy consensus, also termed the extended
-majority-rule consensus \insertCite{Bryant2003}{Consensus}.  Distinct splits
+majority-rule consensus \insertCite{Bryant2003}{ConsTree}.  Distinct splits
 are considered in decreasing order of their frequency across the input trees;
 each is added to the growing consensus if it is compatible with every split
 already accepted.  The result is typically more resolved than the
@@ -52,3 +52,4 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
+

@@ -16,7 +16,7 @@ rooted as in the first entry of \code{trees}.
 }
 \description{
 \code{Loose()} returns the loose consensus, also known as the semi-strict or
-combinable-component consensus \insertCite{Bremer1990}{Consensus}.  It
+combinable-component consensus \insertCite{Bremer1990}{ConsTree}.  It
 contains every split that is contradicted by none of the input trees;
 equivalently, every split that is compatible with each input tree.
 }
@@ -52,3 +52,4 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
+

@@ -16,7 +16,7 @@ share the same leaf labels.}
 }
 \description{
 \code{MajorityPlus()} returns the majority-rule (+) consensus
-\insertCite{JanssonShenSung2016}{Consensus}: a clade is retained when it
+\insertCite{JanssonShenSung2016}{ConsTree}: a clade is retained when it
 occurs in more input trees than contradict it -- i.e. when the number of
 trees displaying the clade exceeds the number of trees incompatible with it.
 A tree that is compatible with a clade without displaying it counts neither
@@ -53,3 +53,4 @@ Other consensus methods:
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}
+

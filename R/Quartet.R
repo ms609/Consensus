@@ -6,7 +6,7 @@
 #' The majority-rule consensus minimizes the sum of Robinson-Foulds distances
 #' to the input trees.  Analogously, `Quartet()` finds an approximate
 #' median tree under the symmetric quartet distance
-#' \insertCite{Takazawa2026}{Consensus}, which counts
+#' \insertCite{Takazawa2026}{ConsTree}, which counts
 #' both false-positive and false-negative resolved quartets equally.
 #'
 #' Because the quartet distance gives greater weight to deep branches (which
@@ -122,3 +122,4 @@ Quartet <- function(trees,
   # Return:
   as.phylo(sp)
 }
+

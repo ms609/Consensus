@@ -1,4 +1,4 @@
-Package: Consensus
+Package: ConsTree
 Title: Fast Algorithms for Phylogenetic Consensus Trees
 Version: 0.0.0.9005
 Authors@R: c(
@@ -20,8 +20,8 @@ Description: Efficient construction of phylogenetic consensus trees from a set
   loose (combinable component / semi-strict), greedy, Adams, frequency
   difference, R*, and local consensus, computed using asymptotically efficient
   algorithms.  Builds on 'TreeTools' for the manipulation of trees and splits.
-URL: https://github.com/ms609/Consensus/
-BugReports: https://github.com/ms609/Consensus/issues/
+URL: https://github.com/ms609/ConsTree/
+BugReports: https://github.com/ms609/ConsTree/issues/
 Depends:
   R (>= 4.1.0),
 Imports:

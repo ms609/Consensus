@@ -8,7 +8,7 @@
 
 #' Adams consensus tree
 #'
-#' `Adams()` returns the Adams consensus \insertCite{Adams1972}{Consensus}, a
+#' `Adams()` returns the Adams consensus \insertCite{Adams1972}{ConsTree}, a
 #' summary of a set of **rooted** trees.
 #'
 #' The Adams consensus is defined recursively.  At the top level, the leaves are
@@ -123,3 +123,4 @@ Adams <- function(trees) {
   # Return:
   unname(split(taxa, signature))
 }
+
