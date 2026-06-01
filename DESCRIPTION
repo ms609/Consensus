@@ -32,6 +32,8 @@ Imports:
 LinkingTo:
   Rcpp
 Suggests:
+  distory,
+  Quartet,
   spelling,
   testthat (>= 3.0),
   TreeSearch (>= 2.0.0),

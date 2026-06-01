@@ -30,6 +30,9 @@
   [TreeTools](https://ms609.github.io/TreeTools/).
 - `Strict()` and `Majority()` / `MajorityRule()`: thin, consistently named
   wrappers around `TreeTools::Consensus()`.
+- Add `QuartetConsensus()`: a consensus tree minimizing the summed symmetric
+  quartet distance to the input trees, found with a greedy add-and-prune
+  heuristic (Takazawa et al. 2026).  The C++ core is self-contained.
 - `Loose()`: loose (semi-strict / combinable-component) consensus.
 - `Greedy()`: greedy (extended majority-rule) consensus.
 - `MajorityPlus()`: majority-rule (+) consensus.
