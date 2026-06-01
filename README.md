@@ -29,14 +29,9 @@ returns a rooted `phylo`. They differ in *which* groupings (splits) they retain:
 | `Frequency()` | it is **more frequent than every** grouping that conflicts with it (frequency-difference) |
 | `Greedy()` | added greedily, most frequent first, if compatible with those already kept (extended majority-rule) |
 | `Average()` | (distance-based) the tree best fitting the mean path-length distances |
-
-Forthcoming: `Adams()`, `Local()` (minimum rooted/induced local consensus), and
-`RStar()`.
-
-These fill genuine gaps in the R ecosystem: `ape::consensus()` offers only strict
-and majority; `phangorn` partially overlaps on greedy (`allCompat`); loose,
-majority-rule (+), and especially the **frequency-difference** consensus are not
-otherwise readily available in R.
+| `Adams()` | constructed from the finest root-level partition shared by **every** tree (may introduce novel groupings; rooted) |
+| `Local()` | based on rooted triplets shared by **every** tree (minimum rooted/induced local consensus; ≤ 20 leaves) |
+| `RStar()` | each rooted triplet grouping that wins a **plurality** against each alternative separately |
 
 ## Usage
 
@@ -72,6 +67,11 @@ information-theoretic consensus) and
 ['TreeSearch'](https://ms609.github.io/TreeSearch/) (phylogenetic search).
 TreeTools itself remains the fast engine for the strict and majority-rule
 consensus, which 'ConsTree' exposes through consistently-named wrappers.
+
+The ['Rogue'](https://ms609.github.io/Rogue/) package identifies unstable
+('rogue') leaves whose removal can improve the resolution and support of a
+consensus tree; dropping rogues before summarising with 'ConsTree' often yields
+a better-resolved result.
 
 ## Citation and attribution
 
