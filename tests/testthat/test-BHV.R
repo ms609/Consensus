@@ -141,14 +141,6 @@ test_that("BHVVariance() relates average and sum correctly", {
   expect_equal(va, mean(d2))
 })
 
-test_that("BHVPairwiseDistances() is deprecated but still agrees with BHVDistance()", {
-  set.seed(4)
-  trees <- lapply(1:5, function(i) rtreeBHV(7))
-  expect_warning(d <- BHVPairwiseDistances(trees), "deprecated")
-  expect_s3_class(d, "dist")
-  m <- as.matrix(d)
-  expect_equal(m[2, 4], BHVDistance(trees[[2]], trees[[4]]))
-})
 
 test_that("BHVDistance() pairwise (list, NULL) returns the same dist as BHVDistance(trees, trees)", {
   set.seed(5)

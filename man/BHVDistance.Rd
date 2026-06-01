@@ -54,7 +54,6 @@ BHVDistance(trees[1:2], trees[3:4])  # matrix
 }
 \seealso{
 Other BHV summaries:
-\code{\link[=BHVMean]{BHVMean()}},
-\code{\link[=BHVPairwiseDistances]{BHVPairwiseDistances()}}
+\code{\link[=BHVMean]{BHVMean()}}
 }
 \concept{BHV summaries}

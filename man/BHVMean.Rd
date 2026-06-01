@@ -76,7 +76,6 @@ BHVVariance(trees, mean = meanTree)
 }
 \seealso{
 Other BHV summaries:
-\code{\link[=BHVDistance]{BHVDistance()}},
-\code{\link[=BHVPairwiseDistances]{BHVPairwiseDistances()}}
+\code{\link[=BHVDistance]{BHVDistance()}}
 }
 \concept{BHV summaries}

@@ -255,25 +255,6 @@ BHV <- BHVDistance
   as.dist(d)
 }
 
-#' Distances between every pair of trees
-#'
-#' **Deprecated.** `BHVPairwiseDistances()` is superseded by `BHVDistance(trees)`, which
-#' handles pairwise, one-vs-many, and cross-set comparisons in a single
-#' function.
-#'
-#' @param trees A list of trees, or a `multiPhylo` object; all entries must
-#' share the same leaf labels and carry `edge.length`.
-#'
-#' @return A [`stats::dist`] object of geodesic distances.
-#'
-#' @references \insertAllCited{}
-#' @family BHV summaries
-#' @export
-BHVPairwiseDistances <- function(trees) {
-  .Deprecated("BHVDistance")
-  .BHVAllPairs(trees)
-}
-
 #' Fréchet mean and variance in BHV treespace
 #'
 #' `BHVMean()` returns the Fréchet (Karcher) mean of a set of trees in BHV
@@ -294,7 +275,8 @@ BHVPairwiseDistances <- function(trees) {
 #' unresolved even when the sample trees are binary
 #' \insertCite{BrownOwen2020}{ConsTree}.
 #'
-#' @inheritParams BHVPairwiseDistances
+#' @param trees A list of trees, or a `multiPhylo` object; all entries must
+#'   share the same leaf labels and carry `edge.length`.
 #' @param tolerance Numeric convergence threshold, _relative_ to the sample
 #' standard deviation: iteration stops once `cauchyLength` consecutive steps
 #' each move the estimate less than `tolerance` times the sample standard
