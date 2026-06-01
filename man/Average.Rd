@@ -115,7 +115,14 @@ Average(trees, method = "ls")      # faithful least-squares fit (slower)
 Split-based summaries: \code{\link[=Strict]{Strict()}}, \code{\link[=Majority]{Majority()}}.
 
 Other consensus methods:
+\code{\link[=Adams]{Adams()}},
+\code{\link[=Frequency]{Frequency()}},
+\code{\link[=Greedy]{Greedy()}},
+\code{\link[=Local]{Local()}},
+\code{\link[=Loose]{Loose()}},
 \code{\link[=Majority]{Majority()}},
+\code{\link[=MajorityPlus]{MajorityPlus()}},
+\code{\link[=RStar]{RStar()}},
 \code{\link[=Strict]{Strict()}}
 }
 \concept{consensus methods}

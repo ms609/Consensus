@@ -25,41 +25,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// localConsensus
-std::string localConsensus(Rcpp::List edgeList, int nTip, bool minrs);
-RcppExport SEXP _Consensus_localConsensus(SEXP edgeListSEXP, SEXP nTipSEXP, SEXP minrsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List >::type edgeList(edgeListSEXP);
-    Rcpp::traits::input_parameter< int >::type nTip(nTipSEXP);
-    Rcpp::traits::input_parameter< bool >::type minrs(minrsSEXP);
-    rcpp_result_gen = Rcpp::wrap(localConsensus(edgeList, nTip, minrs));
-    return rcpp_result_gen;
-END_RCPP
-}
-// consensus_rcpp_selfcheck
-int consensus_rcpp_selfcheck();
-RcppExport SEXP _Consensus_consensus_rcpp_selfcheck() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(consensus_rcpp_selfcheck());
-    return rcpp_result_gen;
-END_RCPP
-}
-// rStarConsensus
-std::string rStarConsensus(Rcpp::List edgeList, int nTip);
-RcppExport SEXP _Consensus_rStarConsensus(SEXP edgeListSEXP, SEXP nTipSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List >::type edgeList(edgeListSEXP);
-    Rcpp::traits::input_parameter< int >::type nTip(nTipSEXP);
-    rcpp_result_gen = Rcpp::wrap(rStarConsensus(edgeList, nTip));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cpp_bhv_distance
 double cpp_bhv_distance(IntegerMatrix memA, NumericVector lenA, NumericVector leafA, IntegerMatrix memB, NumericVector lenB, NumericVector leafB);
 RcppExport SEXP _Consensus_cpp_bhv_distance(SEXP memASEXP, SEXP lenASEXP, SEXP leafASEXP, SEXP memBSEXP, SEXP lenBSEXP, SEXP leafBSEXP) {
@@ -110,15 +75,50 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// localConsensus
+std::string localConsensus(Rcpp::List edgeList, int nTip, bool minrs);
+RcppExport SEXP _Consensus_localConsensus(SEXP edgeListSEXP, SEXP nTipSEXP, SEXP minrsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type edgeList(edgeListSEXP);
+    Rcpp::traits::input_parameter< int >::type nTip(nTipSEXP);
+    Rcpp::traits::input_parameter< bool >::type minrs(minrsSEXP);
+    rcpp_result_gen = Rcpp::wrap(localConsensus(edgeList, nTip, minrs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// consensus_rcpp_selfcheck
+int consensus_rcpp_selfcheck();
+RcppExport SEXP _Consensus_consensus_rcpp_selfcheck() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(consensus_rcpp_selfcheck());
+    return rcpp_result_gen;
+END_RCPP
+}
+// rStarConsensus
+std::string rStarConsensus(Rcpp::List edgeList, int nTip);
+RcppExport SEXP _Consensus_rStarConsensus(SEXP edgeListSEXP, SEXP nTipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type edgeList(edgeListSEXP);
+    Rcpp::traits::input_parameter< int >::type nTip(nTipSEXP);
+    rcpp_result_gen = Rcpp::wrap(rStarConsensus(edgeList, nTip));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_Consensus_cpp_quartet_consensus", (DL_FUNC) &_Consensus_cpp_quartet_consensus, 5},
-    {"_Consensus_localConsensus", (DL_FUNC) &_Consensus_localConsensus, 3},
-    {"_Consensus_consensus_rcpp_selfcheck", (DL_FUNC) &_Consensus_consensus_rcpp_selfcheck, 0},
-    {"_Consensus_rStarConsensus", (DL_FUNC) &_Consensus_rStarConsensus, 2},
     {"_Consensus_cpp_bhv_distance", (DL_FUNC) &_Consensus_cpp_bhv_distance, 6},
     {"_Consensus_cpp_bhv_tree_at", (DL_FUNC) &_Consensus_cpp_bhv_tree_at, 7},
     {"_Consensus_cpp_bhv_mean", (DL_FUNC) &_Consensus_cpp_bhv_mean, 7},
+    {"_Consensus_localConsensus", (DL_FUNC) &_Consensus_localConsensus, 3},
+    {"_Consensus_consensus_rcpp_selfcheck", (DL_FUNC) &_Consensus_consensus_rcpp_selfcheck, 0},
+    {"_Consensus_rStarConsensus", (DL_FUNC) &_Consensus_rStarConsensus, 2},
     {NULL, NULL, 0}
 };
 
