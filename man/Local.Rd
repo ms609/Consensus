@@ -20,7 +20,7 @@ rooted by construction.
 }
 \description{
 \code{Local()} returns the local consensus
-\insertCite{JanssonShenSung2016}{ConsTree} of a set of \strong{rooted} trees.
+\insertCite{JanssonRajabySung2018}{ConsTree} of a set of \strong{rooted} trees.
 }
 \details{
 The local consensus is the most conservative tree consistent with the rooted
@@ -30,6 +30,11 @@ local consensus (MinILC, \code{type = "induced"}), which differ in how the
 resolution of the result is scored.  The tree is assembled from the Aho-graph
 decomposition of the common-triplet set by dynamic programming over the
 subsets of leaves.
+
+The MinRLC and MinILC variants, and the exact exponential-time algorithm used
+here to construct them, are due to \insertCite{JanssonRajabySung2018}{ConsTree};
+this is a direct port of the reference C++ from their \code{FDCT_new} toolkit, used
+with permission.
 
 \strong{Complexity note:} the algorithm is exponential, so \code{Local()} is limited to
 \code{n <= 20} leaves.  Running time depends not only on \code{n} but on how \emph{congruent}

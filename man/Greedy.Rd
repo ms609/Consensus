@@ -27,6 +27,11 @@ Splits that occur equally often are considered in a fixed, reproducible order,
 so the result is deterministic.  Where several mutually incompatible splits
 are equally frequent, a different (but equally valid) greedy resolution may be
 returned by other software.
+
+An asymptotically efficient algorithm for the greedy consensus was given by
+\insertCite{JanssonShenSung2016}{ConsTree} and implemented in their FACT
+toolkit; here the same tree is computed directly from the pooled splits ranked
+by frequency.
 }
 \examples{
 trees <- ape::as.phylo(0:5, 8)

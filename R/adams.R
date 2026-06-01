@@ -25,6 +25,12 @@
 #' unrooted bipartitions.  Input trees are treated as rooted on their current
 #' root; root the trees as you intend before calling `Adams()`.
 #'
+#' @details
+#' This implementation follows Adams' original recursive definition, as ported
+#' from the FACT toolkit of Jansson and colleagues (used with permission); their
+#' asymptotically faster \eqn{O(kn \log n)} algorithm
+#' \insertCite{JanssonLiSung2017}{ConsTree} is not employed here.
+#'
 #' @inheritParams Strict
 #'
 #' @return `Adams()` returns the consensus tree, an object of class `phylo`,

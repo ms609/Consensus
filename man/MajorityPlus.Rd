@@ -28,6 +28,10 @@ contradicted by fewer than half), so \code{MajorityPlus()} contains the
 majority-rule consensus (\code{\link[=Majority]{Majority()}}) and may add further splits that are
 supported more often than they are contradicted.  The retained splits are
 necessarily mutually compatible, so they define a valid tree.
+
+\insertCite{JanssonShenSung2016;textual}{ConsTree} give an optimal
+\eqn{O(kn)} algorithm for this consensus, implemented in their FACT toolkit;
+here the same tree is computed directly from the pooled splits.
 }
 \examples{
 trees <- ape::as.phylo(0:5, 8)

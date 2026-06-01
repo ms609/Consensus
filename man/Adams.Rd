@@ -32,6 +32,11 @@ contain a cluster that appears in no individual input tree, and it depends on
 how the input trees are rooted: it is a statement about nesting, not about
 unrooted bipartitions.  Input trees are treated as rooted on their current
 root; root the trees as you intend before calling \code{Adams()}.
+
+This implementation follows Adams' original recursive definition, as ported
+from the FACT toolkit of Jansson and colleagues (used with permission); their
+asymptotically faster \eqn{O(kn \log n)} algorithm
+\insertCite{JanssonLiSung2017}{ConsTree} is not employed here.
 }
 \examples{
 # Two rooted trees that disagree only on the position of one leaf

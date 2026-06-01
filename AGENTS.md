@@ -80,7 +80,7 @@ TreeTools registers S3 methods but does not export `as.phylo`. Use
 | `MajorityPlus()` | selection.R | FACT `majorityplus.cpp` | FACT-exact |
 | `Frequency()` | selection.R | FACT2/FDCT `freqdiff.h` | property-validated (`dev/oracle/freqdiff/`) |
 | `Adams()` | adams.R | FACT `adams.cpp` | FACT clade-oracle exact |
-| `Local(type=)` | local.R (Rcpp) | FACT2/FDCT `local_consensus.h` | FDCT-oracle exact; **≤20 leaves**; see runtime caveat |
+| `Local(type=)` | local.R (Rcpp) | FACT2/FDCT `local_consensus.h` (Jansson, Rajaby & Sung 2018) | FDCT-oracle exact; **≤20 leaves**; see runtime caveat |
 | `RStar()` | rstar.R (Rcpp) | Jansson et al. 2016 | definition-exact (strong-cluster oracle); **≤200 leaves** (memory) |
 | `Quartet()` | Quartet.R (Rcpp) | Quartet pkg (ported) | brute-force oracle (n=5); ≤100 tips |
 | `Average()` | Average.R | Lapointe & Cucumel | user-authored (path-length LS / BME) |
@@ -92,10 +92,14 @@ TreeTools registers S3 methods but does not export `as.phylo`. Use
 (Ctrl-C).
 
 ## Open decisions (unresolved — surface to the user, don't silently pick)
-- **`Local()` citation**: currently `\insertCite{JanssonShenSung2016}` but likely
-  wrong for MinRLC/MinILC. Confirm the correct reference before release.
 - **`Local()` hard runtime guard**: none yet (only interruptible) — decide
   whether to add one.
+
+## Resolved
+- **`Local()` citation**: now `\insertCite{JanssonRajabySung2018}` (Jansson,
+  Rajaby & Sung 2018, *AIMS Medical Science* 5(2):181–203,
+  doi:10.3934/medsci.2018.2.181), the paper that defines the MinRLC/MinILC
+  variants `Local()` implements.
 
 ## The consensus lattice (invariants the tests enforce)
 

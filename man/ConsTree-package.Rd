@@ -16,7 +16,7 @@ asymptotically efficient consensus algorithms
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/ms609/ConsTree/}
+  \item \url{https://constree.github.io/}
   \item Report bugs at \url{https://github.com/ms609/ConsTree/issues/}
 }
 

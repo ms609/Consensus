@@ -84,6 +84,11 @@
 #' excluded from the loose consensus, whereas a split occurring in a single tree
 #' is retained if no other tree contradicts it.
 #'
+#' The loose consensus is one of the methods implemented in the FACT toolkit of
+#' Jansson and colleagues \insertCite{JanssonShenSung2016}{ConsTree}, whose
+#' asymptotically efficient consensus algorithms this package draws on; here the
+#' tree is computed directly from the pooled splits and their compatibilities.
+#'
 #' @inheritParams Strict
 #'
 #' @return `Loose()` returns the consensus tree, an object of class `phylo`,
@@ -120,6 +125,11 @@ Loose <- function(trees) {
 #' so the result is deterministic.  Where several mutually incompatible splits
 #' are equally frequent, a different (but equally valid) greedy resolution may be
 #' returned by other software.
+#'
+#' An asymptotically efficient algorithm for the greedy consensus was given by
+#' \insertCite{JanssonShenSung2016}{ConsTree} and implemented in their FACT
+#' toolkit; here the same tree is computed directly from the pooled splits ranked
+#' by frequency.
 #'
 #' @inheritParams Strict
 #'
@@ -168,6 +178,10 @@ Greedy <- function(trees) {
 #' majority-rule consensus ([`Majority()`]) and may add further splits that are
 #' supported more often than they are contradicted.  The retained splits are
 #' necessarily mutually compatible, so they define a valid tree.
+#'
+#' \insertCite{JanssonShenSung2016;textual}{ConsTree} give an optimal
+#' \eqn{O(kn)} algorithm for this consensus, implemented in their FACT toolkit;
+#' here the same tree is computed directly from the pooled splits.
 #'
 #' @inheritParams Strict
 #'

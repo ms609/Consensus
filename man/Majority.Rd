@@ -32,7 +32,12 @@ splits present in a greater proportion of trees, up to the strict consensus
 at \code{p = 1}.
 }
 \details{
-A thin wrapper around \code{\link[TreeTools:Consensus]{TreeTools::Consensus()}}.
+The majority-rule consensus belongs to the family of consensus methods for
+which Jansson and colleagues developed asymptotically efficient algorithms
+\insertCite{JanssonShenSung2016}{ConsTree} -- the algorithmic backbone of this
+package -- and which their FACT toolkit implements.  This particular method is
+a thin wrapper around \code{\link[TreeTools:Consensus]{TreeTools::Consensus()}}, to which the computation is
+delegated.
 }
 \examples{
 trees <- ape::as.phylo(0:5, 8)

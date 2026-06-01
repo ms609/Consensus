@@ -1,7 +1,7 @@
 #' Local consensus tree
 #'
 #' `Local()` returns the local consensus
-#' \insertCite{JanssonShenSung2016}{ConsTree} of a set of **rooted** trees.
+#' \insertCite{JanssonRajabySung2018}{ConsTree} of a set of **rooted** trees.
 #'
 #' The local consensus is the most conservative tree consistent with the rooted
 #' triplets shared by *every* input tree.  Two variants are offered: the minimum
@@ -10,6 +10,12 @@
 #' resolution of the result is scored.  The tree is assembled from the Aho-graph
 #' decomposition of the common-triplet set by dynamic programming over the
 #' subsets of leaves.
+#'
+#' @details
+#' The MinRLC and MinILC variants, and the exact exponential-time algorithm used
+#' here to construct them, are due to \insertCite{JanssonRajabySung2018}{ConsTree};
+#' this is a direct port of the reference C++ from their `FDCT_new` toolkit, used
+#' with permission.
 #'
 #' **Complexity note:** the algorithm is exponential, so `Local()` is limited to
 #' `n <= 20` leaves.  Running time depends not only on `n` but on how *congruent*

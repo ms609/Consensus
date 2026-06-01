@@ -27,6 +27,11 @@ tree.  It is incomparable with the majority-rule consensus (\code{\link[=Majorit
 a split present in most trees may still be contradicted by a minority, and so
 excluded from the loose consensus, whereas a split occurring in a single tree
 is retained if no other tree contradicts it.
+
+The loose consensus is one of the methods implemented in the FACT toolkit of
+Jansson and colleagues \insertCite{JanssonShenSung2016}{ConsTree}, whose
+asymptotically efficient consensus algorithms this package draws on; here the
+tree is computed directly from the pooled splits and their compatibilities.
 }
 \examples{
 trees <- ape::as.phylo(0:5, 8)

@@ -35,7 +35,12 @@ Strict <- function(trees) {
 #' splits present in a greater proportion of trees, up to the strict consensus
 #' at `p = 1`.
 #'
-#' A thin wrapper around [`TreeTools::Consensus()`].
+#' The majority-rule consensus belongs to the family of consensus methods for
+#' which Jansson and colleagues developed asymptotically efficient algorithms
+#' \insertCite{JanssonShenSung2016}{ConsTree} -- the algorithmic backbone of this
+#' package -- and which their FACT toolkit implements.  This particular method is
+#' a thin wrapper around [`TreeTools::Consensus()`], to which the computation is
+#' delegated.
 #'
 #' @inheritParams Strict
 #' @param p Numeric between 0.5 and 1: the minimum proportion of trees that must
