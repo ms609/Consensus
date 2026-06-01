@@ -1,5 +1,5 @@
 ^\.git$
-^Consensus\.Rproj$
+^ConsTree\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
 ^_pkgdown\.yml$
@@ -13,4 +13,5 @@
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
 ^codemeta\.json$
+^AGENTS\.md$
 ^LICENSE\.md$
