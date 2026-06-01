@@ -33,11 +33,14 @@ LinkingTo:
   Rcpp
 Suggests:
   distory,
+  knitr,
   Quartet,
+  rmarkdown,
   spelling,
   testthat (>= 3.0),
   TreeSearch (>= 2.0.0),
 Remotes: ms609/TreeSearch@cpp-search,
+VignetteBuilder: knitr
 Config/needs/check: rcmdcheck
 Config/needs/coverage: covr
 Config/testthat/edition: 3

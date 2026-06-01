@@ -17,8 +17,11 @@ colleagues, several of which have not previously been available in R.
 
 ## Consensus methods
 
+### Split-selection methods
+
 Each method takes a list of trees (or a `multiPhylo`) sharing the same leaves and
-returns a rooted `phylo`. They differ in *which* groupings (splits) they retain:
+returns a `phylo`. They differ in *which* groupings (splits or clusters) they
+retain:
 
 | Function | Retains a grouping when… |
 |----------|--------------------------|
@@ -28,10 +31,20 @@ returns a rooted `phylo`. They differ in *which* groupings (splits) they retain:
 | `MajorityPlus()` | **more** trees display it than contradict it |
 | `Frequency()` | it is **more frequent than every** grouping that conflicts with it (frequency-difference) |
 | `Greedy()` | added greedily, most frequent first, if compatible with those already kept (extended majority-rule) |
-| `Average()` | (distance-based) the tree best fitting the mean path-length distances |
 | `Adams()` | constructed from the finest root-level partition shared by **every** tree (may introduce novel groupings; rooted) |
 | `Local()` | based on rooted triplets shared by **every** tree (minimum rooted/induced local consensus; ≤ 20 leaves) |
 | `RStar()` | each rooted triplet grouping that wins a **plurality** against each alternative separately |
+
+### Distance and branch-length summaries
+
+A second family summarizes the trees through a distance or treespace criterion
+rather than by selecting groupings:
+
+| Function | Summary |
+|----------|---------|
+| `Average()` | the tree best fitting the **mean path-length** (patristic) distances of the inputs |
+| `Quartet()` | an approximate median minimizing the total **quartet distance** to the inputs; often more resolved than majority-rule |
+| `BHVMean()` | the Fréchet **mean tree** in Billera–Holmes–Vogtmann treespace, with branch lengths; `BHVDistance()`, `BHVPairwiseDistances()` and `BHVVariance()` provide the supporting geodesic distances and dispersion |
 
 ## Usage
 
@@ -68,9 +81,20 @@ information-theoretic consensus) and
 TreeTools itself remains the fast engine for the strict and majority-rule
 consensus, which 'ConsTree' exposes through consistently-named wrappers.
 
+['TreeDist'](https://ms609.github.io/TreeDist/) also offers a complementary
+summary that 'ConsTree' does not duplicate: the tree from a sample that has the
+lowest median clustering-information distance (CID) to the others — a single
+*representative* of the sample rather than a constructed consensus.
+
+The quartet machinery underlying `Quartet()` builds on the
+['Quartet'](https://ms609.github.io/Quartet/) package, which counts the
+resolved- and shared-quartet statistics between trees; and the BHV summaries
+relate to ['distory'](https://cran.r-project.org/package=distory), which
+computes geodesic distances in the same treespace.
+
 The ['Rogue'](https://ms609.github.io/Rogue/) package identifies unstable
 ('rogue') leaves whose removal can improve the resolution and support of a
-consensus tree; dropping rogues before summarising with 'ConsTree' often yields
+consensus tree; dropping rogues before summarizing with 'ConsTree' often yields
 a better-resolved result.
 
 ## Citation and attribution

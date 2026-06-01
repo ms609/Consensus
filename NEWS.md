@@ -1,5 +1,7 @@
 # Consensus 0.0.0.9005 (development)
 
+- Add introductory vignette `ConsTree`, summarizing the split-selection,
+  rooted, and distance/branch-length methods on worked exemplars.
 - `RStar()`: assemble the consensus from the **strong clusters** of the majority
   resolved-triplet set (Jansson, Sung, Vu & Yiu 2016, Lemma 1.1) — the exact R*
   definition.  This replaces the earlier Aho-BUILD assembly, which could over- or
