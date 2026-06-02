@@ -217,9 +217,13 @@ Greedy <- function(trees) {
 #' supported more often than they are contradicted.  The retained splits are
 #' necessarily mutually compatible, so they define a valid tree.
 #'
-#' \insertCite{JanssonShenSung2016;textual}{ConsTree} give an optimal
-#' \eqn{O(kn)} algorithm for this consensus, implemented in their FACT toolkit;
-#' here the same tree is computed directly from the pooled splits.
+#' This implementation ports the optimal \eqn{O(kn)} algorithm of
+#' \insertCite{JanssonShenSung2016;textual}{ConsTree} from their FACT toolkit
+#' (used with permission): each input tree is processed in a single sweep, the
+#' candidate clusters are accumulated by an incremental merge, and a clade is
+#' kept when it is displayed by strictly more trees than contradict it -- a
+#' deterministic count rule (no frequency tie-break), so the result is exact.
+#' This replaces the previous R pairwise compatibility matrix.
 #'
 #' @inheritParams Strict
 #'
@@ -233,25 +237,20 @@ Greedy <- function(trees) {
 #' @seealso Closely related: [`Majority()`], [`Greedy()`], [`Loose()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
+#' @importFrom ape read.tree
 #' @export
 MajorityPlus <- function(trees) {
-  prep <- .PoolSplits(trees)
+  prep <- .PrepareTrees(trees)
   if (!is.null(prep[["trivial"]])) {
     return(prep[["trivial"]])
   }
-  conflict <- !.CompatibilityMatrix(prep)
-  nSplit <- length(prep[["counts"]])
-  # incidence[i, j]: does tree i display distinct split j?
-  incidence <- matrix(FALSE, prep[["nTree"]], nSplit)
-  for (i in seq_len(prep[["nTree"]])) {
-    incidence[i, prep[["membership"]][[i]]] <- TRUE
-  }
-  # conflictsPerTree[j, i]: number of splits in tree i incompatible with split j
-  conflictsPerTree <- conflict %*% t(incidence)
-  incompatibleTrees <- rowSums(conflictsPerTree > 0)
-  keep <- prep[["counts"]] > incompatibleTrees
+  labels <- prep[["labels"]]
+  nwk <- majorityPlusConsensusCpp(.FactEdges(prep[["trees"]], labels),
+                                  length(labels))
+  tree <- read.tree(text = paste0(nwk, ";"))
+  tree[["tip.label"]] <- labels[as.integer(tree[["tip.label"]])]
   # Return:
-  .SelectedConsensus(keep, prep)
+  .RootLikeFirst(tree, prep[["firstTree"]])
 }
 
 #' Frequency-difference consensus tree

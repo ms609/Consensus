@@ -1,9 +1,17 @@
-# ConsTree 0.0.0.9006 (development)
+# ConsTree 0.0.0.9007 (development)
 
 **Performance overhaul (in progress).** Reimplementing each consensus method
 with its fastest available algorithm, then profiling and optimising (harness in
 `dev/profiling/`). Landed so far:
 
+- `MajorityPlus()` now uses a C++ port of the optimal O(kn)
+  `majorityPlusConsensus` algorithm of Jansson, Shen & Sung (2016) (their FACT
+  toolkit, used with permission), replacing the previous R pairwise
+  compatibility matrix. It is typically two to three orders of magnitude faster
+  and clears inputs that previously timed out (e.g. 50 trees on 100–200 leaves).
+  Majority-rule (+) is a deterministic count rule (a clade is kept when displayed
+  by strictly more trees than contradict it, with no frequency tie-break), so the
+  output is the FACT reference exactly, verified even at n > 60.
 - `Greedy()` now uses a C++ port of the asymptotically efficient
   `greedyConsensusFast` algorithm of Jansson, Shen & Sung (2016) (their FACT
   toolkit, used with permission), replacing the previous R pairwise
