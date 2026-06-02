@@ -1,12 +1,60 @@
 # Cross-validate the R consensus methods against the reference FACT binary.
 # Run with: Rscript dev/oracle/check-oracle.R
-.libPaths(c("C:/Users/pjjg18/GitHub/Consensus/.agent-cons", .libPaths()))
+# Resolve everything relative to THIS script so the oracle uses this worktree's
+# OWN build, never a sibling worktree's.  Each worktree installs into its own
+# .agent-cons (gitignored by the rooted /.agent* rule); worktrees never share a
+# library, which removes the clobber/self-mask hazard at the source.  Install:
+#   R CMD INSTALL --no-multiarch --library=<worktree>/.agent-cons <worktree>
+.cohArgs <- commandArgs(FALSE)
+.cohFile <- sub("^--file=", "", grep("^--file=", .cohArgs, value = TRUE))
+.cohDir  <- if (length(.cohFile)) dirname(normalizePath(.cohFile)) else getwd()
+.cohRoot <- normalizePath(file.path(.cohDir, "..", ".."))
+.cohLib  <- file.path(.cohRoot, ".agent-cons")
+if (!dir.exists(.cohLib)) {
+  stop("Validation library not found: ", .cohLib,
+       "\n  Install first:  R CMD INSTALL --no-multiarch --library=\"", .cohLib,
+       "\" \"", .cohRoot, "\"")
+}
+.libPaths(c(.cohLib, .libPaths()))
 suppressMessages(library(ConsTree))
 suppressMessages(library(TreeTools))
-source("C:/Users/pjjg18/GitHub/Consensus/dev/oracle/oracle.R")
+
+# --- self-guard ------------------------------------------------------------
+# Even with per-worktree libraries, guard against a stale/foreign build (e.g. an
+# install that silently partial-failed under a DLL lock): the installed version
+# must match THIS worktree's source, and (this branch's deliverable) MajorityPlus
+# must be on the C++ path.  See the `agent-cons-install-can-silently-fail` note.
+local({
+  want <- read.dcf(file.path(.cohRoot, "DESCRIPTION"), fields = "Version")[1, 1]
+  have <- as.character(utils::packageVersion("ConsTree"))
+  if (have != want) {
+    stop(sprintf(paste0("[self-guard] Installed ConsTree %s != this worktree's %s",
+                        " -- reinstall this worktree (into its own .agent-cons)",
+                        " before trusting the oracle."),
+                 have, want))
+  }
+  if (!any(grepl("majorityPlusConsensusCpp", deparse(body(ConsTree::MajorityPlus))))) {
+    stop("[self-guard] MajorityPlus is not on the C++ path -- installed build",
+         " predates the port.")
+  }
+  cat(sprintf("[self-guard] ConsTree %s (this worktree), MajorityPlus on C++ path: OK\n",
+              have))
+})
+# ---------------------------------------------------------------------------
+
+source(file.path(.cohDir, "oracle.R"))
 
 cmp <- function(mine, fact, labels) {
   setequal(SplitSet(mine, labels), SplitSet(fact, labels))
+}
+
+# Make the oracle an ASSERTION, not eyeball-only: count divergences and exit
+# non-zero at the end, so a regression is caught by CI / a non-zero $? rather
+# than scrolling past a printed "*** DIFFER ***".
+failCount <- 0L
+mark <- function(ok) {
+  if (!isTRUE(ok)) failCount <<- failCount + 1L
+  if (isTRUE(ok)) "MATCH" else "*** DIFFER ***"
 }
 
 datasets <- list(
@@ -37,7 +85,7 @@ for (rt in c(0L, 1L)) {
       ok <- cmp(mine, fact, labels)
       cat(sprintf("  %-13s mine=%2d fact=%2d  %s\n",
                   mn, NSplits(mine), NSplits(fact),
-                  if (ok) "MATCH" else "*** DIFFER ***"))
+                  mark(ok)))
     }
   }
 }
@@ -52,7 +100,7 @@ for (dn in names(datasets)) {
   cm <- CladeSet(mine)
   cf <- CladeSet(fact)
   cat(sprintf("  %-16s mine=%2d fact=%2d  %s\n", dn, length(cm), length(cf),
-              if (setequal(cm, cf)) "MATCH" else "*** DIFFER ***"))
+              mark(setequal(cm, cf))))
 }
 
 # Multi-word bitset path (n > 60: BUCKET_SIZE = 60, so LEN > 1 -- the word-index
@@ -82,5 +130,132 @@ for (n in c(80L, 137L)) {
   ok <- cmp(Greedy(trees), FactConsensus(trees, "greedy", rooted = 1L), labs)
   cat(sprintf("  n=%-3d LEN=%d  idempotent: %-5s   FACT-exact (same rooting): %s\n",
               n, (n + 59L) %/% 60L, idem,
+              mark(ok)))
+}
+
+# Loose at scale (n > 60).  Unlike greedy, the loose fast path does NO leaf-set
+# bit-packing (it is purely structural: Day's labelling + consecutive-range /
+# DEPTH queries), so there is no LEN > 1 word-arithmetic to exercise -- this
+# block instead validates the looseMerge / contract pipeline on a large instance.
+# And because the loose consensus is UNIQUE (every split compatible with all
+# inputs, no frequency tie-break), it is FACT-exact at every n, so we assert an
+# exact fact.exe match directly (no "same rooting" caveat -- SplitSet compares
+# unrooted bipartitions and ignores the trivial root split).  Two checks:
+# (a) idempotence Loose(list(t,t,t)) == t recovers a fully resolved binary tree;
+# (b) a congruent (perturbed) set keeps real splits AND matches fact.exe exactly
+#     (independent random trees would share no all-compatible split -> the star
+#     tree, making the assertion vacuous).
+cat("\n== Loose at scale (n > 60) ==\n")
+for (n in c(80L, 137L)) {
+  set.seed(n + 1000L)
+  labs <- paste0("t", seq_len(n))
+  base <- RootTree(RandomTree(labs, root = TRUE), labs[[1]])
+  idem <- setequal(SplitSet(Loose(structure(list(base, base, base),
+                                            class = "multiPhylo")), labs),
+                   SplitSet(base, labs))
+  trees <- structure(lapply(1:8, function(i) {
+    tr <- base
+    for (s in 1:3) {
+      ij <- sample.int(n, 2L)
+      tr[["tip.label"]][ij] <- tr[["tip.label"]][rev(ij)]
+    }
+    RootTree(RenumberTips(tr, labs), labs[[1]])
+  }), class = "multiPhylo")
+  mine <- Loose(trees)
+  ok <- cmp(mine, FactConsensus(trees, "loose", rooted = 1L), labs)
+  cat(sprintf("  n=%-3d  idempotent: %-5s   nSplit=%-3d  FACT-exact: %s\n",
+              n, idem, NSplits(mine),
+              mark(ok)))
+}
+
+# Loose with POLYTOMOUS inputs.  Every dataset above (and in test-loose.R) is
+# binary, so each input tree B has only 2-child nodes -- but looseMerge's op == 1
+# tree-construction inserts new vertices AMONG a B node's children via the
+# BEFORE/AFTER + pid bookkeeping, a path that is only fully exercised when an
+# input has a node with > 2 children.  Loose is deterministic (compatible-with-
+# all), so this must be FACT-exact; a divergence is a real bug.  Checked under
+# both rooted flags, as the binary datasets are.
+#
+# NB: compare CANONICAL (polarised) splits here.  A polytomous loose consensus is
+# rooted differently by Loose() (.RootLikeFirst) and by fact.exe, and as.Splits()
+# orients each bipartition by descendant side -- which flips with the root -- so
+# the plain SplitSet comparison `cmp` (fine for the binary datasets, where mine
+# and fact happen to orient alike) reports SPURIOUS differences here.
+cat("\n== Loose with polytomous inputs ==\n")
+cmpPol <- function(mine, fact, labels) {
+  pol <- function(tr) if (NSplits(tr) == 0L) character(0L) else
+    as.character(PolarizeSplits(as.Splits(tr, tipLabels = labels)))
+  setequal(pol(mine), pol(fact))
+}
+polytomySets <- list(
+  "n8 trichotomies" = c(
+    ape::read.tree(text = "((t1,t2,t3),(t4,t5),(t6,t7,t8));"),
+    ape::read.tree(text = "((t1,t2,t3),(t4,t5),(t6,t7,t8));"),
+    ape::read.tree(text = "((t1,t2),(t3,t4,t5),(t6,t7,t8));")
+  ),
+  "n9 nested polytomies" = c(
+    ape::read.tree(text = "((t1,t2,t3,t4),(t5,t6),(t7,t8,t9));"),
+    ape::read.tree(text = "((t1,t2,t3),t4,(t5,t6),(t7,t8,t9));"),
+    ape::read.tree(text = "((t1,t2,t3,t4),(t5,t6),t7,(t8,t9));")
+  )
+)
+for (dn in names(polytomySets)) {
+  trees <- polytomySets[[dn]]
+  labels <- TipLabels(trees[[1]])
+  for (rt in c(0L, 1L)) {
+    mine <- Loose(trees)
+    fact <- FactConsensus(trees, "loose", rooted = rt)
+    ok <- cmpPol(mine, fact, labels)
+    cat(sprintf("  %-22s rooted=%d  nSplit=%-2d  %s\n", dn, rt, NSplits(mine),
+                mark(ok)))
+  }
+}
+
+# Fail loud: a non-zero exit status turns this script into a real gate (CI / a
+# scripted `Rscript ... || stop`), instead of a wall of text a regression could
+# hide in.  (The strict rooted-flag DETERMINATION block above is diagnostic and
+# deliberately not counted.)
+cat("\n")
+if (failCount > 0L) {
+  cat(sprintf("*** %d oracle comparison(s) DIFFERED -- FAILING. ***\n", failCount))
+  quit(status = 1L)
+}
+
+# Large-n majorityPlus.  Unlike Greedy, majorityPlus does NOT bit-pack (there is
+# no BUCKET_SIZE), so "multi-word" here is a misnomer: n > 60 instead stresses
+# the Day's leaf-relabelling / left-right path-query machinery at scale.  Because
+# majorityPlus is a deterministic count rule -- keep a clade iff it is displayed
+# by strictly more trees than contradict it, with NO frequency tie-break -- it
+# must be FACT-EXACT at every n; divergence is a real bug, not a tie-break
+# artefact.  Independent random trees would collapse to a star (essentially every
+# non-trivial split is contradicted more often than displayed), giving a vacuous
+# star-vs-star match, so drive it with CONGRUENT input (one base topology, each
+# replicate perturbed by a few tip swaps) and assert a non-trivial result.
+cat("\n== majorityPlus at n > 60 (exact) ==\n")
+mpPass <- logical(0)
+for (n in c(80L, 137L)) {
+  set.seed(n + 1000L)
+  labs <- paste0("t", seq_len(n))
+  base <- RootTree(RandomTree(labs, root = TRUE), labs[[1]])
+  idem <- setequal(SplitSet(MajorityPlus(structure(list(base, base, base),
+                                                   class = "multiPhylo")), labs),
+                   SplitSet(base, labs))
+  swap <- function(tr) {
+    for (s in 1:3) {
+      ij <- sample.int(n, 2L)
+      tr[["tip.label"]][ij] <- tr[["tip.label"]][rev(ij)]
+    }
+    RootTree(tr, labs[[1]])
+  }
+  trees <- structure(c(list(base), lapply(1:14, function(i) swap(base))),
+                     class = "multiPhylo")
+  mine <- MajorityPlus(trees)
+  ok <- cmp(mine, FactConsensus(trees, "majorityPlus", rooted = 1L), labs)
+  mpPass <- c(mpPass, idem, ok, NSplits(mine) > 0L)
+  cat(sprintf("  n=%-3d LEN=%d  idempotent: %-5s  splits=%2d  FACT-exact: %s\n",
+              n, (n + 59L) %/% 60L, idem, NSplits(mine),
               if (ok) "MATCH" else "*** DIFFER ***"))
 }
+# Hard assertion: idempotent, FACT-exact, and non-trivial (not a star) at all n.
+stopifnot(all(mpPass))
+cat("All oracle comparisons MATCH.\n")

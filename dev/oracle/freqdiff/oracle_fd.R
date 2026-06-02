@@ -27,9 +27,15 @@ FREQDIFF_EXE <- normalizePath(
 .WriteFreqdiffInput <- function(trees, path, labels) {
   n <- length(labels)
   treeLines <- vapply(trees, function(tr) {
-    # Renumber tips so they match labels[1..n] order, then replace with integers
+    # Renumber tips to labels[1..n] order, then relabel with integers 1..n so
+    # taxon i carries label "i".  Root every tree at taxon 1 ("1") BEFORE writing
+    # -- frequency-difference weights ROOTED clusters, so both sides must feed
+    # identically rooted trees (the C++ path roots at taxon 1 via .FactEdges).
+    # Relabel before rooting so the integer<->label mapping survives any tip
+    # reordering RootTree performs (the decode is labels[as.integer(label)]).
     tr <- TreeTools::RenumberTips(tr, labels)
     tr[["tip.label"]] <- as.character(seq_len(n))
+    tr <- TreeTools::RootTree(tr, "1")
     tr[["edge.length"]] <- NULL
     ape::write.tree(tr)  # returns string; file=NULL is unreliable in some ape versions
   }, character(1))

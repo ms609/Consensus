@@ -1,6 +1,6 @@
 Package: ConsTree
 Title: Fast Algorithms for Phylogenetic Consensus Trees
-Version: 0.0.0.9008
+Version: 0.0.0.9007
 Authors@R: c(
   person("Martin R.", "Smith", role = c("aut", "cre", "cph"),
          email = "martin.smith@durham.ac.uk",
@@ -43,6 +43,7 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Config/roxygen2/version: 8.0.0
+Config/Needs/memcheck: pkgdown, testthat
 RdMacros: Rdpack
 Encoding: UTF-8
 Language: en-GB

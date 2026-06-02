@@ -27,9 +27,13 @@ trees is necessarily more frequent than any conflicting split -- and is
 contained within the greedy consensus (\code{\link[=Greedy]{Greedy()}}).  The retained splits
 are mutually compatible, so they define a valid tree.
 
-An efficient algorithm for constructing this consensus was given by
-\insertCite{Jansson2024}{ConsTree}; the present implementation computes the
-same tree directly from pooled split frequencies.
+This implementation ports the near-linear \eqn{O(kn \log n)} algorithm of
+\insertCite{Jansson2024;textual}{ConsTree} from their FDCT reference C++ (used
+with permission): cluster frequencies are computed by a divide-and-conquer
+labelling with radix sort, and conflicting lower-frequency clusters are
+filtered out using centroid-path decomposition, lowest-common-ancestor and
+range-minimum queries, and tree contraction, avoiding the explicit
+\eqn{O(s^2)} pairwise compatibility matrix used previously.
 }
 \examples{
 trees <- ape::as.phylo(0:5, 8)

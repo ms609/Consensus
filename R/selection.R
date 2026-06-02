@@ -126,10 +126,13 @@
 #' excluded from the loose consensus, whereas a split occurring in a single tree
 #' is retained if no other tree contradicts it.
 #'
-#' The loose consensus is one of the methods implemented in the FACT toolkit of
-#' Jansson and colleagues \insertCite{JanssonShenSung2016}{ConsTree}, whose
-#' asymptotically efficient consensus algorithms this package draws on; here the
-#' tree is computed directly from the pooled splits and their compatibilities.
+#' This implementation ports the asymptotically efficient `looseConsensusFast`
+#' algorithm of \insertCite{JanssonShenSung2016}{ConsTree} from their FACT
+#' toolkit (used with permission): the input trees are merged into a one-way
+#' compatible tree by repeated linear-time consecutive-range queries, the
+#' clusters that are compatible with every input are then marked, and the rest
+#' contracted away -- avoiding the explicit pairwise compatibility matrix used
+#' previously.
 #'
 #' @inheritParams Strict
 #'
@@ -143,15 +146,19 @@
 #' @seealso Closely related: [`Strict()`], [`Majority()`], [`Greedy()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
+#' @importFrom ape read.tree
 #' @export
 Loose <- function(trees) {
-  prep <- .PoolSplits(trees)
+  prep <- .PrepareTrees(trees)
   if (!is.null(prep[["trivial"]])) {
     return(prep[["trivial"]])
   }
-  keep <- apply(.CompatibilityMatrix(prep), 1, all)
+  labels <- prep[["labels"]]
+  nwk <- looseConsensusCpp(.FactEdges(prep[["trees"]], labels), length(labels))
+  tree <- read.tree(text = paste0(nwk, ";"))
+  tree[["tip.label"]] <- labels[as.integer(tree[["tip.label"]])]
   # Return:
-  .SelectedConsensus(keep, prep)
+  .RootLikeFirst(tree, prep[["firstTree"]])
 }
 
 #' Greedy (extended majority-rule) consensus tree
@@ -217,9 +224,13 @@ Greedy <- function(trees) {
 #' supported more often than they are contradicted.  The retained splits are
 #' necessarily mutually compatible, so they define a valid tree.
 #'
-#' \insertCite{JanssonShenSung2016;textual}{ConsTree} give an optimal
-#' \eqn{O(kn)} algorithm for this consensus, implemented in their FACT toolkit;
-#' here the same tree is computed directly from the pooled splits.
+#' This implementation ports the optimal \eqn{O(kn)} algorithm of
+#' \insertCite{JanssonShenSung2016;textual}{ConsTree} from their FACT toolkit
+#' (used with permission): each input tree is processed in a single sweep, the
+#' candidate clusters are accumulated by an incremental merge, and a clade is
+#' kept when it is displayed by strictly more trees than contradict it -- a
+#' deterministic count rule (no frequency tie-break), so the result is exact.
+#' This replaces the previous R pairwise compatibility matrix.
 #'
 #' @inheritParams Strict
 #'
@@ -233,25 +244,20 @@ Greedy <- function(trees) {
 #' @seealso Closely related: [`Majority()`], [`Greedy()`], [`Loose()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
+#' @importFrom ape read.tree
 #' @export
 MajorityPlus <- function(trees) {
-  prep <- .PoolSplits(trees)
+  prep <- .PrepareTrees(trees)
   if (!is.null(prep[["trivial"]])) {
     return(prep[["trivial"]])
   }
-  conflict <- !.CompatibilityMatrix(prep)
-  nSplit <- length(prep[["counts"]])
-  # incidence[i, j]: does tree i display distinct split j?
-  incidence <- matrix(FALSE, prep[["nTree"]], nSplit)
-  for (i in seq_len(prep[["nTree"]])) {
-    incidence[i, prep[["membership"]][[i]]] <- TRUE
-  }
-  # conflictsPerTree[j, i]: number of splits in tree i incompatible with split j
-  conflictsPerTree <- conflict %*% t(incidence)
-  incompatibleTrees <- rowSums(conflictsPerTree > 0)
-  keep <- prep[["counts"]] > incompatibleTrees
+  labels <- prep[["labels"]]
+  nwk <- majorityPlusConsensusCpp(.FactEdges(prep[["trees"]], labels),
+                                  length(labels))
+  tree <- read.tree(text = paste0(nwk, ";"))
+  tree[["tip.label"]] <- labels[as.integer(tree[["tip.label"]])]
   # Return:
-  .SelectedConsensus(keep, prep)
+  .RootLikeFirst(tree, prep[["firstTree"]])
 }
 
 #' Frequency-difference consensus tree
@@ -267,9 +273,13 @@ MajorityPlus <- function(trees) {
 #' contained within the greedy consensus ([`Greedy()`]).  The retained splits
 #' are mutually compatible, so they define a valid tree.
 #'
-#' An efficient algorithm for constructing this consensus was given by
-#' \insertCite{Jansson2024}{ConsTree}; the present implementation computes the
-#' same tree directly from pooled split frequencies.
+#' This implementation ports the near-linear \eqn{O(kn \log n)} algorithm of
+#' \insertCite{Jansson2024;textual}{ConsTree} from their FDCT reference C++ (used
+#' with permission): cluster frequencies are computed by a divide-and-conquer
+#' labelling with radix sort, and conflicting lower-frequency clusters are
+#' filtered out using centroid-path decomposition, lowest-common-ancestor and
+#' range-minimum queries, and tree contraction, avoiding the explicit
+#' \eqn{O(s^2)} pairwise compatibility matrix used previously.
 #'
 #' @inheritParams Strict
 #'
@@ -284,19 +294,18 @@ MajorityPlus <- function(trees) {
 #' [`Greedy()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
+#' @importFrom ape read.tree
 #' @export
 Frequency <- function(trees) {
-  prep <- .PoolSplits(trees)
+  prep <- .PrepareTrees(trees)
   if (!is.null(prep[["trivial"]])) {
     return(prep[["trivial"]])
   }
-  conflict <- !.CompatibilityMatrix(prep)
-  counts <- prep[["counts"]]
-  keep <- vapply(seq_along(counts), function(i) {
-    rivals <- conflict[i, ]
-    counts[[i]] > if (any(rivals)) max(counts[rivals]) else 0L
-  }, logical(1))
+  labels <- prep[["labels"]]
+  nwk <- frequencyConsensusCpp(.FactEdges(prep[["trees"]], labels), length(labels))
+  tree <- read.tree(text = paste0(nwk, ";"))
+  tree[["tip.label"]] <- labels[as.integer(tree[["tip.label"]])]
   # Return:
-  .SelectedConsensus(keep, prep)
+  .RootLikeFirst(tree, prep[["firstTree"]])
 }
 
