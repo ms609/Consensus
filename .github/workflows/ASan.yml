@@ -45,6 +45,14 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
+      # TreeSearch is in Suggests but unavailable from CRAN; its development
+      # branch must be pre-installed so pak::local_install_deps (called inside
+      # ms609/actions/asan) can resolve all declared Suggests.  The r-hub
+      # gcc-asan container ships R + pak, so this runs without a prior checkout.
+      - name: Pre-install TreeSearch from development branch
+        run: Rscript -e 'pak::pak("ms609/TreeSearch@cpp-search")'
+        shell: bash
+
       - uses: ms609/actions/asan@main
         with:
           test: ${{ matrix.config.test }}
