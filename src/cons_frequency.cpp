@@ -840,6 +840,12 @@ struct Interval {
 
 class FreqDiff {
  public:
+  // The 2n / 3n scratch sizes and the radix capacities (5n adds, key <= k) are
+  // the worst-case bounds carried verbatim from the upstream raw-array
+  // allocations; they are not proven closed-form here, but hold empirically over
+  // a wide adversarial battery (n at powers +/-1, incongruent/caterpillar/star
+  // ensembles, k >> n).  std::vector::operator[] is unchecked, so if you touch
+  // the contraction or merge, re-validate with a -D_GLIBCXX_ASSERTIONS build.
   FreqDiff(int n_, int k_) : n(n_), k(k_) {
     start.assign(2 * n, 0);
     stop.assign(2 * n, 0);

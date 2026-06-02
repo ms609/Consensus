@@ -66,6 +66,39 @@ test_that("Frequency drops splits merely tied with a conflicting rival", {
   expect_gt(TreeTools::NSplits(Greedy(trees)), TreeTools::NSplits(f))
 })
 
+test_that("Frequency scales to larger ensembles (centroid-path recursion)", {
+  # n = 40 exercises code paths the small fixtures never reach -- the centroid-
+  # path recursion, special-node insertion in the tree contraction, and (k near
+  # n) the weight-compression branch -- guarding them against crashes/regressions
+  # in CI (the dev oracle checks exact values).  Both regimes: an incongruent
+  # ensemble (the harder filter/merge path) and a near-congruent one (a rich
+  # surviving split pool that drives the cluster grafting).  Assertions are the
+  # lattice invariants, which hold for any inputs (robust to RNG drift).
+  set.seed(20L)
+  base <- TreeTools::RandomTree(40L)
+  ensembles <- list(
+    incongruent = structure(
+      lapply(seq_len(18), function(i) TreeTools::RandomTree(40L)), class = "multiPhylo"),
+    congruent = structure(lapply(seq_len(18), function(i) {
+      tr <- base
+      ij <- sample.int(40L, 2L)
+      tr[["tip.label"]][ij] <- tr[["tip.label"]][rev(ij)]
+      tr
+    }), class = "multiPhylo")
+  )
+  for (trees in ensembles) {
+    labels <- TreeTools::TipLabels(trees[[1]])
+    f <- Frequency(trees)
+    expect_s3_class(f, "phylo")
+    expect_setequal(TreeTools::TipLabels(f), labels)
+    mSplits <- as.character(TreeTools::as.Splits(Majority(trees), tipLabels = labels))
+    fSplits <- as.character(TreeTools::as.Splits(f, tipLabels = labels))
+    gSplits <- as.character(TreeTools::as.Splits(Greedy(trees), tipLabels = labels))
+    expect_true(all(mSplits %in% fSplits))   # majority        <= frequency
+    expect_true(all(fSplits %in% gSplits))   # frequency-diff   <= greedy
+  }
+})
+
 test_that("Frequency short-circuits the degenerate cases", {
   tree <- ape::as.phylo(1, 9)
   expect_equal(Frequency(tree), tree)           # a bare phylo is returned as-is
