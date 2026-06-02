@@ -14,12 +14,11 @@ args <- commandArgs(trailingOnly = FALSE)
 fileArg <- sub("^--file=", "", grep("^--file=", args, value = TRUE))
 scriptDir <- if (length(fileArg)) dirname(normalizePath(fileArg)) else getwd()
 pkgRoot <- normalizePath(file.path(scriptDir, "..", ".."))
-# The shared validation library, same one check-oracle.R uses.  NB: this is a
-# SINGLE lib shared across worktrees -- a sibling worktree's install can clobber
-# it, so the version self-guard below is load-bearing.  (Resolving it relative
-# to pkgRoot would break: the build is installed into the main repo's
-# .agent-cons, not the worktree's.)
-agentLib <- "C:/Users/pjjg18/GitHub/Consensus/.agent-cons"
+# This worktree's OWN validation library (per-worktree isolation: worktrees
+# never share a library, so a sibling worktree's install cannot clobber this
+# one).  Gitignored by the rooted /.agent* rule.  Resolves the same way as
+# check-oracle.R.
+agentLib <- file.path(pkgRoot, ".agent-cons")
 if (!dir.exists(agentLib)) {
   stop("Validation library not found: ", agentLib,
        "\n  Install first:  R CMD INSTALL --no-multiarch --library=\"", agentLib,
