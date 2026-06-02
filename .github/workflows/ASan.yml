@@ -1,0 +1,50 @@
+# Address Sanitizer: replicate CRAN's gcc-ASAN 'Additional Test'.
+# Uses the r-hub gcc-asan container (R-devel built with ASAN/UBSAN).
+# Additional_repositories in DESCRIPTION (https://ms609.github.io/packages/) is
+# read automatically by ms609/actions/asan so no extra-repositories input needed.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+      - '**asan**'
+    paths:
+      - '.github/workflows/ASan.yml'
+      - 'src/**'
+      - 'memcheck/**'
+      - 'tests/testthat/**.R'
+      - 'vignettes/**.Rmd'
+  pull_request:
+    paths:
+      - '.github/workflows/ASan.yml'
+      - 'src/**'
+      - 'memcheck/**'
+      - 'tests/testthat/**.R'
+      - 'vignettes/**.Rmd'
+
+name: gcc-ASAN
+
+jobs:
+  mem-check:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/r-hub/containers/gcc-asan:latest
+
+    name: AddressSanitizer ${{ matrix.config.test }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {test: 'tests'}
+          - {test: 'examples'}
+          - {test: 'vignettes'}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: ms609/actions/asan@main
+        with:
+          test: ${{ matrix.config.test }}
