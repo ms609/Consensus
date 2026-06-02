@@ -100,12 +100,12 @@ therefore recover structure that the unrooted strict consensus collapses:
 
 ```{r rooted}
 rTrees <- ape::read.tree(text = c(
-  "((((t1,t2),t3),(((t4,t6),t9),t5)),t7);",
-  "(((((t1,t2),t3),(t4,(t6,t9))),t5),t7);",
-  "(((((t1,t2),t3),((t4,t9),t6)),t5),t7);",
-  "((((((t1,t2),t9),(t4,t6)),t3),t5),t7);",
-  "((((((t1,t2),t3),t9),(t4,t6)),t5),t7);",
-  "(((((t1,t2),t9),(t3,(t4,t6))),t5),t7);"))
+  "((((t1,t2),t3),(((t5,t6),t4),t7)),t8);",
+  "(((((t1,t2),t3),(t5,(t6,t4))),t7),t8);",
+  "(((((t1,t2),t3),((t5,t4),t6)),t7),t8);",
+  "((((((t1,t2),t4),(t5,t6)),t3),t7),t8);",
+  "((((((t1,t2),t3),t4),(t5,t6)),t7),t8);",
+  "(((((t1,t2),t4),(t3,(t5,t6))),t7),t8);"))
 ```
 
 ```{r plot-rooted-in, fig.height = 4.6}
