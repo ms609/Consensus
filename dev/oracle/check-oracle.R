@@ -54,3 +54,33 @@ for (dn in names(datasets)) {
   cat(sprintf("  %-16s mine=%2d fact=%2d  %s\n", dn, length(cm), length(cf),
               if (setequal(cm, cf)) "MATCH" else "*** DIFFER ***"))
 }
+
+# Multi-word bitset path (n > 60: BUCKET_SIZE = 60, so LEN > 1 -- the word-index
+# arithmetic (c-1)/60, %60 and the LEN-length OR-up/compare loops).  The datasets
+# above all have LEN = 1, so the multi-word packing needs its own check.
+#
+# Greedy is tie-break sensitive, and FACT's tie-break depends on its exact
+# internal clade representation (it roots at taxon 1's neighbour; the R wrapper
+# roots on taxon 1's edge), so an exact match on tie-heavy random input is NOT
+# expected -- greedy is "FACT-match up to tie-break" (as the previous R
+# implementation also was; AGENTS.md).  Validate the multi-word path two ways
+# that ARE exact: (a) idempotence Greedy(list(t,t,t)) == t exercises the pack/
+# unpack with no ties; (b) with every tree identically rooted at taxon 1, mine
+# and FACT see the same clades, isolating algorithm faithfulness from the
+# rooting/tie-break artefact.
+cat("\n== Multi-word bitset path (n > 60) ==\n")
+for (n in c(80L, 137L)) {
+  set.seed(n)
+  labs <- paste0("t", seq_len(n))
+  base <- RandomTree(labs, root = TRUE)
+  idem <- setequal(SplitSet(Greedy(structure(list(base, base, base),
+                                             class = "multiPhylo")), labs),
+                   SplitSet(base, labs))
+  trees <- structure(lapply(1:15, function(i)
+                       RootTree(RandomTree(labs, root = TRUE), labs[[1]])),
+                     class = "multiPhylo")
+  ok <- cmp(Greedy(trees), FactConsensus(trees, "greedy", rooted = 1L), labs)
+  cat(sprintf("  n=%-3d LEN=%d  idempotent: %-5s   FACT-exact (same rooting): %s\n",
+              n, (n + 59L) %/% 60L, idem,
+              if (ok) "MATCH" else "*** DIFFER ***"))
+}
