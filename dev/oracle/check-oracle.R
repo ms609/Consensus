@@ -9,6 +9,15 @@ cmp <- function(mine, fact, labels) {
   setequal(SplitSet(mine, labels), SplitSet(fact, labels))
 }
 
+# Make the oracle an ASSERTION, not eyeball-only: count divergences and exit
+# non-zero at the end, so a regression is caught by CI / a non-zero $? rather
+# than scrolling past a printed "*** DIFFER ***".
+failCount <- 0L
+mark <- function(ok) {
+  if (!isTRUE(ok)) failCount <<- failCount + 1L
+  if (isTRUE(ok)) "MATCH" else "*** DIFFER ***"
+}
+
 datasets <- list(
   "random  n9  k21" = ape::as.phylo(0:20, 9),
   "random  n10 k31" = ape::as.phylo(0:30, 10),
@@ -37,7 +46,7 @@ for (rt in c(0L, 1L)) {
       ok <- cmp(mine, fact, labels)
       cat(sprintf("  %-13s mine=%2d fact=%2d  %s\n",
                   mn, NSplits(mine), NSplits(fact),
-                  if (ok) "MATCH" else "*** DIFFER ***"))
+                  mark(ok)))
     }
   }
 }
@@ -52,7 +61,7 @@ for (dn in names(datasets)) {
   cm <- CladeSet(mine)
   cf <- CladeSet(fact)
   cat(sprintf("  %-16s mine=%2d fact=%2d  %s\n", dn, length(cm), length(cf),
-              if (setequal(cm, cf)) "MATCH" else "*** DIFFER ***"))
+              mark(setequal(cm, cf))))
 }
 
 # Multi-word bitset path (n > 60: BUCKET_SIZE = 60, so LEN > 1 -- the word-index
@@ -82,7 +91,7 @@ for (n in c(80L, 137L)) {
   ok <- cmp(Greedy(trees), FactConsensus(trees, "greedy", rooted = 1L), labs)
   cat(sprintf("  n=%-3d LEN=%d  idempotent: %-5s   FACT-exact (same rooting): %s\n",
               n, (n + 59L) %/% 60L, idem,
-              if (ok) "MATCH" else "*** DIFFER ***"))
+              mark(ok)))
 }
 
 # Loose at scale (n > 60).  Unlike greedy, the loose fast path does NO leaf-set
@@ -117,7 +126,7 @@ for (n in c(80L, 137L)) {
   ok <- cmp(mine, FactConsensus(trees, "loose", rooted = 1L), labs)
   cat(sprintf("  n=%-3d  idempotent: %-5s   nSplit=%-3d  FACT-exact: %s\n",
               n, idem, NSplits(mine),
-              if (ok) "MATCH" else "*** DIFFER ***"))
+              mark(ok)))
 }
 
 # Loose with POLYTOMOUS inputs.  Every dataset above (and in test-loose.R) is
@@ -159,6 +168,17 @@ for (dn in names(polytomySets)) {
     fact <- FactConsensus(trees, "loose", rooted = rt)
     ok <- cmpPol(mine, fact, labels)
     cat(sprintf("  %-22s rooted=%d  nSplit=%-2d  %s\n", dn, rt, NSplits(mine),
-                if (ok) "MATCH" else "*** DIFFER ***"))
+                mark(ok)))
   }
 }
+
+# Fail loud: a non-zero exit status turns this script into a real gate (CI / a
+# scripted `Rscript ... || stop`), instead of a wall of text a regression could
+# hide in.  (The strict rooted-flag DETERMINATION block above is diagnostic and
+# deliberately not counted.)
+cat("\n")
+if (failCount > 0L) {
+  cat(sprintf("*** %d oracle comparison(s) DIFFERED -- FAILING. ***\n", failCount))
+  quit(status = 1L)
+}
+cat("All oracle comparisons MATCH.\n")

@@ -270,6 +270,18 @@ Tree looseMerge(Tree A, Tree B, bool op, int numTaxas) {
       }
     }
   }
+  // FACT loose.cpp:258 invariant: exactly `newNodes` vertices were inserted, so
+  // the running index must have reached the allocated node count.  A mismatch
+  // means the BEFORE/AFTER bookkeeping built the wrong shape -- fail loud rather
+  // than return a silently mis-built consensus.  Cannot be triggered via a
+  // legitimate R call (looseMerge is internal; the check fires only if the C++
+  // bookkeeping itself is wrong), so excluded from coverage like analogous
+  // post-condition guards in rstar.cpp / bhv.cpp.
+  if (next != ret.cnt) {
+    // # nocov start
+    Rcpp::stop("looseMerge: built %d nodes but allocated %d", next, ret.cnt);
+    // # nocov end
+  }
   for (int i = 1; i <= numTaxas; ++i) ret.idx[i] = B.idx[i];
   return ret;
 }
