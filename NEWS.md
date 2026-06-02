@@ -21,6 +21,14 @@ with its fastest available algorithm, then profiling and optimising (harness in
   incompatible splits may now be resolved in a different but equally valid order.
 - Added a reentrant, allocation-safe C++ tree primitive (`src/fact_tree.*`)
   shared by the fast split-selection methods.
+- `Frequency()` now uses a C++ port of the near-linear _O_(_kn_ log _n_)
+  frequency-difference algorithm of Jansson, Sung, Tabatabaee & Yang (2024,
+  STACS; their FDCT reference implementation, used with permission), replacing
+  the previous R _O_(_s_²) per-split frequency comparison. The old approach
+  exceeded a one-minute budget beyond ~100 leaves on 50 trees, where the port
+  returns in well under a second. The port is boost-free (the upstream
+  `dynamic_bitset` is dead code on this near-linear path) and its output is
+  validated to match the FDCT `freqdiff` reference exactly.
 
 First public release: a consensus-tree toolkit built on
 [TreeTools](https://ms609.github.io/TreeTools/).

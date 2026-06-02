@@ -42,10 +42,25 @@ source("C:/Users/pjjg18/GitHub/Consensus/dev/oracle/freqdiff/oracle_fd.R")
 
 # ----- fixtures ---------------------------------------------------------------
 
+# A seeded ensemble of independent random topologies: deterministic (same trees
+# every run) yet highly INCONGRUENT, the adversarial regime for the near-linear
+# filter/merge -- both sides see the same trees, so the comparison is valid
+# regardless of any cross-version RNG drift.
+set.seed(7L)
+incongruent80 <- structure(lapply(seq_len(20), function(i) TreeTools::RandomTree(80L)),
+                           class = "multiPhylo")
+
 datasets <- list(
-  "random  n9  k21" = ape::as.phylo(0:20, 9),
-  "random  n10 k31" = ape::as.phylo(0:30, 10),
-  "conflict n8  k7" = ape::as.phylo(c(0, 0, 0, 1, 2, 53, 99), 8)
+  "random      n9  k21" = ape::as.phylo(0:20, 9),
+  "random      n10 k31" = ape::as.phylo(0:30, 10),
+  "conflict    n8  k7"  = ape::as.phylo(c(0, 0, 0, 1, 2, 53, 99), 8),
+  # n > 60 exercises deeper centroid-path recursion and bigger LCA / RMQ
+  # structures than the small cases.  Two n > 60 regimes: a near-congruent
+  # ensemble (small surviving split pool) and an incongruent one (the harder
+  # filter/merge path).  (The small random cases above have k > n, hitting the
+  # weight-compression branch.)
+  "congruent   n80 k31" = ape::as.phylo(0:30, 80),
+  "incongruent n80 k20" = incongruent80
 )
 
 # ----- main loop --------------------------------------------------------------
