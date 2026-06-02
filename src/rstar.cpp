@@ -76,7 +76,9 @@ static inline int closePair(int dAB, int dAC, int dBC) {
   if (dAC == dBC && dAB > dAC)  return 0;    // AB|C
   if (dAB == dBC && dAC > dAB)  return 1;    // AC|B
   if (dAB == dAC && dBC > dAB)  return 2;    // BC|A
+  // # nocov start
   return -1;                                 // defensive (unreachable on a valid tree)
+  // # nocov end
 }
 
 // Disjoint-set find with path halving.
@@ -181,22 +183,26 @@ std::string rStarConsensus(Rcpp::List edgeList, int nTip) {
   const int k = edgeList.size();
 
   // Trivial leaf sets (the R wrapper handles n < 3, but stay self-contained).
+  // # nocov start
   if (n < 3) {
     std::string out = "(";
     for (int i = 0; i < n; ++i) { if (i) out += ","; out += std::to_string(i + 1); }
     out += ")";
     return out;
   }
+  // # nocov end
 
   // Memory guard on the k per-tree LCA-depth matrices (O(k n^2) ints).  This
   // replaces the former dense n^3 tensor; the ceiling is far higher (e.g.
   // n = 2000, k = 10 ~ 0.16 GB) and scales linearly in k, quadratically in n.
   const double bytes = (double)k * (double)n * (double)n * (double)sizeof(int);
+  // # nocov start
   if (bytes > 2.4e9) {
     Rcpp::stop("rStarConsensus: the k per-tree LCA-depth matrices would need "
                "~%.1f GB (k = %d, n = %d). Reduce the number of trees or leaves.",
                bytes / 1e9, k, n);
   }
+  // # nocov end
 
   // ---- Stage 0: per-tree O(1) LCA-depth matrices -----------------------------
   std::vector<int> D((size_t)k * n * n, 0);
@@ -224,9 +230,12 @@ std::string rStarConsensus(Rcpp::List edgeList, int nTip) {
     buildParentDepth(edge0, nNode0, par, dpv);
     for (int a = 0; a < n; ++a)
       for (int b = a + 1; b < n; ++b)
-        if (lcaDepthWalk(a + 1, b + 1, par, dpv) != RSTAR_DEP(0, a, b))
+        if (lcaDepthWalk(a + 1, b + 1, par, dpv) != RSTAR_DEP(0, a, b)) {
+          // # nocov start
           Rcpp::stop("rStarConsensus: internal LCA self-check failed "
                      "(a = %d, b = %d).", a, b);
+          // # nocov end
+        }
   }
 
   // ---- Stage 1: tally -> similarity s(a,b) = #{x : ab|x in R_maj} ------------
