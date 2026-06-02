@@ -28,6 +28,26 @@ cpp_bhv_mean <- function(mems, lens, leaves, nTip, maxIter, tol, cauchyLength) {
     .Call(`_ConsTree_cpp_bhv_mean`, mems, lens, leaves, nTip, maxIter, tol, cauchyLength)
 }
 
+adamsConsensusCpp <- function(edgeList, nTip) {
+    .Call(`_ConsTree_adamsConsensusCpp`, edgeList, nTip)
+}
+
+frequencyConsensusCpp <- function(edgeList, nTip) {
+    .Call(`_ConsTree_frequencyConsensusCpp`, edgeList, nTip)
+}
+
+greedyConsensusCpp <- function(edgeList, nTip) {
+    .Call(`_ConsTree_greedyConsensusCpp`, edgeList, nTip)
+}
+
+looseConsensusCpp <- function(edgeList, nTip) {
+    .Call(`_ConsTree_looseConsensusCpp`, edgeList, nTip)
+}
+
+majorityPlusConsensusCpp <- function(edgeList, nTip) {
+    .Call(`_ConsTree_majorityPlusConsensusCpp`, edgeList, nTip)
+}
+
 localConsensus <- function(edgeList, nTip, minrs) {
     .Call(`_ConsTree_localConsensus`, edgeList, nTip, minrs)
 }

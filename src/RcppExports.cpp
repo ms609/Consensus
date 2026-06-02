@@ -75,6 +75,66 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// adamsConsensusCpp
+std::string adamsConsensusCpp(Rcpp::List edgeList, int nTip);
+RcppExport SEXP _ConsTree_adamsConsensusCpp(SEXP edgeListSEXP, SEXP nTipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type edgeList(edgeListSEXP);
+    Rcpp::traits::input_parameter< int >::type nTip(nTipSEXP);
+    rcpp_result_gen = Rcpp::wrap(adamsConsensusCpp(edgeList, nTip));
+    return rcpp_result_gen;
+END_RCPP
+}
+// frequencyConsensusCpp
+std::string frequencyConsensusCpp(Rcpp::List edgeList, int nTip);
+RcppExport SEXP _ConsTree_frequencyConsensusCpp(SEXP edgeListSEXP, SEXP nTipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type edgeList(edgeListSEXP);
+    Rcpp::traits::input_parameter< int >::type nTip(nTipSEXP);
+    rcpp_result_gen = Rcpp::wrap(frequencyConsensusCpp(edgeList, nTip));
+    return rcpp_result_gen;
+END_RCPP
+}
+// greedyConsensusCpp
+std::string greedyConsensusCpp(Rcpp::List edgeList, int nTip);
+RcppExport SEXP _ConsTree_greedyConsensusCpp(SEXP edgeListSEXP, SEXP nTipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type edgeList(edgeListSEXP);
+    Rcpp::traits::input_parameter< int >::type nTip(nTipSEXP);
+    rcpp_result_gen = Rcpp::wrap(greedyConsensusCpp(edgeList, nTip));
+    return rcpp_result_gen;
+END_RCPP
+}
+// looseConsensusCpp
+std::string looseConsensusCpp(Rcpp::List edgeList, int nTip);
+RcppExport SEXP _ConsTree_looseConsensusCpp(SEXP edgeListSEXP, SEXP nTipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type edgeList(edgeListSEXP);
+    Rcpp::traits::input_parameter< int >::type nTip(nTipSEXP);
+    rcpp_result_gen = Rcpp::wrap(looseConsensusCpp(edgeList, nTip));
+    return rcpp_result_gen;
+END_RCPP
+}
+// majorityPlusConsensusCpp
+std::string majorityPlusConsensusCpp(Rcpp::List edgeList, int nTip);
+RcppExport SEXP _ConsTree_majorityPlusConsensusCpp(SEXP edgeListSEXP, SEXP nTipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type edgeList(edgeListSEXP);
+    Rcpp::traits::input_parameter< int >::type nTip(nTipSEXP);
+    rcpp_result_gen = Rcpp::wrap(majorityPlusConsensusCpp(edgeList, nTip));
+    return rcpp_result_gen;
+END_RCPP
+}
 // localConsensus
 std::string localConsensus(Rcpp::List edgeList, int nTip, bool minrs);
 RcppExport SEXP _ConsTree_localConsensus(SEXP edgeListSEXP, SEXP nTipSEXP, SEXP minrsSEXP) {
@@ -116,6 +176,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ConsTree_cpp_bhv_distance", (DL_FUNC) &_ConsTree_cpp_bhv_distance, 6},
     {"_ConsTree_cpp_bhv_tree_at", (DL_FUNC) &_ConsTree_cpp_bhv_tree_at, 7},
     {"_ConsTree_cpp_bhv_mean", (DL_FUNC) &_ConsTree_cpp_bhv_mean, 7},
+    {"_ConsTree_adamsConsensusCpp", (DL_FUNC) &_ConsTree_adamsConsensusCpp, 2},
+    {"_ConsTree_frequencyConsensusCpp", (DL_FUNC) &_ConsTree_frequencyConsensusCpp, 2},
+    {"_ConsTree_greedyConsensusCpp", (DL_FUNC) &_ConsTree_greedyConsensusCpp, 2},
+    {"_ConsTree_looseConsensusCpp", (DL_FUNC) &_ConsTree_looseConsensusCpp, 2},
+    {"_ConsTree_majorityPlusConsensusCpp", (DL_FUNC) &_ConsTree_majorityPlusConsensusCpp, 2},
     {"_ConsTree_localConsensus", (DL_FUNC) &_ConsTree_localConsensus, 3},
     {"_ConsTree_consensus_rcpp_selfcheck", (DL_FUNC) &_ConsTree_consensus_rcpp_selfcheck, 0},
     {"_ConsTree_rStarConsensus", (DL_FUNC) &_ConsTree_rStarConsensus, 2},

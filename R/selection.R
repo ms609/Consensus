@@ -6,10 +6,13 @@
 # by `TreeTools::Consensus()`; reconstruction and rooting reuse `TreeTools`,
 # keeping behaviour consistent with `Strict()` and `Majority()`.
 
-# Pool the splits occurring across `trees`, returning their distinct values and
-# occurrence counts -- or, when no computation is required, a `trivial` tree.
-#' @importFrom TreeTools as.Splits TipLabels
-.PoolSplits <- function(trees) {
+# Validate `trees`, drop NULLs, and short-circuit the degenerate cases (a bare
+# `phylo`, fewer than two trees, or fewer than four leaves) by returning a
+# `trivial` tree.  Shared by `.PoolSplits()` (the R split-selection pipeline) and
+# the C++ fast paths (e.g. `Greedy()`), which need the cleaned tree list and the
+# shared leaf labels.
+#' @importFrom TreeTools TipLabels
+.PrepareTrees <- function(trees) {
   if (inherits(trees, "phylo")) {
     return(list(trivial = trees))
   }
@@ -26,6 +29,36 @@
   if (length(labels) < 4L) {
     return(list(trivial = trees[[1]]))
   }
+  # Return:
+  list(trivial = NULL, trees = trees, labels = labels, nTree = nTree,
+       firstTree = trees[[1]])
+}
+
+# Edge matrices for the FACT split-method C++ ports.  Each tree is renumbered to
+# the shared `labels` and rooted at taxon 1 (`labels[[1]]`), so the rooted
+# clusters the C++ extracts correspond consistently to unrooted bipartitions --
+# the convention FACT's reference C++ uses (`tree.cpp`: an unrooted tree is
+# rooted at the node adjacent to taxon 1).  Returned in `Preorder` (parent before
+# child), as `buildTreeFromEdge()` requires.
+#' @importFrom TreeTools Preorder RenumberTips RootTree
+.FactEdges <- function(trees, labels) {
+  lapply(trees, function(tr) {
+    tr <- RenumberTips(tr, labels)
+    tr <- RootTree(tr, labels[[1]])
+    Preorder(tr)[["edge"]]
+  })
+}
+
+# Pool the splits occurring across `trees`, returning their distinct values and
+# occurrence counts -- or, when no computation is required, a `trivial` tree.
+#' @importFrom TreeTools as.Splits
+.PoolSplits <- function(trees) {
+  prep <- .PrepareTrees(trees)
+  if (!is.null(prep[["trivial"]])) {
+    return(list(trivial = prep[["trivial"]]))
+  }
+  trees <- prep[["trees"]]
+  labels <- prep[["labels"]]
   splitList <- lapply(trees, as.Splits, tipLabels = labels)
   pooled <- do.call(c, splitList)
   distinct <- unique(pooled)
@@ -42,7 +75,7 @@
        counts = counts,
        membership = membership,
        labels = labels,
-       nTree = nTree,
+       nTree = prep[["nTree"]],
        firstTree = trees[[1]])
 }
 
@@ -53,21 +86,30 @@
   as.matrix(CompatibleSplits(prep[["splits"]], prep[["splits"]]))
 }
 
-# Rebuild a tree from the splits selected by `keep` (a logical vector over
-# `prep$splits`), rooted to match the first input tree as `TreeTools::Consensus`
-# does.
-#' @importFrom ape as.phylo
-#' @importFrom TreeTools as.Splits DescendantEdges NTip Preorder RootTree
-.SelectedConsensus <- function(keep, prep) {
-  selected <- as.Splits(prep[["members"]][keep, , drop = FALSE],
-                        tipLabels = prep[["labels"]])
-  tree <- as.phylo(selected)
-  first <- Preorder(prep[["firstTree"]])
+# Root `tree` to match the first input tree, as `TreeTools::Consensus()` does:
+# place the root on the split that separates the first tree's root group from the
+# rest.  Factored out of `.SelectedConsensus()` so the C++ fast paths (`Greedy()`
+# and the Loose/MajorityPlus chips) reuse identical rooting.
+#' @importFrom TreeTools DescendantEdges NTip Preorder RootTree
+.RootLikeFirst <- function(tree, firstTree) {
+  first <- Preorder(firstTree)
   edge <- first[["edge"]]
   rootTips <- edge[DescendantEdges(edge[, 1], edge[, 2], edge = 1), 2]
   rootTips <- rootTips[rootTips <= NTip(first)]
   # Return:
-  RootTree(tree, prep[["labels"]][rootTips])
+  RootTree(tree, first[["tip.label"]][rootTips])
+}
+
+# Rebuild a tree from the splits selected by `keep` (a logical vector over
+# `prep$splits`), rooted to match the first input tree as `TreeTools::Consensus`
+# does.
+#' @importFrom ape as.phylo
+#' @importFrom TreeTools as.Splits
+.SelectedConsensus <- function(keep, prep) {
+  selected <- as.Splits(prep[["members"]][keep, , drop = FALSE],
+                        tipLabels = prep[["labels"]])
+  # Return:
+  .RootLikeFirst(as.phylo(selected), prep[["firstTree"]])
 }
 
 #' Loose consensus tree
@@ -126,10 +168,12 @@ Loose <- function(trees) {
 #' are equally frequent, a different (but equally valid) greedy resolution may be
 #' returned by other software.
 #'
-#' An asymptotically efficient algorithm for the greedy consensus was given by
-#' \insertCite{JanssonShenSung2016}{ConsTree} and implemented in their FACT
-#' toolkit; here the same tree is computed directly from the pooled splits ranked
-#' by frequency.
+#' This implementation ports the asymptotically efficient `greedyConsensusFast`
+#' algorithm of \insertCite{JanssonShenSung2016}{ConsTree} from their FACT
+#' toolkit (used with permission): the distinct clusters are extracted in a
+#' single post-order sweep of each tree and added in decreasing order of
+#' frequency whenever compatible with the tree built so far, avoiding the
+#' explicit pairwise compatibility matrix used previously.
 #'
 #' @inheritParams Strict
 #'
@@ -143,25 +187,19 @@ Loose <- function(trees) {
 #' @seealso Closely related: [`Strict()`], [`Majority()`], [`Loose()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
+#' @importFrom ape read.tree
 #' @export
 Greedy <- function(trees) {
-  prep <- .PoolSplits(trees)
+  prep <- .PrepareTrees(trees)
   if (!is.null(prep[["trivial"]])) {
     return(prep[["trivial"]])
   }
-  compatible <- .CompatibilityMatrix(prep)
-  # Frequency descending; ties broken reproducibly by split pattern
-  priority <- order(-prep[["counts"]], as.character(prep[["splits"]]))
-  accepted <- integer(0)
-  for (i in priority) {
-    if (!length(accepted) || all(compatible[i, accepted])) {
-      accepted <- c(accepted, i)
-    }
-  }
-  keep <- logical(length(prep[["counts"]]))
-  keep[accepted] <- TRUE
+  labels <- prep[["labels"]]
+  nwk <- greedyConsensusCpp(.FactEdges(prep[["trees"]], labels), length(labels))
+  tree <- read.tree(text = paste0(nwk, ";"))
+  tree[["tip.label"]] <- labels[as.integer(tree[["tip.label"]])]
   # Return:
-  .SelectedConsensus(keep, prep)
+  .RootLikeFirst(tree, prep[["firstTree"]])
 }
 
 #' Majority-rule (+) consensus tree

@@ -2,7 +2,7 @@
 # NOT part of the package: it shells out to a compiled binary and is used only
 # to cross-validate the R implementations against the original algorithms.
 #
-# FACT I/O (see dev/reference/FACT/src/{wrapper,tree}.cpp):
+# FACT I/O (see dev/oracle/fact-src/{wrapper,tree}.cpp):
 #  * Input: a NEXUS file whose Newick trees use integer taxon labels 1..n,
 #    in a picky dialect (two header lines, a literal `translate` line, taxon
 #    lines ending with `;`, `tree i = (...);` lines, then `END;`).

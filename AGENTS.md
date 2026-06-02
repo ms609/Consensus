@@ -9,8 +9,9 @@ methods are R/C++ ports of the asymptotically-efficient C++ in
 [FACT](https://github.com/Mesh89/FACT),
 [FACT2](https://github.com/Mesh89/FACT2) and
 [FDCT_new](https://github.com/tswddd2/FDCT_new) (Jesper Jansson et al.; used with
-permission). Cloned reference C++ lives in `dev/reference/` — read it when porting
-or validating; never ship it.
+permission). The committed FACT reference source lives in `dev/oracle/fact-src/`
+— read it when porting or validating; never ship it. (FACT2 / FDCT_new are
+cloned ad-hoc into `dev/reference/` when needed, e.g. for the Frequency port.)
 
 ## Repository layout
 

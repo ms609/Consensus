@@ -1,4 +1,18 @@
-# ConsTree 1.0.0 (2026-06-01)
+# ConsTree 0.0.0.9006 (development)
+
+**Performance overhaul (in progress).** Reimplementing each consensus method
+with its fastest available algorithm, then profiling and optimising (harness in
+`dev/profiling/`). Landed so far:
+
+- `Greedy()` now uses a C++ port of the asymptotically efficient
+  `greedyConsensusFast` algorithm of Jansson, Shen & Sung (2016) (their FACT
+  toolkit, used with permission), replacing the previous R pairwise
+  compatibility matrix. It is typically two to three orders of magnitude faster
+  and lifts the practical size ceiling (e.g. 50 trees on 200 leaves: ~15 s to
+  ~10 ms); the output is validated to match the FACT reference. Equally frequent
+  incompatible splits may now be resolved in a different but equally valid order.
+- Added a reentrant, allocation-safe C++ tree primitive (`src/fact_tree.*`)
+  shared by the fast split-selection methods.
 
 First public release: a consensus-tree toolkit built on
 [TreeTools](https://ms609.github.io/TreeTools/).
