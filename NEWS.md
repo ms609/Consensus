@@ -1,4 +1,4 @@
-# ConsTree 0.0.0.9006 (development)
+# ConsTree 0.0.0.9008 (development)
 
 **Performance overhaul (in progress).** Reimplementing each consensus method
 with its fastest available algorithm, then profiling and optimising (harness in
@@ -13,6 +13,13 @@ with its fastest available algorithm, then profiling and optimising (harness in
   incompatible splits may now be resolved in a different but equally valid order.
 - Added a reentrant, allocation-safe C++ tree primitive (`src/fact_tree.*`)
   shared by the fast split-selection methods.
+- `RStar()` no longer caps at 200 leaves. The dense `O(n^3)` triplet tensor is
+  replaced by per-tree constant-time LCA queries (`O(kn^2)` memory), and the
+  strong-cluster assembly is tightened from `O(n^4)` to about `O(n^3)` via the
+  single-linkage (Apresjan) construction of Jansson, Sung, Vu & Yiu (2016). The
+  R\* tree is unchanged — verified clade-for-clade against the previous
+  implementation up to 200 leaves — and large inputs are now bounded by running
+  time rather than a memory wall.
 
 First public release: a consensus-tree toolkit built on
 [TreeTools](https://ms609.github.io/TreeTools/).

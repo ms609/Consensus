@@ -38,10 +38,10 @@ outside \eqn{R_{maj}}.
 R* is always a \emph{refinement} of the majority-rule consensus
 (every majority clade also appears in \code{RStar()}) and is a statistically
 consistent estimator of a species tree from gene trees.  Unlike \code{\link[=Local]{Local()}}
-it is \strong{polynomial}, so it is not restricted to small leaf counts; \code{RStar()}
-caps \code{n} at 200 purely as a memory safeguard on its dense triplet tensor (a
-limit quite different in nature from \code{Local()}'s exact-exponential 20-leaf
-bound).
+it is \strong{polynomial} and imposes no hard leaf-count limit: it stores no dense
+\eqn{n^3} structure (memory is \eqn{O(kn^2)} for \code{k} input trees), so the
+practical bound is running time (the tally is \eqn{O(kn^3)}), not a memory
+wall -- quite unlike \code{Local()}'s exact-exponential 20-leaf bound.
 
 Like \code{\link[=Adams]{Adams()}}, R* is a rooted method: triplet states depend on the
 rooting, so input trees are treated as rooted on their current root.  Root the
@@ -60,11 +60,17 @@ triple contributes nothing, leaving the affected taxa unresolved.
 yields a single, well-defined tree (Lemma 1.1 of
 \insertCite{Jansson2016a}{ConsTree}); there is no incompatibility or
 "build-failure" case to resolve.
-\item \emph{Algorithm.}  This implementation is correctness-first: an
-\eqn{O(kn^3)} triplet tally followed by an \eqn{O(n^4)} strong-cluster
-assembly.  The sub-cubic and near-quadratic algorithms of
-\insertCite{Jansson2013a,Jansson2016a}{ConsTree} are a deferred speed
-optimisation.
+\item \emph{Algorithm.}  Following \insertCite{Jansson2016a}{ConsTree}, the tree
+is built from a leaf-pair similarity -- for each pair \code{a}, \code{b}, the number
+of leaves \code{x} for which \code{ab|x} lies in \eqn{R_{maj}} -- whose single-linkage
+(Apresjan) clusters form a laminar superset of the strong clusters; those
+are then filtered exactly and assembled.  The tally runs in \eqn{O(kn^3)}
+time using per-tree constant-time LCA queries and stores no \eqn{n^3}
+tensor (memory \eqn{O(kn^2)}); the assembly is about \eqn{O(n^3)}.  The
+asymptotically sub-cubic bounds of
+\insertCite{Jansson2013a,Jansson2016a}{ConsTree} rely on
+fast-matrix-multiplication and dynamic-connectivity machinery that does
+more work than this for every practical leaf count, so they are not used.
 }
 }
 

@@ -35,9 +35,18 @@ Rscript.exe dev/profiling/compare.R baseline-2026-06-02.csv Greedy
   `ape::rtree`. Two regimes: `independent` (incongruent, large split pool —
   worst case for the `O(s²)` R pipeline) and `perturbed` (mostly congruent).
 - Each call is guarded by a per-call elapsed `timeout`; cells that time out or
-  exceed a method's hard cap (e.g. `RStar` ≤ 200 tips) record `NA`, which is
-  itself informative.
+  exceed a method's bench cap (`BENCH_CAPS`) record `NA`, which is itself
+  informative. (`RStar`'s former 200-leaf *memory* cap is gone — see below — so
+  its `BENCH_CAPS` entry now only bounds grid runtime.)
 - `compare.R` flags any cell where the output **split count** changed. For the
   unique-output methods that is a bug; for **Greedy** it may be the documented
   tie-break on equal-frequency incompatible splits — confirm against the FACT
   oracle and sign off, do not silently re-baseline.
+- **RStar** (round 1): the dense `O(n^3)` triplet tensor and its hard 200-leaf
+  cap were removed — memory is now `O(kn^2)` via per-tree constant-time LCA — and
+  the strong-cluster assembly was tightened from `O(n^4)` to about `O(n^3)`. The
+  R\* tree is unchanged (clade-exact vs the previous build on every grid cell to
+  n = 200; `dev/oracle/rstar/check-vs-legacy.R`). At n ≤ 200 timing is at parity
+  with the former code (the tally is still `O(kn^3)`); the practical win is the
+  lifted cap (n = 300 ≈ 0.2 s, n = 500 ≈ 0.7 s at k = 10 — formerly an immediate
+  error) and the far lower memory.
