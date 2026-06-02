@@ -555,15 +555,10 @@ struct radix_t {
     }
   }
 
-  void quicksort(bool desc = false) {
+  void quicksort() {
     for (int i = 0; i < n; i++) *out[i] = *nodes[i];
-    if (desc) {
-      std::sort(out.begin(), out.begin() + n,
-                [](radix_node_t* x, radix_node_t* y) { return x->key > y->key; });
-    } else {
-      std::sort(out.begin(), out.begin() + n,
-                [](radix_node_t* x, radix_node_t* y) { return x->key < y->key; });
-    }
+    std::sort(out.begin(), out.begin() + n,
+              [](radix_node_t* x, radix_node_t* y) { return x->key < y->key; });
   }
 };
 
