@@ -387,7 +387,16 @@ Tree majorityPlusMerge(Tree A, Tree B) {
       }
     }
     for (int i = 1; i <= numTaxas; ++i) ret.idx[i] = B.idx[i];
-    // FACT asserts cnt2 == ret.cnt here; it holds on well-formed input.
+    // FACT asserts cnt2 == ret.cnt here.  A bare assert() is a no-op in the
+    // installed package (R compiles with -DNDEBUG), so guard for real: a
+    // mismatch means the BEFORE/AFTER reconstruction is malformed and `ret`
+    // would be the wrong size, risking out-of-bounds access downstream -- bail
+    // cleanly instead.
+    if (cnt2 != ret.cnt) {
+      Rcpp::stop("cons_majorityplus: merge reconstruction produced " +
+                 std::to_string(cnt2) + " nodes, expected " +
+                 std::to_string(ret.cnt) + " (malformed input tree)");
+    }
   } else {
     ret = B;
   }

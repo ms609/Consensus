@@ -3,6 +3,37 @@
 .libPaths(c("C:/Users/pjjg18/GitHub/Consensus/.agent-cons", .libPaths()))
 suppressMessages(library(ConsTree))
 suppressMessages(library(TreeTools))
+
+# --- self-guard ------------------------------------------------------------
+# .agent-cons is a SINGLE library shared across all worktrees, and this script
+# hardcodes it; a sibling worktree's `R CMD INSTALL` can clobber it, silently
+# reverting a method to its (also-correct) R fallback.  Because every method has
+# such a fallback, the oracle would still PASS against the stale build -- the
+# self-mask.  Fail loudly instead: the installed build must match THIS worktree's
+# source version, and (this branch's deliverable) MajorityPlus must be on the C++
+# path.  See the `agent-cons-install-can-silently-fail` memory note.
+local({
+  a <- commandArgs(FALSE)
+  f <- sub("^--file=", "", grep("^--file=", a, value = TRUE))
+  scriptDir <- if (length(f)) dirname(normalizePath(f)) else getwd()
+  want <- read.dcf(file.path(scriptDir, "..", "..", "DESCRIPTION"),
+                   fields = "Version")[1, 1]
+  have <- as.character(utils::packageVersion("ConsTree"))
+  if (have != want) {
+    stop(sprintf(paste0("[self-guard] Installed ConsTree %s != this worktree's %s",
+                        " -- .agent-cons holds a stale/foreign build (a sibling",
+                        " worktree's install likely clobbered the shared library).",
+                        " Reinstall this worktree before trusting the oracle."),
+                 have, want))
+  }
+  if (!any(grepl("majorityPlusConsensusCpp", deparse(body(ConsTree::MajorityPlus))))) {
+    stop("[self-guard] MajorityPlus is not on the C++ path -- installed build",
+         " predates the port.")
+  }
+  cat(sprintf("[self-guard] ConsTree %s, MajorityPlus on C++ path: OK\n", have))
+})
+# ---------------------------------------------------------------------------
+
 source("C:/Users/pjjg18/GitHub/Consensus/dev/oracle/oracle.R")
 
 cmp <- function(mine, fact, labels) {

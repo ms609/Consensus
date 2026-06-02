@@ -14,10 +14,31 @@ args <- commandArgs(trailingOnly = FALSE)
 fileArg <- sub("^--file=", "", grep("^--file=", args, value = TRUE))
 scriptDir <- if (length(fileArg)) dirname(normalizePath(fileArg)) else getwd()
 pkgRoot <- normalizePath(file.path(scriptDir, "..", ".."))
-agentLib <- file.path(pkgRoot, ".agent-cons")
-if (dir.exists(agentLib)) .libPaths(c(agentLib, .libPaths()))
+# The shared validation library, same one check-oracle.R uses.  NB: this is a
+# SINGLE lib shared across worktrees -- a sibling worktree's install can clobber
+# it, so the version self-guard below is load-bearing.  (Resolving it relative
+# to pkgRoot would break: the build is installed into the main repo's
+# .agent-cons, not the worktree's.)
+agentLib <- "C:/Users/pjjg18/GitHub/Consensus/.agent-cons"
+if (!dir.exists(agentLib)) {
+  stop("Validation library not found: ", agentLib,
+       "\n  Install first:  R CMD INSTALL --no-multiarch --library=\"", agentLib,
+       "\" \"", pkgRoot, "\"")
+}
+.libPaths(c(agentLib, .libPaths()))
 
 suppressMessages(library(ConsTree))
+# Self-guard: installed build must match THIS worktree's source version, else a
+# sibling worktree clobbered the shared lib and the timings would be a lie.
+local({
+  want <- read.dcf(file.path(pkgRoot, "DESCRIPTION"), fields = "Version")[1, 1]
+  have <- as.character(utils::packageVersion("ConsTree"))
+  if (have != want) {
+    stop(sprintf(paste0("Installed ConsTree %s != this worktree's %s -- .agent-cons",
+                        " holds a stale/foreign build; reinstall before profiling."),
+                 have, want))
+  }
+})
 source(file.path(scriptDir, "bench-common.R"))
 
 rest <- commandArgs(trailingOnly = TRUE)
