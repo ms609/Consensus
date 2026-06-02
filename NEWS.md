@@ -1,9 +1,19 @@
-# ConsTree 0.0.0.9007 (development)
+# ConsTree 0.0.0.9008 (development)
 
 **Performance overhaul (in progress).** Reimplementing each consensus method
 with its fastest available algorithm, then profiling and optimising (harness in
 `dev/profiling/`). Landed so far:
 
+- `Adams()` now uses a C++ implementation of the asymptotically efficient
+  O(kn log n) centroid-path algorithm of Jansson, Li & Sung (2017) (their
+  FACT toolkit, used with permission), replacing the previous pure-R recursion
+  and per-level Newick round-trip. The shared "spine" of the consensus (the
+  leaves lying under the heavy child of every input tree's root) is expanded
+  iteratively down the trees' centroid paths in unison, recursing only on the
+  smaller off-spine blocks. The Adams consensus tree is unique, so the output is
+  identical to the classical definition (validated clade-for-clade against the
+  slow FACT reference); it is orders of magnitude faster (e.g. 50 trees on 200
+  leaves: ~0.9 s to ~0.02 s).
 - `Loose()` now uses a C++ port of the asymptotically efficient
   `looseConsensusFast` algorithm of Jansson, Shen & Sung (2016) (their FACT
   toolkit, used with permission), replacing the previous R pairwise

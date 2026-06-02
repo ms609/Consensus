@@ -64,6 +64,54 @@ for (dn in names(datasets)) {
               mark(setequal(cm, cf))))
 }
 
+# Adams at scale.  The small datasets above barely exercise the centroid-path
+# iteration of the JLS2017 algorithm; these larger and more skewed inputs do.
+# Yule-style random rooted trees (independent + perturbed) at n = 50, 137, and
+# caterpillars (a single long spine -- the algorithm's best case and the slow
+# recursion's worst case).  Adams is unique, so each must be clade-exact vs the
+# slow fact.exe (rule 512, rooted = 1).
+catTree <- function(labs) {
+  nwk <- labs[length(labs)]
+  for (i in (length(labs) - 1L):1L) nwk <- paste0("(", labs[[i]], ",", nwk, ")")
+  ape::read.tree(text = paste0(nwk, ";"))
+}
+cat("\n== Adams at scale (rooted=1, clade comparison) ==\n")
+adamsBig <- list()
+set.seed(50L)
+labs50 <- paste0("t", seq_len(50L))
+adamsBig[["indep   n50  k20"]] <- structure(
+  lapply(1:20, function(i) RandomTree(labs50, root = TRUE)), class = "multiPhylo")
+base50 <- RandomTree(labs50, root = TRUE)
+adamsBig[["perturb n50  k20"]] <- structure(lapply(1:20, function(i) {
+  tr <- base50
+  for (s in 1:3) {
+    ij <- sample.int(50L, 2L)
+    tr[["tip.label"]][ij] <- tr[["tip.label"]][rev(ij)]
+  }
+  tr
+}), class = "multiPhylo")
+set.seed(137L)
+labs137 <- paste0("t", seq_len(137L))
+adamsBig[["indep   n137 k10"]] <- structure(
+  lapply(1:10, function(i) RandomTree(labs137, root = TRUE)), class = "multiPhylo")
+set.seed(7L)
+labs40 <- paste0("t", seq_len(40L))
+cat1 <- catTree(labs40)
+adamsBig[["caterpillar identical n40 k4"]] <-
+  structure(list(cat1, cat1, cat1, cat1), class = "multiPhylo")
+adamsBig[["caterpillar distinct  n40 k4"]] <- structure(
+  list(cat1, catTree(sample(labs40)), catTree(sample(labs40)),
+       catTree(sample(labs40))), class = "multiPhylo")
+for (dn in names(adamsBig)) {
+  trees <- adamsBig[[dn]]
+  mine <- Adams(trees)
+  fact <- FactConsensus(trees, "adams", rooted = 1L)
+  cm <- CladeSet(mine)
+  cf <- CladeSet(fact)
+  cat(sprintf("  %-26s mine=%3d fact=%3d  %s\n", dn, length(cm), length(cf),
+              mark(setequal(cm, cf))))
+}
+
 # Multi-word bitset path (n > 60: BUCKET_SIZE = 60, so LEN > 1 -- the word-index
 # arithmetic (c-1)/60, %60 and the LEN-length OR-up/compare loops).  The datasets
 # above all have LEN = 1, so the multi-word packing needs its own check.

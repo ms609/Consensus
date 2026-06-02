@@ -3,8 +3,10 @@
 # tree, so it is not built by selecting pooled splits.  Instead it follows
 # Adams' (1972) recursive definition: partition the current taxon set by the
 # top-level (root-children) grouping shared across every input tree, then recurse
-# within each block.  This mirrors FACT's classical `adamsRecursionSlow`; the
-# O(kn log n) variant is deferred.
+# within each block.  The heavy lifting is done in C++ (src/cons_adams.cpp) by the
+# O(kn log n) centroid-path algorithm of Jansson, Li & Sung (2017); this wrapper
+# only marshals each tree (on its OWN root) to integer-coded preorder edges and
+# relabels the integer-labelled Newick it returns.
 
 #' Adams consensus tree
 #'
@@ -26,10 +28,15 @@
 #' root; root the trees as you intend before calling `Adams()`.
 #'
 #' @details
-#' This implementation follows Adams' original recursive definition, as ported
-#' from the FACT toolkit of Jansson and colleagues (used with permission); their
-#' asymptotically faster \eqn{O(kn \log n)} algorithm
-#' \insertCite{JanssonLiSung2017}{ConsTree} is not employed here.
+#' This implementation employs the asymptotically efficient \eqn{O(kn \log n)}
+#' algorithm of \insertCite{JanssonLiSung2017}{ConsTree} (their
+#' `New_Adams_consensus_k`, from the FACT toolkit of Jansson and colleagues, used
+#' with permission), realised in C++.  Rather than recomputing Adams' partition
+#' from scratch at every recursion level, it follows a centroid path through each
+#' input tree in unison, expanding the shared "spine" of the consensus
+#' iteratively and recursing only on the off-spine blocks (each at most half the
+#' leaves).  The Adams consensus tree is unique, so the result is identical to the
+#' classical recursive definition; only the running time differs.
 #'
 #' @inheritParams Strict
 #'
@@ -67,75 +74,15 @@ Adams <- function(trees) {
   if (n < 3L) {
     return(trees[[1]])
   }
-  # Relabel every tree with integer codes 1..n in a shared order, so that the
-  # recursion can build a Newick string safely (free of label-escaping issues).
-  treesInt <- lapply(trees, function(tr) {
-    tr <- RenumberTips(tr, labels)
-    tr[["tip.label"]] <- as.character(seq_len(n))
-    Preorder(tr)
+  # Marshal each tree on its OWN root (Adams is rooted; do not re-root at taxon 1
+  # as the split methods do).  RenumberTips aligns ape tip i with labels[i] in
+  # every tree, so the integer labels the C++ returns map straight back.
+  edgeList <- lapply(trees, function(tr) {
+    Preorder(RenumberTips(tr, labels))[["edge"]]
   })
-  nwk <- paste0(.AdamsNewick(as.character(seq_len(n)), treesInt), ";")
+  nwk <- paste0(adamsConsensusCpp(edgeList, n), ";")
   tree <- read.tree(text = nwk)
   tree[["tip.label"]] <- labels[as.integer(tree[["tip.label"]])]
-  # Return:
+  # Return: rooted by construction -- do not re-root.
   tree
 }
-
-# Recursively build the Newick string (without trailing ";") of the Adams
-# consensus on the integer-coded leaf set `taxa`, across the relabelled `trees`.
-.AdamsNewick <- function(taxa, trees) {
-  m <- length(taxa)
-  if (m == 1L) {
-    return(taxa)
-  }
-  if (m == 2L) {
-    return(paste0("(", taxa[[1]], ",", taxa[[2]], ")"))
-  }
-  blocks <- .AdamsPartition(taxa, trees)
-  # nocov start
-  # Unreachable for valid input: within any single tree the kept taxa fall under
-  # >= 2 root-children, so the cross-tree signature always yields >= 2 blocks.
-  # Retained as a defensive guard (a degenerate star node).
-  if (length(blocks) < 2L) {
-    return(paste0("(", paste(taxa, collapse = ","), ")"))
-  }
-  # nocov end
-  parts <- vapply(blocks, .AdamsNewick, character(1), trees = trees)
-  # Return:
-  paste0("(", paste(parts, collapse = ","), ")")
-}
-
-# Partition `taxa` into the blocks of the Adams product: leaves grouped so that
-# two share a block exactly when, in every tree, they descend from the same child
-# of the most recent common ancestor of `taxa`.
-#' @importFrom TreeTools DescendantEdges KeepTip NTip Preorder
-.AdamsPartition <- function(taxa, trees) {
-  sig <- vapply(trees, function(tr) {
-    kept <- Preorder(KeepTip(tr, taxa))
-    edge <- kept[["edge"]]
-    root <- edge[1L, 1L]            # Preorder lists root-emanating edges first
-    nt <- NTip(kept)
-    rootKids <- which(edge[, 1L] == root)
-    blockId <- integer(nt)
-    for (b in seq_along(rootKids)) {
-      below <- DescendantEdges(edge[, 1L], edge[, 2L], edge = rootKids[[b]])
-      childTips <- edge[below, 2L]
-      childTips <- childTips[childTips <= nt]
-      blockId[childTips] <- b
-    }
-    # Block of each requested taxon, in the order of `taxa`:
-    blockId[match(taxa, kept[["tip.label"]])]
-  }, integer(length(taxa)))
-  # nocov start
-  # Unreachable for valid input: `.AdamsPartition()` is only called with >= 3
-  # taxa (smaller sets short-circuit in `.AdamsNewick()`), so `vapply()` always
-  # returns a matrix.  Retained as a defensive guard for the single-taxon shape.
-  if (is.null(dim(sig))) {
-    sig <- matrix(sig, nrow = length(taxa))
-  }
-  # nocov end
-  signature <- apply(sig, 1L, paste, collapse = ",")
-  # Return:
-  unname(split(taxa, signature))
-}
-

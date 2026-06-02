@@ -80,7 +80,7 @@ TreeTools registers S3 methods but does not export `as.phylo`. Use
 | `Greedy()` | selection.R | FACT `greedy.cpp` | FACT-match up to tie-break (documented) |
 | `MajorityPlus()` | selection.R | FACT `majorityplus.cpp` | FACT-exact |
 | `Frequency()` | selection.R | FACT2/FDCT `freqdiff.h` | property-validated (`dev/oracle/freqdiff/`) |
-| `Adams()` | adams.R | FACT `adams.cpp` | FACT clade-oracle exact |
+| `Adams()` | adams.R (Rcpp) | Jansson, Li & Sung 2017 (`src/cons_adams.cpp`) | slow-Adams clade-oracle exact |
 | `Local(type=)` | local.R (Rcpp) | FACT2/FDCT `local_consensus.h` (Jansson, Rajaby & Sung 2018) | FDCT-oracle exact; **≤20 leaves**; see runtime caveat |
 | `RStar()` | rstar.R (Rcpp) | Jansson et al. 2016 | definition-exact (strong-cluster oracle); **≤200 leaves** (memory) |
 | `Quartet()` | Quartet.R (Rcpp) | Quartet pkg (ported) | brute-force oracle (n=5); ≤100 tips |
@@ -189,7 +189,9 @@ check available.
   NEXUS (integer labels, literal `translate` line), invokes `fact.exe` over stdin
   (`file rule rooted`), and parses integer-labelled Newick back to `phylo`.
   `FACT_RULE` maps method → algorithm bitmask:
-  `strict=1, majority=8, greedy=32, loose=128, majorityPlus=256, adams=1024`.
+  `strict=1, majority=8, greedy=32, loose=128, majorityPlus=256, adams=512`
+  (the *slow*, classical Adams; the fast bit `1024` mis-prints small trees, so it
+  is not used as an oracle).
 - `dev/oracle/check-oracle.R` — cross-validation driver
   (`Rscript.exe dev/oracle/check-oracle.R`). Per-method harnesses also live under
   `dev/oracle/{freqdiff,local,rstar}/`.
