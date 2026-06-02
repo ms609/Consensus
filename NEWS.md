@@ -1,9 +1,17 @@
-# ConsTree 0.0.0.9006 (development)
+# ConsTree 0.0.0.9007 (development)
 
 **Performance overhaul (in progress).** Reimplementing each consensus method
 with its fastest available algorithm, then profiling and optimising (harness in
 `dev/profiling/`). Landed so far:
 
+- `Loose()` now uses a C++ port of the asymptotically efficient
+  `looseConsensusFast` algorithm of Jansson, Shen & Sung (2016) (their FACT
+  toolkit, used with permission), replacing the previous R pairwise
+  compatibility matrix. The input trees are merged into a one-way compatible
+  tree by repeated linear-time consecutive-range queries, then the clusters
+  compatible with every input are retained; the output is validated to match
+  the FACT reference exactly (the loose consensus is unique, so there is no
+  tie-break ambiguity).
 - `Greedy()` now uses a C++ port of the asymptotically efficient
   `greedyConsensusFast` algorithm of Jansson, Shen & Sung (2016) (their FACT
   toolkit, used with permission), replacing the previous R pairwise
