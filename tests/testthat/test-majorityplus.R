@@ -82,6 +82,38 @@ test_that("MajorityPlus can keep a split the majority-rule consensus omits", {
   expect_false(s12 %in% mSplits)
 })
 
+test_that("MajorityPlus handles larger perturbed input (path-query at scale)", {
+  # A base topology perturbed by random tip swaps produces clusters whose
+  # boundaries fall on both sides of B's leaf order, so the merge exercises BOTH
+  # arms of the C++ left-right path-query compatibility test -- not just the
+  # left-deeper arm the tiny fixtures above happen to hit.  (The dev oracle
+  # checks these inputs against fact.exe at n = 80/137; here we pin validity and
+  # the lattice relation at a size the small fixtures never reach.)
+  perturbed <- function(n, k, seed, nSwap = 3L) {
+    set.seed(seed)
+    labs <- paste0("t", seq_len(n))
+    base <- TreeTools::RootTree(TreeTools::RandomTree(labs, root = TRUE), labs[[1]])
+    swap <- function(tr) {
+      for (s in seq_len(nSwap)) {
+        ij <- sample.int(n, 2L)
+        tr[["tip.label"]][ij] <- tr[["tip.label"]][rev(ij)]
+      }
+      TreeTools::RootTree(tr, labs[[1]])
+    }
+    structure(c(list(base), lapply(seq_len(k - 1L), function(i) swap(base))),
+              class = "multiPhylo")
+  }
+  for (n in c(8L, 20L)) {
+    trees <- perturbed(n, 15L, n + 7L)
+    labels <- TreeTools::TipLabels(trees[[1]])
+    mp <- MajorityPlus(trees)
+    expect_s3_class(mp, "phylo")
+    expect_setequal(TreeTools::TipLabels(mp), labels)
+    # Every majority split survives majority-rule (+) (the lattice relation).
+    expect_true(all(splitSet(Majority(trees), labels) %in% splitSet(mp, labels)))
+  }
+})
+
 test_that("MajorityPlus returns a valid tree on conflicting input", {
   # Mutually incompatible equal-frequency splits all sit at the displayed ==
   # contradicted boundary, so none is retained: the result is the (valid) star.

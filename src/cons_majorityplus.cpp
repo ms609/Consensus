@@ -393,9 +393,14 @@ Tree majorityPlusMerge(Tree A, Tree B) {
     // would be the wrong size, risking out-of-bounds access downstream -- bail
     // cleanly instead.
     if (cnt2 != ret.cnt) {
+      // Unreachable on valid input: the BEFORE/AFTER reconstruction always
+      // yields exactly ret.cnt nodes by construction.  Defensive guard only,
+      // so excluded from coverage.
+      // # nocov start
       Rcpp::stop("cons_majorityplus: merge reconstruction produced " +
                  std::to_string(cnt2) + " nodes, expected " +
                  std::to_string(ret.cnt) + " (malformed input tree)");
+      // # nocov end
     }
   } else {
     ret = B;
