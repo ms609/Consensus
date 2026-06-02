@@ -126,10 +126,13 @@
 #' excluded from the loose consensus, whereas a split occurring in a single tree
 #' is retained if no other tree contradicts it.
 #'
-#' The loose consensus is one of the methods implemented in the FACT toolkit of
-#' Jansson and colleagues \insertCite{JanssonShenSung2016}{ConsTree}, whose
-#' asymptotically efficient consensus algorithms this package draws on; here the
-#' tree is computed directly from the pooled splits and their compatibilities.
+#' This implementation ports the asymptotically efficient `looseConsensusFast`
+#' algorithm of \insertCite{JanssonShenSung2016}{ConsTree} from their FACT
+#' toolkit (used with permission): the input trees are merged into a one-way
+#' compatible tree by repeated linear-time consecutive-range queries, the
+#' clusters that are compatible with every input are then marked, and the rest
+#' contracted away -- avoiding the explicit pairwise compatibility matrix used
+#' previously.
 #'
 #' @inheritParams Strict
 #'
@@ -143,15 +146,19 @@
 #' @seealso Closely related: [`Strict()`], [`Majority()`], [`Greedy()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
+#' @importFrom ape read.tree
 #' @export
 Loose <- function(trees) {
-  prep <- .PoolSplits(trees)
+  prep <- .PrepareTrees(trees)
   if (!is.null(prep[["trivial"]])) {
     return(prep[["trivial"]])
   }
-  keep <- apply(.CompatibilityMatrix(prep), 1, all)
+  labels <- prep[["labels"]]
+  nwk <- looseConsensusCpp(.FactEdges(prep[["trees"]], labels), length(labels))
+  tree <- read.tree(text = paste0(nwk, ";"))
+  tree[["tip.label"]] <- labels[as.integer(tree[["tip.label"]])]
   # Return:
-  .SelectedConsensus(keep, prep)
+  .RootLikeFirst(tree, prep[["firstTree"]])
 }
 
 #' Greedy (extended majority-rule) consensus tree

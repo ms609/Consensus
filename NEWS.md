@@ -12,6 +12,14 @@ with its fastest available algorithm, then profiling and optimising (harness in
   Majority-rule (+) is a deterministic count rule (a clade is kept when displayed
   by strictly more trees than contradict it, with no frequency tie-break), so the
   output is the FACT reference exactly, verified even at n > 60.
+- `Loose()` now uses a C++ port of the asymptotically efficient
+  `looseConsensusFast` algorithm of Jansson, Shen & Sung (2016) (their FACT
+  toolkit, used with permission), replacing the previous R pairwise
+  compatibility matrix. The input trees are merged into a one-way compatible
+  tree by repeated linear-time consecutive-range queries, then the clusters
+  compatible with every input are retained; the output is validated to match
+  the FACT reference exactly (the loose consensus is unique, so there is no
+  tie-break ambiguity).
 - `Greedy()` now uses a C++ port of the asymptotically efficient
   `greedyConsensusFast` algorithm of Jansson, Shen & Sung (2016) (their FACT
   toolkit, used with permission), replacing the previous R pairwise
