@@ -1,4 +1,4 @@
-# ConsTree 0.0.0.9008 (development)
+# ConsTree 0.0.0.9007 (development)
 
 **Performance overhaul (in progress).** Reimplementing each consensus method
 with its fastest available algorithm, then profiling and optimising (harness in
@@ -14,6 +14,14 @@ with its fastest available algorithm, then profiling and optimising (harness in
   identical to the classical definition (validated clade-for-clade against the
   slow FACT reference); it is orders of magnitude faster (e.g. 50 trees on 200
   leaves: ~0.9 s to ~0.02 s).
+- `MajorityPlus()` now uses a C++ port of the optimal O(kn)
+  `majorityPlusConsensus` algorithm of Jansson, Shen & Sung (2016) (their FACT
+  toolkit, used with permission), replacing the previous R pairwise
+  compatibility matrix. It is typically two to three orders of magnitude faster
+  and clears inputs that previously timed out (e.g. 50 trees on 100–200 leaves).
+  Majority-rule (+) is a deterministic count rule (a clade is kept when displayed
+  by strictly more trees than contradict it, with no frequency tie-break), so the
+  output is the FACT reference exactly, verified even at n > 60.
 - `Loose()` now uses a C++ port of the asymptotically efficient
   `looseConsensusFast` algorithm of Jansson, Shen & Sung (2016) (their FACT
   toolkit, used with permission), replacing the previous R pairwise
@@ -31,6 +39,14 @@ with its fastest available algorithm, then profiling and optimising (harness in
   incompatible splits may now be resolved in a different but equally valid order.
 - Added a reentrant, allocation-safe C++ tree primitive (`src/fact_tree.*`)
   shared by the fast split-selection methods.
+- `Frequency()` now uses a C++ port of the near-linear _O_(_kn_ log _n_)
+  frequency-difference algorithm of Jansson, Sung, Tabatabaee & Yang (2024,
+  STACS; their FDCT reference implementation, used with permission), replacing
+  the previous R _O_(_s_²) per-split frequency comparison. The old approach
+  exceeded a one-minute budget beyond ~100 leaves on 50 trees, where the port
+  returns in well under a second. The port is boost-free (the upstream
+  `dynamic_bitset` is dead code on this near-linear path) and its output is
+  validated to match the FDCT `freqdiff` reference exactly.
 
 First public release: a consensus-tree toolkit built on
 [TreeTools](https://ms609.github.io/TreeTools/).

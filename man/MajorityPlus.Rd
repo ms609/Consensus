@@ -29,9 +29,13 @@ majority-rule consensus (\code{\link[=Majority]{Majority()}}) and may add furthe
 supported more often than they are contradicted.  The retained splits are
 necessarily mutually compatible, so they define a valid tree.
 
-\insertCite{JanssonShenSung2016;textual}{ConsTree} give an optimal
-\eqn{O(kn)} algorithm for this consensus, implemented in their FACT toolkit;
-here the same tree is computed directly from the pooled splits.
+This implementation ports the optimal \eqn{O(kn)} algorithm of
+\insertCite{JanssonShenSung2016;textual}{ConsTree} from their FACT toolkit
+(used with permission): each input tree is processed in a single sweep, the
+candidate clusters are accumulated by an incremental merge, and a clade is
+kept when it is displayed by strictly more trees than contradict it -- a
+deterministic count rule (no frequency tie-break), so the result is exact.
+This replaces the previous R pairwise compatibility matrix.
 }
 \examples{
 trees <- ape::as.phylo(0:5, 8)
