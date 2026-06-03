@@ -58,8 +58,12 @@
 #'
 #' @inheritParams Strict
 #'
-#' @return `RStar()` returns the consensus tree, an object of class `phylo`,
-#' rooted by construction.
+#' @return `RStar()` returns the consensus tree, an object of class `phylo`.
+#' It is rooted by construction, but when the resolved triplets leave the deepest
+#' divergence unresolved the root is a polytomy (in the limit, a star).  Such a
+#' tree has a root node of degree greater than two, which `ape::is.rooted()`
+#' reports as unrooted; re-root or resolve downstream if a strictly binary root
+#' is required.  All input trees must share the same set of (unique) tip labels.
 #'
 #' @examples
 #' # Five trees whose majority signal recovers the species tree (((a,b),c),d):
@@ -96,6 +100,9 @@ RStar <- function(trees) {
   }
 
   labels <- TipLabels(trees[[1L]])
+  if (anyDuplicated(labels)) {
+    stop("all tip labels must be unique")
+  }
   if (any(vapply(trees[-1L], function(tr)
     !setequal(TipLabels(tr), labels), logical(1)))) {
     stop("all trees must have the same tip labels")

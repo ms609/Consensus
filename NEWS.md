@@ -35,7 +35,10 @@ with its fastest available algorithm, then profiling and optimising (harness in
   single-linkage (Apresjan) construction of Jansson, Sung, Vu & Yiu (2016). The
   R\* tree is unchanged — verified clade-for-clade against the previous
   implementation up to 200 leaves — and large inputs are now bounded by running
-  time rather than a memory wall.
+  time rather than a memory wall. `RStar()` now also rejects duplicated tip
+  labels and trees on differing leaf sets (which would otherwise be scored
+  silently against mismatched taxa), and the internal LCA self-check now covers
+  every input tree rather than only the first.
 - `Frequency()` now uses a C++ port of the near-linear _O_(_kn_ log _n_)
   frequency-difference algorithm of Jansson, Sung, Tabatabaee & Yang (2024,
   STACS; their FDCT reference implementation, used with permission), replacing

@@ -217,25 +217,27 @@ std::string rStarConsensus(Rcpp::List edgeList, int nTip) {
   #define RSTAR_DEP(t, a, b) (D[(((size_t)(a) * n + (b)) * k + (t))])
 
   // Defensive: on small inputs, cross-check the O(1) LCA against a direct
-  // ancestor walk (the new primitive's only failure mode).  Cheap; exercised by
-  // every small test/oracle case.
-  if (k >= 1 && n <= 50) {
-    Rcpp::IntegerMatrix edge0 = edgeList[0];
-    int nNode0 = 0;
-    for (int r = 0; r < edge0.nrow(); ++r) {
-      if (edge0(r, 0) > nNode0) nNode0 = edge0(r, 0);
-      if (edge0(r, 1) > nNode0) nNode0 = edge0(r, 1);
+  // ancestor walk (the new primitive's only failure mode) for EVERY tree, not
+  // just tree 0.  Cheap at n <= 50; exercised by every small test/oracle case.
+  if (n <= 50) {
+    for (int t = 0; t < k; ++t) {
+      Rcpp::IntegerMatrix edgeT = edgeList[t];
+      int nNodeT = 0;
+      for (int r = 0; r < edgeT.nrow(); ++r) {
+        if (edgeT(r, 0) > nNodeT) nNodeT = edgeT(r, 0);
+        if (edgeT(r, 1) > nNodeT) nNodeT = edgeT(r, 1);
+      }
+      std::vector<int> par, dpv;
+      buildParentDepth(edgeT, nNodeT, par, dpv);
+      for (int a = 0; a < n; ++a)
+        for (int b = a + 1; b < n; ++b)
+          if (lcaDepthWalk(a + 1, b + 1, par, dpv) != RSTAR_DEP(t, a, b)) {
+            // # nocov start
+            Rcpp::stop("rStarConsensus: internal LCA self-check failed "
+                       "(tree = %d, a = %d, b = %d).", t, a, b);
+            // # nocov end
+          }
     }
-    std::vector<int> par, dpv;
-    buildParentDepth(edge0, nNode0, par, dpv);
-    for (int a = 0; a < n; ++a)
-      for (int b = a + 1; b < n; ++b)
-        if (lcaDepthWalk(a + 1, b + 1, par, dpv) != RSTAR_DEP(0, a, b)) {
-          // # nocov start
-          Rcpp::stop("rStarConsensus: internal LCA self-check failed "
-                     "(a = %d, b = %d).", a, b);
-          // # nocov end
-        }
   }
 
   // ---- Stage 1: tally -> similarity s(a,b) = #{x : ab|x in R_maj} ------------

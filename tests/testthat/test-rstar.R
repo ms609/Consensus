@@ -226,6 +226,16 @@ test_that("RStar errors on mismatched tip labels", {
   t1 <- ape::read.tree(text = "(((a,b),c),d);")
   t2 <- ape::read.tree(text = "(((a,b),c),X);")
   expect_error(RStar(list(t1, t2)), "tip label")
+  # A subset leaf set is the dangerous SILENT case (its absent ids would alias
+  # internal nodes in the C++ tally); it must also fail loud.
+  t3 <- ape::read.tree(text = "((a,b),c);")
+  expect_error(RStar(list(t1, t3)), "tip label")
+})
+
+test_that("RStar rejects duplicated tip labels", {
+  # setequal() ignores multiplicity, so duplicates need their own guard.
+  dup <- ape::read.tree(text = "(((a,a),b),c);")
+  expect_error(RStar(list(dup, dup)), "unique")
 })
 
 test_that("RStar resolves an agreed 3-leaf triple", {

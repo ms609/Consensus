@@ -11,8 +11,12 @@ RStar(trees)
 share the same leaf labels.}
 }
 \value{
-\code{RStar()} returns the consensus tree, an object of class \code{phylo},
-rooted by construction.
+\code{RStar()} returns the consensus tree, an object of class \code{phylo}.
+It is rooted by construction, but when the resolved triplets leave the deepest
+divergence unresolved the root is a polytomy (in the limit, a star).  Such a
+tree has a root node of degree greater than two, which \code{ape::is.rooted()}
+reports as unrooted; re-root or resolve downstream if a strictly binary root
+is required.  All input trees must share the same set of (unique) tip labels.
 }
 \description{
 \code{RStar()} returns the R* consensus \insertCite{Degnan2009}{ConsTree} of a set
