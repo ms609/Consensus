@@ -50,7 +50,7 @@
 #' @seealso Closely related: [`Strict()`], [`Majority()`], [`Adams()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
-#' @importFrom ape read.tree write.tree
+#' @importFrom ape read.tree
 #' @importFrom TreeTools NTip Preorder RenumberTips TipLabels
 #' @export
 Local <- function(trees, type = c("rooted", "induced")) {
