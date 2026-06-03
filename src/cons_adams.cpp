@@ -173,13 +173,16 @@ struct Nub {
 Nub buildNub(const InTree& g, const vector<int>& leaves) {
   int m = static_cast<int>(leaves.size());
   Nub nub;
-  if (m == 1) {
-    nub.cnt = 1;
-    nub.root = 0;
-    nub.ch.assign(1, vector<int>());
-    nub.leafTaxon.assign(1, leaves[0]);
-    nub.cntLeaves.assign(1, 1);
-    return nub;
+  if (m < 2) {
+    // # nocov start
+    // Unreachable: buildNub's sole caller (adamsRecurse) returns at its own
+    // m==1 / m==2 base cases *before* calling buildNub, and always passes the
+    // full active leaf set (size m >= 3).  Asserted rather than handled so a
+    // future caller that breaks this invariant fails loudly instead of silently.
+    // (The general path below would in fact build a correct single-leaf nub, so
+    // nothing is lost.)
+    Rcpp::stop("cons_adams: buildNub called with fewer than 2 leaves");
+    // # nocov end
   }
   // Auxiliary-tree node set: the leaf nodes plus the LCA of each consecutive pair.
   vector<int> nodes;
