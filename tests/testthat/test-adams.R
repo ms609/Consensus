@@ -173,3 +173,24 @@ test_that("Adams resolves three leaves", {
                 ape::read.tree(text = "((a, c), b);"))
   expect_length(cladeSet(Adams(disagree)), 0L)
 })
+
+test_that("Adams suppresses a degree-1 spine node (deepest single-block step)", {
+  # A rare n=7/k=2 configuration whose deepest spine step resolves to a single
+  # block with no spine-bottom leaf remaining: this exercises the degree-1
+  # suppression branch of the chain assembly (pass the lone child through rather
+  # than wrap it in a one-child internal node).
+  trees <- structure(list(
+    ape::read.tree(text = "((t1, t6), (((t2, t5), (t3, t4)), t7));"),
+    ape::read.tree(text = "((((t1, (t6, t7)), (t3, t4)), t5), t2);")
+  ), class = "multiPhylo")
+  ad <- Adams(trees)
+  expect_false(any(tabulate(ad[["edge"]][, 1L]) == 1L))
+  expect_setequal(cladeSet(ad), refAdamsCladeSet(trees))
+})
+
+test_that("Adams requires a common leaf set", {
+  t1 <- ape::read.tree(text = "((a, b), c);")
+  t2 <- ape::read.tree(text = "((a, b), d);")  # 'd' replaces 'c'
+  expect_error(Adams(structure(list(t1, t2), class = "multiPhylo")),
+               "same leaves")
+})

@@ -12,7 +12,9 @@ share the same leaf labels.}
 }
 \value{
 \code{Adams()} returns the consensus tree, an object of class \code{phylo},
-rooted by construction.
+rooted by construction.  (A tree whose root is multifurcating reports
+\code{ape::is.rooted() == FALSE}, which tests only for a two-child root; the Adams
+tree is rooted regardless.)
 }
 \description{
 \code{Adams()} returns the Adams consensus \insertCite{Adams1972}{ConsTree}, a

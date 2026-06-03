@@ -17,7 +17,20 @@ clade-exact at scale (counts 7/11/27/38/12 unchanged, "All oracle comparisons
 MATCH"); independent brute-force 0/320 binary + 0/350 multifurcating + 10/10
 adversarial; timing 0.02 s at n=200/k=50 (no regression vs the prior C++ build),
 clean scaling to n=1600. The `O(kn log n)` claim in NEWS/`@details`/header is now
-accurate, so no documentation change was required. Minors F2–F5 remain open.
+accurate, so no documentation change was required.
+
+Minors F2–F5 were then folded in:
+- **F2** — a reachability probe (guards temporarily `Rcpp::stop`, 16 042 fuzz
+  cases) showed `kids.size()==1` **is reachable and load-bearing** (degree-1
+  suppression at a deepest single-block step; e.g. the n=7/k=2 pair now in
+  `test-adams.R`), *not* "defensive only" as the comment claimed — corrected the
+  comment and added that regression. `kids.empty()` is genuinely unreachable and
+  is now wrapped in `// # nocov` with an `Rcpp::stop`, per house style.
+- **F3** — `R/adams.R` now validates a shared leaf set up front with a clear
+  message (was an opaque `RenumberTips` failure); covered by a new test.
+- **F4** — `@return` notes the `is.rooted()==FALSE` ape quirk on multifurcating
+  roots; `Adams.Rd` regenerated.
+- **F5** — version paper-trail: no code change (end state 9007 is correct).
 
 ## Verdict
 **Do not block on correctness — block the *claim*.** The implementation is

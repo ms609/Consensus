@@ -41,7 +41,9 @@
 #' @inheritParams Strict
 #'
 #' @return `Adams()` returns the consensus tree, an object of class `phylo`,
-#' rooted by construction.
+#' rooted by construction.  (A tree whose root is multifurcating reports
+#' `ape::is.rooted() == FALSE`, which tests only for a two-child root; the Adams
+#' tree is rooted regardless.)
 #'
 #' @examples
 #' # Two rooted trees that disagree only on the position of one leaf
@@ -71,6 +73,12 @@ Adams <- function(trees) {
   }
   labels <- TipLabels(trees[[1]])
   n <- length(labels)
+  # Adams is defined only for trees on a common leaf set; RenumberTips() below
+  # would otherwise fail with an opaque message, so check up front.
+  if (!all(vapply(trees[-1], function(tr) setequal(TipLabels(tr), labels),
+                  logical(1)))) {
+    stop("All `trees` must describe the same leaves.")
+  }
   if (n < 3L) {
     return(trees[[1]])
   }

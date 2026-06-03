@@ -496,17 +496,25 @@ int adamsRecurse(const vector<InTree>& trees,
       blockNode[b] = adamsRecurse(trees, blockLeaves[b], out, sc);
   }
 
-  // Assemble the spine as a nested chain (deepest step first).  Each step node
-  // has >= 2 children (its LCA has >= 2 child-blocks); the degree-1 guard is
-  // defensive only.
+  // Assemble the spine as a nested chain (deepest step first), threading `deeper`.
+  // Most step nodes have >= 2 children, but the deepest step can resolve to a
+  // single block when no spine-bottom leaf is left (remaining reached 0): that
+  // lone block is the whole subtree below, so its degree-1 node is suppressed and
+  // passed through.  Rare but reachable (see the n=7/k=2 regression in
+  // test-adams.R).  `kids` is never empty -- every spine step records a block.
   int deeper = (lastLeaf >= 0) ? out.addLeaf(lastLeaf) : -1;
   for (int s = static_cast<int>(stepBlocks.size()) - 1; s >= 0; --s) {
     vector<int> kids;
     for (int b : stepBlocks[s]) kids.push_back(blockNode[b]);
     if (deeper != -1) kids.push_back(deeper);
-    if (kids.empty()) continue;
+    if (kids.empty()) {
+      // # nocov start
+      // Unreachable: each spine step records >= 1 side block in stepBlocks[s].
+      Rcpp::stop("cons_adams: empty assembly step");
+      // # nocov end
+    }
     if (kids.size() == 1) {
-      deeper = kids[0];
+      deeper = kids[0];  // degree-1 suppression -- load-bearing, see above
     } else {
       int node = out.addInternal();
       for (int c : kids) out.link(node, c);
