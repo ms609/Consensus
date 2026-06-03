@@ -283,23 +283,18 @@ test_that("Frequency retains a clade with non-symmetric incompatibility", {
 })
 
 test_that("Frequency errors on mismatched tip labels", {
-  # Coverage gap 10 (F1 guard): mismatched taxa set triggers an error.
-  # Currently fails in RenumberTips.phylo ("Tree labels ... missing from
-  # `tipOrder`") before reaching C++.  Once the explicit taxa-set check in
-  # .PrepareTrees() lands (F1 fix), the error message will match "tip label";
-  # until then, any error is acceptable.
+  # Coverage gap 10 (F1 guard): .PrepareTrees() validates the taxa set and
+  # stops with a clear message before reaching C++.
   t1 <- ape::read.tree(text = "((a,b),(c,d));")
   t2 <- ape::read.tree(text = "((a,b),(c,e));")   # 'e' instead of 'd'
-  expect_error(Frequency(list(t1, t2)))
+  expect_error(Frequency(list(t1, t2)), "tip labels")
 })
 
-test_that("Frequency errors on NA entries in the tree list", {
-  # Coverage gap 11 (F4 guard): an NA in the list is forwarded to
-  # RenumberTips(), which has no method for a logical and throws.  Once the
-  # Filter(inherits(., "phylo"), ...) fix lands in .PrepareTrees(), NA will be
-  # silently dropped and the result should equal Frequency(list(t, t)).
+test_that("Frequency silently drops NA entries in the tree list", {
+  # Coverage gap 11 (F4 guard): Filter(inherits(., "phylo"), ...) in
+  # .PrepareTrees() silently removes NA and other non-phylo objects.
   t <- ape::read.tree(text = "((a,b),(c,d));")
-  expect_error(Frequency(list(t, NA, t)))
+  expect_equal(Frequency(list(t, NA, t)), Frequency(list(t, t)))
 })
 
 test_that("Frequency completes on large caterpillar inputs without stack overflow", {
