@@ -19,6 +19,8 @@ agentLib <- file.path(pkgRoot, ".agent-cons")
 if (dir.exists(agentLib)) .libPaths(c(agentLib, .libPaths()))
 
 suppressMessages(library(ConsTree))
+source(file.path(scriptDir, "..", "oracle", "build-identity.R"))
+assertConsTreeBuild(pkgRoot = pkgRoot)
 source(file.path(scriptDir, "bench-common.R"))
 
 stamp <- commandArgs(trailingOnly = TRUE)[1]

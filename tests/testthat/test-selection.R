@@ -65,7 +65,7 @@ test_that("A single tree, or fewer than four leaves, returns the input", {
 })
 
 test_that("Every selection method short-circuits a bare single tree", {
-  # A bare `phylo` (not a list) takes the `.PoolSplits()` single-tree fast path
+  # A bare `phylo` (not a list) triggers the `.PrepareTrees()` trivial-tree path
   # and is returned unchanged; exercised for the methods whose trivial branch is
   # otherwise untested.
   tree <- ape::as.phylo(1, 9)

@@ -50,3 +50,37 @@ Rscript.exe dev/profiling/compare.R baseline-2026-06-02.csv Greedy
   with the former code (the tally is still `O(kn^3)`); the practical win is the
   lifted cap (n = 300 ≈ 0.2 s, n = 500 ≈ 0.7 s at k = 10 — formerly an immediate
   error) and the far lower memory.
+
+## Stale-build footgun and the build-identity guard
+
+`R CMD INSTALL` copies `.R` sources and `DESCRIPTION` before compiling `src/`.
+When `make` finds stale `.o`/`.dll` artefacts (timestamps newer than sources, or
+a DLL lock that prevented the previous `INSTALL` from replacing the file), it
+prints "Nothing to be done for 'all'" and the compiled library is not updated —
+yet `INSTALL` still prints `* DONE`.  The result is a build where the R wrappers
+and version are current but the compiled code is old: the oracle and profiling
+scripts then silently validate the **wrong** implementation.
+
+`dev/oracle/build-identity.R` addresses this with three layers checked at the top
+of every `check-oracle.R`, `baseline.R`, and `compare.R` run:
+
+1. **Version** — `packageVersion("ConsTree")` must equal `DESCRIPTION`'s
+   `Version:` field.
+2. **Body** — each fast-path R wrapper must reference its C++ symbol
+   (e.g. `Greedy()` body must contain `greedyConsensusCpp`).  Catches a stale
+   R source or wrong checkout.
+3. **Idempotence** — `Method(t, t, t)` on a fixed 12-tip tree must return a
+   tree with the same split count as `t`.  Catches a stale DLL where (1) and
+   (2) both pass but the compiled algorithm is a stub or from a prior version.
+
+### Force a clean rebuild (Windows / PowerShell)
+
+```powershell
+# Clear stale objects if the DLL is still locked by a previous R session:
+Remove-Item src\*.o, src\*.dll -ErrorAction SilentlyContinue
+R.exe CMD INSTALL --preclean --library=.agent-cons .
+```
+
+`--preclean` deletes all `src/*.o` before compiling, ensuring a full recompile
+even when timestamps mislead `make`.  Do this whenever the guard aborts with a
+"Stale build" message or when you suspect the DLL was not updated.

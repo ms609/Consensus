@@ -27,17 +27,8 @@ if (!dir.exists(agentLib)) {
 .libPaths(c(agentLib, .libPaths()))
 
 suppressMessages(library(ConsTree))
-# Self-guard: installed build must match THIS worktree's source version, else a
-# sibling worktree clobbered the shared lib and the timings would be a lie.
-local({
-  want <- read.dcf(file.path(pkgRoot, "DESCRIPTION"), fields = "Version")[1, 1]
-  have <- as.character(utils::packageVersion("ConsTree"))
-  if (have != want) {
-    stop(sprintf(paste0("Installed ConsTree %s != this worktree's %s -- .agent-cons",
-                        " holds a stale/foreign build; reinstall before profiling."),
-                 have, want))
-  }
-})
+source(file.path(scriptDir, "..", "oracle", "build-identity.R"))
+assertConsTreeBuild(pkgRoot = pkgRoot)
 source(file.path(scriptDir, "bench-common.R"))
 
 rest <- commandArgs(trailingOnly = TRUE)
