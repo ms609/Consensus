@@ -1,16 +1,12 @@
-# Machinery shared by the split-selection consensus methods (`Loose()`,
-# `Greedy()`, `MajorityPlus()`).  Each pools the bipartitions ("splits") that
-# occur across the input trees, then retains a subset according to a
-# method-specific rule before rebuilding a tree.  Selection operates on the
-# distinct splits and their occurrence counts, exactly the substrate produced
-# by `TreeTools::Consensus()`; reconstruction and rooting reuse `TreeTools`,
-# keeping behaviour consistent with `Strict()` and `Majority()`.
+# Shared helpers and public entry points for the split-selection consensus
+# methods (`Loose()`, `Greedy()`, `MajorityPlus()`, `Frequency()`).  The
+# selection logic lives in C++ (src/); these helpers prepare the input
+# (`.PrepareTrees()`, `.FactEdges()`) and post-process the result
+# (`.RootLikeFirst()`).
 
 # Validate `trees`, drop NULLs, and short-circuit the degenerate cases (a bare
 # `phylo`, fewer than two trees, or fewer than four leaves) by returning a
-# `trivial` tree.  Shared by `.PoolSplits()` (the R split-selection pipeline) and
-# the C++ fast paths (e.g. `Greedy()`), which need the cleaned tree list and the
-# shared leaf labels.
+# `trivial` tree.  Used by all C++ fast-path methods via `.FactEdges()`.
 #' @importFrom TreeTools TipLabels
 .PrepareTrees <- function(trees) {
   if (inherits(trees, "phylo")) {
@@ -20,12 +16,16 @@
     stop("`trees` must be a list of trees or a `multiPhylo` object.")
   }
   trees <- c(trees)
-  trees <- trees[!vapply(trees, is.null, logical(1))]
+  trees <- Filter(function(x) inherits(x, "phylo"), trees)
   nTree <- length(trees)
   if (nTree < 2L) {
     return(list(trivial = if (nTree) trees[[1]] else NULL))
   }
   labels <- TipLabels(trees[[1]])
+  if (any(vapply(trees[-1], function(tr)
+    !setequal(TipLabels(tr), labels), logical(1)))) {
+    stop("all trees must have the same tip labels")
+  }
   if (length(labels) < 4L) {
     return(list(trivial = trees[[1]]))
   }
@@ -49,47 +49,10 @@
   })
 }
 
-# Pool the splits occurring across `trees`, returning their distinct values and
-# occurrence counts -- or, when no computation is required, a `trivial` tree.
-#' @importFrom TreeTools as.Splits
-.PoolSplits <- function(trees) {
-  prep <- .PrepareTrees(trees)
-  if (!is.null(prep[["trivial"]])) {
-    return(list(trivial = prep[["trivial"]]))
-  }
-  trees <- prep[["trees"]]
-  labels <- prep[["labels"]]
-  splitList <- lapply(trees, as.Splits, tipLabels = labels)
-  pooled <- do.call(c, splitList)
-  distinct <- unique(pooled)
-  distinctKeys <- as.character(distinct)
-  counts <- tabulate(match(as.character(pooled), distinctKeys),
-                     nbins = length(distinct))
-  # For each tree, the indices of the distinct splits it displays:
-  membership <- lapply(splitList,
-                       function(s) match(as.character(s), distinctKeys))
-  # Return:
-  list(trivial = NULL,
-       splits = distinct,
-       members = as.logical(distinct),
-       counts = counts,
-       membership = membership,
-       labels = labels,
-       nTree = prep[["nTree"]],
-       firstTree = trees[[1]])
-}
-
-# Pairwise compatibility matrix among the distinct splits in `prep`.
-#' @importFrom TreeTools CompatibleSplits
-.CompatibilityMatrix <- function(prep) {
-  # Return:
-  as.matrix(CompatibleSplits(prep[["splits"]], prep[["splits"]]))
-}
-
 # Root `tree` to match the first input tree, as `TreeTools::Consensus()` does:
 # place the root on the split that separates the first tree's root group from the
-# rest.  Factored out of `.SelectedConsensus()` so the C++ fast paths (`Greedy()`
-# and the Loose/MajorityPlus chips) reuse identical rooting.
+# rest.  Shared by all C++ fast paths (`Loose`, `Greedy`, `MajorityPlus`,
+# `Frequency`).
 #' @importFrom TreeTools DescendantEdges NTip Preorder RootTree
 .RootLikeFirst <- function(tree, firstTree) {
   first <- Preorder(firstTree)
@@ -98,18 +61,6 @@
   rootTips <- rootTips[rootTips <= NTip(first)]
   # Return:
   RootTree(tree, first[["tip.label"]][rootTips])
-}
-
-# Rebuild a tree from the splits selected by `keep` (a logical vector over
-# `prep$splits`), rooted to match the first input tree as `TreeTools::Consensus`
-# does.
-#' @importFrom ape as.phylo
-#' @importFrom TreeTools as.Splits
-.SelectedConsensus <- function(keep, prep) {
-  selected <- as.Splits(prep[["members"]][keep, , drop = FALSE],
-                        tipLabels = prep[["labels"]])
-  # Return:
-  .RootLikeFirst(as.phylo(selected), prep[["firstTree"]])
 }
 
 #' Loose consensus tree

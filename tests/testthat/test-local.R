@@ -167,3 +167,9 @@ test_that("Local rooted and induced produce different clades on a conflict case"
   expect_false(setequal(cr, ci),
     info = "Rooted and induced clades should differ on this input")
 })
+
+test_that("Local errors on mismatched tip labels", {
+  t1 <- ape::read.tree(text = "((a,b),(c,d));")
+  t2 <- ape::read.tree(text = "((a,b),(c,X));")
+  expect_error(Local(list(t1, t2)), "tip label")
+})

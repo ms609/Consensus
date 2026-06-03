@@ -50,7 +50,7 @@
 #' @seealso Closely related: [`Strict()`], [`Majority()`], [`Adams()`].
 #' @family consensus methods
 #' @references \insertAllCited{}
-#' @importFrom ape read.tree write.tree
+#' @importFrom ape read.tree
 #' @importFrom TreeTools NTip Preorder RenumberTips TipLabels
 #' @export
 Local <- function(trees, type = c("rooted", "induced")) {
@@ -69,6 +69,10 @@ Local <- function(trees, type = c("rooted", "induced")) {
   if (nTree < 2L) return(if (nTree) trees[[1L]] else NULL)
 
   labels <- TipLabels(trees[[1L]])
+  if (any(vapply(trees[-1L], function(tr)
+    !setequal(TipLabels(tr), labels), logical(1)))) {
+    stop("all trees must have the same tip labels")
+  }
   n      <- length(labels)
 
   if (n < 3L) return(trees[[1L]])

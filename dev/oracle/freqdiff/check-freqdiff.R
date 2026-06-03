@@ -123,9 +123,15 @@ for (dn in names(datasets)) {
     # and check if any have the same count.
     all_splits <- union(mine_splits, ref_splits)
     pool <- tryCatch({
-      sp_obj <- ConsTree:::.PoolSplits(trees)
-      list(splits = sp_obj$splits, counts = sp_obj$counts,
-           members = sp_obj$members, labels = sp_obj$labels)
+      pool_labels <- TipLabels(trees[[1]])
+      splitList_p  <- lapply(trees, as.Splits, tipLabels = pool_labels)
+      pooled_p     <- do.call(c, splitList_p)
+      distinct_p   <- unique(pooled_p)
+      keys_p       <- as.character(distinct_p)
+      counts_p     <- tabulate(match(as.character(pooled_p), keys_p),
+                               nbins = length(distinct_p))
+      list(splits = distinct_p, counts = counts_p,
+           members = as.logical(distinct_p), labels = pool_labels)
     }, error = function(e) NULL)
 
     if (!is.null(pool)) {

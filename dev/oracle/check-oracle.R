@@ -1,54 +1,15 @@
 # Cross-validate the R consensus methods against the reference FACT binary.
 # Run with: Rscript dev/oracle/check-oracle.R
-# Resolve everything relative to THIS script so the oracle uses this worktree's
-# OWN build, never a sibling worktree's.  Each worktree installs into its own
-# .agent-cons (gitignored by the rooted /.agent* rule); worktrees never share a
-# library, which removes the clobber/self-mask hazard at the source.  Install:
-#   R CMD INSTALL --no-multiarch --library=<worktree>/.agent-cons <worktree>
-.cohArgs <- commandArgs(FALSE)
-.cohFile <- sub("^--file=", "", grep("^--file=", .cohArgs, value = TRUE))
-.cohDir  <- if (length(.cohFile)) dirname(normalizePath(.cohFile)) else getwd()
-.cohRoot <- normalizePath(file.path(.cohDir, "..", ".."))
-.cohLib  <- file.path(.cohRoot, ".agent-cons")
-if (!dir.exists(.cohLib)) {
-  stop("Validation library not found: ", .cohLib,
-       "\n  Install first:  R CMD INSTALL --no-multiarch --library=\"", .cohLib,
-       "\" \"", .cohRoot, "\"")
-}
-.libPaths(c(.cohLib, .libPaths()))
+args      <- commandArgs(trailingOnly = FALSE)
+fileArg   <- sub("^--file=", "", grep("^--file=", args, value = TRUE))
+scriptDir <- if (length(fileArg)) dirname(normalizePath(fileArg)) else "dev/oracle"
+pkgRoot   <- normalizePath(file.path(scriptDir, "..", ".."))
+.libPaths(c(file.path(pkgRoot, ".agent-cons"), .libPaths()))
 suppressMessages(library(ConsTree))
 suppressMessages(library(TreeTools))
-
-# --- self-guard ------------------------------------------------------------
-# Even with per-worktree libraries, guard against a stale/foreign build (e.g. an
-# install that silently partial-failed under a DLL lock): the installed version
-# must match THIS worktree's source, and the ported methods must be on the C++
-# path -- Adams (this branch's deliverable) and MajorityPlus (merged from main).
-# See the `agent-cons-install-can-silently-fail` note.
-local({
-  want <- read.dcf(file.path(.cohRoot, "DESCRIPTION"), fields = "Version")[1, 1]
-  have <- as.character(utils::packageVersion("ConsTree"))
-  if (have != want) {
-    stop(sprintf(paste0("[self-guard] Installed ConsTree %s != this worktree's %s",
-                        " -- reinstall this worktree (into its own .agent-cons)",
-                        " before trusting the oracle."),
-                 have, want))
-  }
-  onCpp <- function(fn, sym) any(grepl(sym, deparse(body(fn))))
-  if (!onCpp(ConsTree::Adams, "adamsConsensusCpp")) {
-    stop("[self-guard] Adams is not on the C++ path -- installed build",
-         " predates the port.")
-  }
-  if (!onCpp(ConsTree::MajorityPlus, "majorityPlusConsensusCpp")) {
-    stop("[self-guard] MajorityPlus is not on the C++ path -- installed build",
-         " predates the port.")
-  }
-  cat(sprintf("[self-guard] ConsTree %s (this worktree), Adams + MajorityPlus on C++ path: OK\n",
-              have))
-})
-# ---------------------------------------------------------------------------
-
-source(file.path(.cohDir, "oracle.R"))
+source(file.path(scriptDir, "build-identity.R"))
+assertConsTreeBuild(pkgRoot = pkgRoot)
+source(file.path(scriptDir, "oracle.R"))
 
 cmp <- function(mine, fact, labels) {
   setequal(SplitSet(mine, labels), SplitSet(fact, labels))

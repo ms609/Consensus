@@ -22,10 +22,10 @@
 #' R* is always a *refinement* of the majority-rule consensus
 #' (every majority clade also appears in `RStar()`) and is a statistically
 #' consistent estimator of a species tree from gene trees.  Unlike [`Local()`]
-#' it is **polynomial**, so it is not restricted to small leaf counts; `RStar()`
-#' caps `n` at 200 purely as a memory safeguard on its dense triplet tensor (a
-#' limit quite different in nature from `Local()`'s exact-exponential 20-leaf
-#' bound).
+#' it is **polynomial** and imposes no hard leaf-count limit: it stores no dense
+#' \eqn{n^3} structure (memory is \eqn{O(kn^2)} for `k` input trees), so the
+#' practical bound is running time (the tally is \eqn{O(kn^3)}), not a memory
+#' wall -- quite unlike `Local()`'s exact-exponential 20-leaf bound.
 #'
 #' Like [`Adams()`], R* is a rooted method: triplet states depend on the
 #' rooting, so input trees are treated as rooted on their current root.  Root the
@@ -43,17 +43,27 @@
 #'     yields a single, well-defined tree (Lemma 1.1 of
 #'     \insertCite{Jansson2016a}{ConsTree}); there is no incompatibility or
 #'     "build-failure" case to resolve.
-#'   \item *Algorithm.*  This implementation is correctness-first: an
-#'     \eqn{O(kn^3)} triplet tally followed by an \eqn{O(n^4)} strong-cluster
-#'     assembly.  The sub-cubic and near-quadratic algorithms of
-#'     \insertCite{Jansson2013a,Jansson2016a}{ConsTree} are a deferred speed
-#'     optimisation.
+#'   \item *Algorithm.*  Following \insertCite{Jansson2016a}{ConsTree}, the tree
+#'     is built from a leaf-pair similarity -- for each pair `a`, `b`, the number
+#'     of leaves `x` for which `ab|x` lies in \eqn{R_{maj}} -- whose single-linkage
+#'     (Apresjan) clusters form a laminar superset of the strong clusters; those
+#'     are then filtered exactly and assembled.  The tally runs in \eqn{O(kn^3)}
+#'     time using per-tree constant-time LCA queries and stores no \eqn{n^3}
+#'     tensor (memory \eqn{O(kn^2)}); the assembly is about \eqn{O(n^3)}.  The
+#'     asymptotically sub-cubic bounds of
+#'     \insertCite{Jansson2013a,Jansson2016a}{ConsTree} rely on
+#'     fast-matrix-multiplication and dynamic-connectivity machinery that does
+#'     more work than this for every practical leaf count, so they are not used.
 #' }
 #'
 #' @inheritParams Strict
 #'
-#' @return `RStar()` returns the consensus tree, an object of class `phylo`,
-#' rooted by construction.
+#' @return `RStar()` returns the consensus tree, an object of class `phylo`.
+#' It is rooted by construction, but when the resolved triplets leave the deepest
+#' divergence unresolved the root is a polytomy (in the limit, a star).  Such a
+#' tree has a root node of degree greater than two, which `ape::is.rooted()`
+#' reports as unrooted; re-root or resolve downstream if a strictly binary root
+#' is required.  All input trees must share the same set of (unique) tip labels.
 #'
 #' @examples
 #' # Five trees whose majority signal recovers the species tree (((a,b),c),d):
@@ -90,16 +100,17 @@ RStar <- function(trees) {
   }
 
   labels <- TipLabels(trees[[1L]])
+  if (anyDuplicated(labels)) {
+    stop("all tip labels must be unique")
+  }
+  if (any(vapply(trees[-1L], function(tr)
+    !setequal(TipLabels(tr), labels), logical(1)))) {
+    stop("all trees must have the same tip labels")
+  }
   n <- length(labels)
 
   if (n < 3L) {
     return(trees[[1L]])
-  }
-
-  if (n > 200L) {
-    stop(
-      "RStar() caps the dense triplet tensor at 200 leaves (n = ", n, ")."
-    )
   }
 
   # Relabel every tree 1..n in a shared canonical order and put in Preorder so

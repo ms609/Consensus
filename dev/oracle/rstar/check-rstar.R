@@ -10,7 +10,7 @@
 #
 # Run:  Rscript.exe dev/oracle/rstar/check-rstar.R
 
-.libPaths(c("C:/Users/pjjg18/GitHub/Consensus/.agent-cons", .libPaths()))
+.libPaths(c(Sys.getenv("CONSTREE_LIB", "C:/Users/pjjg18/GitHub/Consensus/.agent-cons"), .libPaths()))
 suppressMessages(library(ConsTree))
 suppressMessages(library(TreeTools))
 suppressMessages(library(ape))

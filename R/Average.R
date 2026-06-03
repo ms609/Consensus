@@ -100,11 +100,18 @@ Average <- function(trees,
   scale <- match.arg(scale)
 
   trees <- .AverageTrees(trees, check.labels)
-  if (length(trees) == 1L) {
-    return(.RootResult(trees[[1]], outgroup))
+  nTree <- length(trees)
+  if (nTree == 0L) {
+    return(NULL)
+  }
+  labs <- TipLabels(trees[[1L]])
+  if (length(labs) < 3L) {
+    return(trees[[1L]])
+  }
+  if (nTree == 1L) {
+    return(.RootResult(trees[[1L]], outgroup))
   }
 
-  labs <- TipLabels(trees[[1]])
   averageDist <- .AverageDistance(trees, labs, weights, scale, edgeLengths)
   tree <- .FitTree(averageDist, method, lsControl)
 
@@ -122,20 +129,21 @@ Average <- function(trees,
   if (!is.list(trees) || is.data.frame(trees)) {
     stop("`trees` must be a list of trees or a `multiPhylo` object.")
   }
-  trees <- structure(unclass(trees), class = "multiPhylo")
+  trees <- Filter(function(x) inherits(x, "phylo"), unclass(trees))
+  trees <- structure(trees, class = "multiPhylo")
   if (length(trees) == 0L) {
-    stop("`trees` contains no trees.")
+    return(trees)
   }
 
-  labs1 <- TipLabels(trees[[1]])
-  if (length(trees) > 1L && isTRUE(check.labels)) {
-    for (i in seq_along(trees)[-1]) {
-      if (!setequal(TipLabels(trees[[i]]), labs1)) {
-        stop("All trees must share the same leaf labels; `Average()` does not ",
-             "yet support overlapping or partial taxon sets.")
-      }
+  labs1 <- TipLabels(trees[[1L]])
+  if (length(trees) > 1L) {
+    if (any(vapply(trees[-1L], function(tr)
+      !setequal(TipLabels(tr), labs1), logical(1)))) {
+      stop("all trees must have the same tip labels")
     }
-    trees <- RenumberTips(trees, labs1)
+    if (isTRUE(check.labels)) {
+      trees <- RenumberTips(trees, labs1)
+    }
   }
 
   # Return:

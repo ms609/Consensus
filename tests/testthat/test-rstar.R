@@ -187,12 +187,31 @@ test_that("RStar() preserves the leaf set and returns a rooted phylo", {
   expect_setequal(res[["tip.label"]], c("a", "b", "c", "d", "e"))
 })
 
-test_that("RStar() errors above the memory guard", {
-  big <- ape::rtree(201, rooted = TRUE)
+test_that("RStar() runs past the former 200-leaf cap", {
+  # The dense n^3 triplet tensor (and its hard 200-leaf cap) is gone: memory is
+  # now O(k n^2), so large leaf counts run.  Identity past the old cap.
+  set.seed(1)
+  big <- ape::rtree(260, rooted = TRUE)
   big$edge.length <- NULL
-  expect_error(RStar(c(big, big)), "200 leaves")
-  # The C++ core enforces the same guard independently of the R wrapper.
-  expect_error(ConsTree:::rStarConsensus(list(), 201L), "200 leaves")
+  expect_setequal(cladeSet(RStar(c(big, big))), cladeSet(big))
+  # The C++ core no longer caps at 200 leaves either (returns Newick, not error).
+  expect_type(ConsTree:::rStarConsensus(list(), 260L), "character")
+})
+
+test_that("RStar() refines strict & majority clades at larger n (cap lifted)", {
+  # Lemma 1.1 refinement at sizes the former cap forbade and the brute-force
+  # oracle (n <= 12) cannot reach.
+  set.seed(42)
+  for (trial in seq_len(6)) {
+    n <- sample(40:80, 1); k <- sample(3:7, 1)
+    trees <- .alignTrees(lapply(seq_len(k), function(i) {
+      tr <- ape::rtree(n, rooted = TRUE); tr[["edge.length"]] <- NULL; tr
+    }))
+    rs <- cladeSet(RStar(trees))
+    tab <- table(unlist(lapply(trees, cladeSet)))
+    expect_true(all(names(tab)[tab == k] %in% rs))       # strict refinement
+    expect_true(all(names(tab)[tab > k / 2] %in% rs))    # majority refinement
+  }
 })
 
 test_that("RStar() rejects non-list input and trivial leaf sets", {
@@ -201,4 +220,30 @@ test_that("RStar() rejects non-list input and trivial leaf sets", {
   # Fewer than three leaves: the first tree is returned unchanged.
   twoLeaf <- tt("(a, b);")
   expect_identical(RStar(c(twoLeaf, twoLeaf)), twoLeaf)
+})
+
+test_that("RStar errors on mismatched tip labels", {
+  t1 <- ape::read.tree(text = "(((a,b),c),d);")
+  t2 <- ape::read.tree(text = "(((a,b),c),X);")
+  expect_error(RStar(list(t1, t2)), "tip label")
+  # A subset leaf set is the dangerous SILENT case (its absent ids would alias
+  # internal nodes in the C++ tally); it must also fail loud.
+  t3 <- ape::read.tree(text = "((a,b),c);")
+  expect_error(RStar(list(t1, t3)), "tip label")
+})
+
+test_that("RStar rejects duplicated tip labels", {
+  # setequal() ignores multiplicity, so duplicates need their own guard.
+  dup <- ape::read.tree(text = "(((a,a),b),c);")
+  expect_error(RStar(list(dup, dup)), "unique")
+})
+
+test_that("RStar resolves an agreed 3-leaf triple", {
+  trees <- list(tt("((a,b),c);"), tt("((a,b),c);"))
+  expect_setequal(cladeSet(RStar(trees)), "a,b")
+})
+
+test_that("RStar returns star for a tied 3-leaf triple", {
+  trees <- list(tt("((a,b),c);"), tt("((a,c),b);"))
+  expect_length(cladeSet(RStar(trees)), 0L)
 })

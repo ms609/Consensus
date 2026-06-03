@@ -148,7 +148,8 @@ The majority-rule tree has a tidy optimality property: it is the *median* tree
 under the Robinson–Foulds metric -- the tree whose total RF distance to the
 sample is smallest.  `Quartet()` is the quartet-distance analogue, seeking (an
 approximation to) the tree that minimizes the total quartet distance to the
-inputs instead.  Because the quartet distance gives extra weight to deep
+inputs instead [@Takazawa2026].
+Because the quartet distance gives extra weight to deep
 branches, the result is often *more* resolved than the majority-rule tree:
 
 ```{r quartet}
@@ -207,4 +208,4 @@ approach: it can return the sampled tree with the lowest median
 clustering-information distance to the rest -- a single *representative* of the
 sample rather than a summary built from its parts.  And the
 ['Rogue'](https://ms609.github.io/Rogue/) package can first strip unstable
-('rogue') leaves, often sharpening any of the consensus trees above.
+('rogue') leaves [@Smith2022r], often sharpening any of the consensus trees above.

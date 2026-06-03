@@ -224,3 +224,25 @@ test_that("Quartet brute-force verification (n=5)", {
   best_loss <- min(c(qd_all, qd_star))
   expect_lte(qd_qc, best_loss)
 })
+
+test_that("Quartet agrees with brute-force on a known 4-tip case", {
+  library(TreeTools)
+  # Two identical 4-tip trees: zero quartet distance, fully resolved output.
+  t <- ape::read.tree(text = "((a,b),(c,d));")
+  trees <- structure(list(t, t), class = "multiPhylo")
+  result <- Quartet(trees)
+  expect_s3_class(result, "phylo")
+  # A 4-tip unrooted tree has exactly one non-trivial split
+  expect_equal(NSplits(result), 1L)
+})
+
+test_that("Quartet brute-force oracle gives stable output on fixed input", {
+  library(TreeTools)
+  set.seed(1L)
+  trees <- ape::as.phylo(c(1, 1, 2, 3, 5), 5)
+  result <- Quartet(trees, init = "majority", greedy = "best")
+  # Pin the split set (update this comment if the algorithm is intentionally changed):
+  labels <- TipLabels(trees[[1]])
+  splits  <- sort(unname(as.character(as.Splits(result, tipLabels = labels))))
+  expect_snapshot(splits)
+})

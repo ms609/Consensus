@@ -37,38 +37,22 @@ ConsTree/
 └── dev/                     # NOT shipped (.Rbuildignore: ^dev$); oracle + reference C++
 ```
 
-## Core architecture: the split-pooling pipeline
+## Core architecture: the C++ fast-path pipeline
 
-Every split-based method shares one validated pipeline in `R/selection.R`. Reuse
-it for new split-based methods — only the *selection rule* differs.
+Every split-based method in `R/selection.R` follows the same three-step
+pattern — only the C++ selection logic differs:
 
-1. **`.PoolSplits(trees)`** pools bipartitions across all trees, returning:
-   - `splits` — the **distinct** splits (a `Splits` object);
-   - `members` — `as.logical(distinct)`, an (nSplit × nTip) logical matrix;
-   - `counts` — occurrence count of each distinct split (`integer`);
-   - `membership[[i]]` — indices (into `splits`) of the splits in tree *i*;
-   - `labels`, `nTree`, `firstTree`;
-   - `trivial` — a short-circuit tree for degenerate cases (single `phylo`,
-     < 2 trees, or < 4 leaves). When non-`NULL`, return it immediately.
-2. **`.CompatibilityMatrix(prep)`** — pairwise split-compatibility matrix,
-   `as.matrix(CompatibleSplits(prep$splits, prep$splits))`. Its negation is the
-   *conflict* matrix used by `MajorityPlus()` / `Frequency()`.
-3. **Selection** — a method-specific rule produces a logical `keep` over
-   `prep$splits`.
-4. **`.SelectedConsensus(keep, prep)`** — rebuild via
-   `as.phylo(as.Splits(members[keep, ], tipLabels = labels))` and root to match
-   the first input tree (as `TreeTools::Consensus()` does).
-
-### Gotcha: `Splits` is an S4 class
-Single-bracket `[` subsetting **drops the class**. To subset, round-trip through
-the logical matrix:
-`as.Splits(prep$members[keep, , drop = FALSE], tipLabels = prep$labels)`.
-Never `splits[keep]`.
-
-### Gotcha: `as.phylo` is the **ape** generic
-TreeTools registers S3 methods but does not export `as.phylo`. Use
-`ape::as.phylo(...)` in code and examples (dispatches to the TreeTools method for
-`Splits`/TreeTools objects when the TreeTools namespace is loaded).
+1. **`.PrepareTrees(trees)`** — validates and normalises the input, returning a
+   list with `trees`, `labels`, `nTree`, `firstTree`, and a `trivial` shortcut
+   for degenerate cases (single `phylo`, < 2 trees, < 4 leaves).
+2. **`.FactEdges(trees, labels)`** — renumbers each tree to the shared `labels`
+   order, roots at `labels[[1]]`, and returns the `Preorder` edge matrices that
+   the C++ entry points consume.
+3. **C++ call** — `looseConsensusCpp` / `greedyConsensusCpp` /
+   `majorityPlusConsensusCpp` / `frequencyConsensusCpp` — returns a Newick
+   string; tip labels are decoded from integer indices, then
+4. **`.RootLikeFirst(tree, firstTree)`** roots the result to match the first
+   input tree, as `TreeTools::Consensus()` does.
 
 ## Method roster
 

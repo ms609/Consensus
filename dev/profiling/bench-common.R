@@ -14,8 +14,10 @@ suppressMessages({
 BENCH_METHODS <- c("Greedy", "Loose", "MajorityPlus",
                    "Frequency", "Adams", "RStar")
 
-# Hard size caps documented in the package (skip cells that would error).
-BENCH_CAPS <- c(RStar = 200L)
+# Per-method size caps for the grid.  RStar's former 200-leaf MEMORY cap is gone
+# (it now stores O(k n^2), not an n^3 tensor); the practical bound is runtime
+# (~O(k n^3)), so keep grid cells modest rather than erroring.
+BENCH_CAPS <- c(RStar = 1000L)
 
 # Generate `nTree` trees on `nTip` leaves under one of two regimes:
 #   "independent" -- k independent random topologies (incongruent; large split
