@@ -12,7 +12,9 @@ share the same leaf labels.}
 }
 \value{
 \code{Adams()} returns the consensus tree, an object of class \code{phylo},
-rooted by construction.
+rooted by construction.  (A tree whose root is multifurcating reports
+\code{ape::is.rooted() == FALSE}, which tests only for a two-child root; the Adams
+tree is rooted regardless.)
 }
 \description{
 \code{Adams()} returns the Adams consensus \insertCite{Adams1972}{ConsTree}, a
@@ -33,10 +35,15 @@ how the input trees are rooted: it is a statement about nesting, not about
 unrooted bipartitions.  Input trees are treated as rooted on their current
 root; root the trees as you intend before calling \code{Adams()}.
 
-This implementation follows Adams' original recursive definition, as ported
-from the FACT toolkit of Jansson and colleagues (used with permission); their
-asymptotically faster \eqn{O(kn \log n)} algorithm
-\insertCite{JanssonLiSung2017}{ConsTree} is not employed here.
+This implementation employs the asymptotically efficient \eqn{O(kn \log n)}
+algorithm of \insertCite{JanssonLiSung2017}{ConsTree} (their
+\code{New_Adams_consensus_k}, from the FACT toolkit of Jansson and colleagues, used
+with permission), realised in C++.  Rather than recomputing Adams' partition
+from scratch at every recursion level, it follows a centroid path through each
+input tree in unison, expanding the shared "spine" of the consensus
+iteratively and recursing only on the off-spine blocks (each at most half the
+leaves).  The Adams consensus tree is unique, so the result is identical to the
+classical recursive definition; only the running time differs.
 }
 \examples{
 # Two rooted trees that disagree only on the position of one leaf

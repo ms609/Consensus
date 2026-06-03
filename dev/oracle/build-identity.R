@@ -27,7 +27,8 @@
   MajorityPlus = "majorityPlusConsensusCpp",
   Frequency    = "frequencyConsensusCpp",
   RStar        = "rStarConsensus",
-  Local        = "localConsensus"
+  Local        = "localConsensus",
+  Adams        = "adamsConsensusCpp"
 )
 
 # Fixed 12-tip rooted binary tree for idempotence probes.  n=12 is well inside
