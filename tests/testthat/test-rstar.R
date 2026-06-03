@@ -202,3 +202,19 @@ test_that("RStar() rejects non-list input and trivial leaf sets", {
   twoLeaf <- tt("(a, b);")
   expect_identical(RStar(c(twoLeaf, twoLeaf)), twoLeaf)
 })
+
+test_that("RStar errors on mismatched tip labels", {
+  t1 <- ape::read.tree(text = "(((a,b),c),d);")
+  t2 <- ape::read.tree(text = "(((a,b),c),X);")
+  expect_error(RStar(list(t1, t2)), "tip label")
+})
+
+test_that("RStar resolves an agreed 3-leaf triple", {
+  trees <- list(tt("((a,b),c);"), tt("((a,b),c);"))
+  expect_setequal(cladeSet(RStar(trees)), "a,b")
+})
+
+test_that("RStar returns star for a tied 3-leaf triple", {
+  trees <- list(tt("((a,b),c);"), tt("((a,c),b);"))
+  expect_length(cladeSet(RStar(trees)), 0L)
+})

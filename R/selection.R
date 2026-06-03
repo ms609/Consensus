@@ -16,12 +16,16 @@
     stop("`trees` must be a list of trees or a `multiPhylo` object.")
   }
   trees <- c(trees)
-  trees <- trees[!vapply(trees, is.null, logical(1))]
+  trees <- Filter(function(x) inherits(x, "phylo"), trees)
   nTree <- length(trees)
   if (nTree < 2L) {
     return(list(trivial = if (nTree) trees[[1]] else NULL))
   }
   labels <- TipLabels(trees[[1]])
+  if (any(vapply(trees[-1], function(tr)
+    !setequal(TipLabels(tr), labels), logical(1)))) {
+    stop("all trees must have the same tip labels")
+  }
   if (length(labels) < 4L) {
     return(list(trivial = trees[[1]]))
   }

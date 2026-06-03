@@ -79,3 +79,16 @@ test_that("Selection methods reject non-list input", {
   expect_error(Loose(5), "list of trees")
   expect_error(MajorityPlus("not a tree"), "list of trees")
 })
+
+test_that("selection methods error on mismatched tip labels", {
+  t1 <- ape::read.tree(text = "((a,b),(c,d));")
+  t2 <- ape::read.tree(text = "((a,b),(c,e));")
+  expect_error(Loose(list(t1, t2)),     "tip label")
+  expect_error(Greedy(list(t1, t2)),    "tip label")
+  expect_error(Frequency(list(t1, t2)), "tip label")
+})
+
+test_that("NA elements in tree list are silently dropped", {
+  t <- TreeTools::RandomTree(8, root = TRUE)
+  expect_equal(Loose(list(t, NA, t)), Loose(list(t, t)))
+})

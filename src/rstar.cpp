@@ -59,6 +59,8 @@ static const int RSTAR_MAX_TIP = 200;
 
 // ---------------------------------------------------------------------------
 // parent[] and depth[] for a single tree (verbatim from local_consensus.cpp).
+// Preorder is guaranteed by the R wrapper (Preorder() is called before
+// extracting edge matrices); a single forward pass suffices.
 // ---------------------------------------------------------------------------
 static void buildParentDepth(const Rcpp::IntegerMatrix& edge, int nNode,
                              std::vector<int>& parent, std::vector<int>& depth) {
@@ -228,7 +230,6 @@ static std::string assembleRStar(const std::vector<int>& tri, int n) {
   std::vector<int> order;
   {
     std::vector<int> stack(1, rootIdx);
-    std::vector<char> seen(nNode, 0);
     while (!stack.empty()) {
       int u = stack.back(); stack.pop_back();
       order.push_back(u);
