@@ -236,7 +236,6 @@ static PooledSplits pool_splits(const List& splits_list, int n_tips) {
       int idx;
       if (it != split_map.end()) {
         idx = it->second;
-        pool.count[idx]++;
       } else {
         idx = pool.n_splits++;
         const size_t old_sz = pool.data.size();
@@ -249,7 +248,9 @@ static PooledSplits pool_splits(const List& splits_list, int n_tips) {
           unsigned char byte = canon_buf[b];
           while (byte) { pc += byte & 1; byte >>= 1; }
         }
-        pool.count.push_back(1);
+        // Initialise count to 0; the !found block below will increment to 1
+        // when this split is recorded as a member of the current tree.
+        pool.count.push_back(0);
         pool.light_side.push_back(std::min(pc, n_tips - pc));
 
         // Build tip list for side 1 (canonical side: bit 0 is OFF)
@@ -264,12 +265,16 @@ static PooledSplits pool_splits(const List& splits_list, int n_tips) {
         split_map[pool.split(idx)] = idx;
       }
 
-      // Record unique membership per tree
+      // Record unique membership per tree; count tracks number of distinct trees
+      // that display each split (not raw row count).
       bool found = false;
       for (int m : members) {
         if (m == idx) { found = true; break; }
       }
-      if (!found) members.push_back(idx);
+      if (!found) {
+        pool.count[idx]++;
+        members.push_back(idx);
+      }
     }
   }
 
@@ -867,9 +872,14 @@ List cpp_quartet_consensus(
         }
       }
     } else {
-      // Majority rule: add only those appearing in > 50% of trees
+      // Majority rule: add only those appearing in > 50% of trees.
+      // Majority splits are always mutually compatible, but guard defensively
+      // to protect the resolve_count / consensus_state caching invariant.
       for (int i = 0; i < M; ++i) {
         if (pool.count[i] > half) {
+          if (!st.is_compatible(i))
+            Rcpp::stop("Internal error: majority split is incompatible — "
+                       "please report this bug.");
           st.do_add(i);
         }
       }

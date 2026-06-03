@@ -5,6 +5,9 @@
 # frequent incompatible splits are resolved.
 
 test_that("Greedy preserves the leaf set and contains the majority consensus", {
+  # All four specs on n=9 produce non-empty majority splits (verified empirically),
+  # so the majority-subset assertion is non-vacuous across all iterations.
+  non_vacuous_checked <- FALSE
   for (spec in list(0:20, 0:30, c(0, 0, 0, 1, 2, 53, 99), 1:15)) {
     trees <- ape::as.phylo(spec, 9)
     labels <- TreeTools::TipLabels(trees[[1]])
@@ -19,7 +22,11 @@ test_that("Greedy preserves the leaf set and contains the majority consensus", {
                                                  tipLabels = labels))
     gSplits <- as.character(TreeTools::as.Splits(g, tipLabels = labels))
     expect_true(all(mSplits %in% gSplits))
+    if (length(mSplits) > 0L) non_vacuous_checked <- TRUE
   }
+  # At least one spec must produce a non-star majority consensus, confirming
+  # that the majority-subset assertions above are not all trivially satisfied.
+  expect_true(non_vacuous_checked)
 })
 
 test_that("Greedy returns a fully resolved tree when the inputs agree", {

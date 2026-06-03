@@ -199,7 +199,13 @@ void updateCounter(Tree& A, Tree B) {
             decided = true;
           } else {
             a = L[a].back();
-            b = R[b][DEPTH[B.idx[b]] - DEPTH[a]];
+            // Guard is not reachable via the public API (R wrapper validates
+            // input), but defence-in-depth against future refactors.
+            int ridx = DEPTH[B.idx[b]] - DEPTH[a];
+            if (ridx < 0 || ridx >= static_cast<int>(R[b].size()))
+              Rcpp::stop("Internal error: node ID %d out of range (depth vector size %d)",
+                         ridx, (int)R[b].size());
+            b = R[b][ridx];
           }
         } else {
           if (DEPTH[R[b].back()] - DEPTH[B.idx[a]] > 0) {
@@ -207,7 +213,13 @@ void updateCounter(Tree& A, Tree B) {
             decided = true;
           } else {
             b = R[b].back();
-            a = L[a][DEPTH[B.idx[a]] - DEPTH[b]];
+            // Guard is not reachable via the public API (R wrapper validates
+            // input), but defence-in-depth against future refactors.
+            int lidx = DEPTH[B.idx[a]] - DEPTH[b];
+            if (lidx < 0 || lidx >= static_cast<int>(L[a].size()))
+              Rcpp::stop("Internal error: node ID %d out of range (depth vector size %d)",
+                         lidx, (int)L[a].size());
+            a = L[a][lidx];
           }
         }
       }
@@ -335,13 +347,25 @@ Tree majorityPlusMerge(Tree A, Tree B) {
           if (DEPTH[L[a].back()] - DEPTH[B.idx[b]] > 0) decided = true;
           else {
             a = L[a].back();
-            b = R[b][DEPTH[B.idx[b]] - DEPTH[a]];
+            // Guard is not reachable via the public API (R wrapper validates
+            // input), but defence-in-depth against future refactors.
+            int ridx = DEPTH[B.idx[b]] - DEPTH[a];
+            if (ridx < 0 || ridx >= static_cast<int>(R[b].size()))
+              Rcpp::stop("Internal error: node ID %d out of range (depth vector size %d)",
+                         ridx, (int)R[b].size());
+            b = R[b][ridx];
           }
         } else {
           if (DEPTH[R[b].back()] - DEPTH[B.idx[a]] > 0) decided = true;
           else {
             b = R[b].back();
-            a = L[a][DEPTH[B.idx[a]] - DEPTH[b]];
+            // Guard is not reachable via the public API (R wrapper validates
+            // input), but defence-in-depth against future refactors.
+            int lidx = DEPTH[B.idx[a]] - DEPTH[b];
+            if (lidx < 0 || lidx >= static_cast<int>(L[a].size()))
+              Rcpp::stop("Internal error: node ID %d out of range (depth vector size %d)",
+                         lidx, (int)L[a].size());
+            a = L[a][lidx];
           }
         }
       }

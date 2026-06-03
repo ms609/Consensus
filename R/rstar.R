@@ -96,6 +96,10 @@ RStar <- function(trees) {
   }
 
   labels <- TipLabels(trees[[1L]])
+  if (any(vapply(trees[-1L], function(tr)
+    !setequal(TipLabels(tr), labels), logical(1)))) {
+    stop("all trees must have the same tip labels")
+  }
   n <- length(labels)
 
   if (n < 3L) {

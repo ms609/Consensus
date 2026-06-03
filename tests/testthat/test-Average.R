@@ -129,14 +129,54 @@ test_that("scale = 'max' makes the average invariant to per-tree rescaling", {
 test_that("Average() validates its input", {
   good <- ape::read.tree(text = "((A,B),(C,D));")
   bad  <- ape::read.tree(text = "((A,B),(C,E));")
-  expect_error(Average(list(good, bad)), "same leaf labels")
+  expect_error(Average(list(good, bad)), "tip labels")
   expect_error(Average("not a tree"), "list of trees")
-  expect_error(Average(list()), "no trees")
+  expect_null(Average(list()))
 
   trees <- ape::rmtree(2, 6)
   expect_error(Average(trees, weights = c(1, 2, 3)), "one entry per tree")
   expect_error(Average(trees, weights = c(-1, 1)), "non-negative")
   expect_s3_class(Average(trees, edgeLengths = TRUE, method = "nj"), "phylo")
+})
+
+test_that("Average() handles n < 3 leaves (F1)", {
+  # empty list returns NULL
+  expect_null(Average(list()))
+
+  # single tree in a list returns that tree unchanged (no unroot crash)
+  t1 <- ape::read.tree(text = "(A,B);")
+  result_list <- Average(list(t1))
+  expect_s3_class(result_list, "phylo")
+  expect_setequal(result_list[["tip.label"]], c("A", "B"))
+
+  # bare phylo with 2 tips returns it (phylo dispatch)
+  result_bare <- Average(t1)
+  expect_s3_class(result_bare, "phylo")
+
+  # two trees with 2 tips each returns first tree (no fitter crash)
+  t2 <- ape::read.tree(text = "(A,B);")
+  result_two <- Average(list(t1, t2), method = "nj")
+  expect_s3_class(result_two, "phylo")
+  expect_setequal(result_two[["tip.label"]], c("A", "B"))
+})
+
+test_that("Average() always validates tip labels, even with check.labels = FALSE (F2)", {
+  t4 <- ape::read.tree(text = "((A,B),(C,D));")
+  t5 <- ape::read.tree(text = "(((A,B),(C,D)),E);")
+  # superset mismatch should error even when check.labels = FALSE
+  expect_error(Average(list(t4, t5), check.labels = FALSE), "tip labels")
+
+  # disjoint-label mismatch also errors with check.labels = FALSE
+  bad <- ape::read.tree(text = "((A,B),(C,E));")
+  expect_error(Average(list(t4, bad), check.labels = FALSE), "tip labels")
+})
+
+test_that("Average() silently drops NAs from the tree list (F2)", {
+  tr <- ape::rtree(6)
+  # NA entries are filtered out; a list of [tree, NA] becomes [tree] -> trivial
+  result <- Average(list(tr, NA))
+  expect_s3_class(result, "phylo")
+  expect_setequal(result[["tip.label"]], tr[["tip.label"]])
 })
 
 test_that("weights shift the average toward the favoured tree", {
