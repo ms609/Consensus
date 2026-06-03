@@ -187,8 +187,22 @@ Nub buildNub(const InTree& g, const vector<int>& leaves) {
   for (int t : leaves) nodes.push_back(g.leafNode[t]);
   for (int i = 1; i < m; ++i)
     nodes.push_back(g.lca(g.leafNode[leaves[i - 1]], g.leafNode[leaves[i]]));
-  std::sort(nodes.begin(), nodes.end(),
-            [&](int a, int b) { return g.firstVisit[a] < g.firstVisit[b]; });
+  // Order by firstVisit (preorder) with a stable LSD radix on the bounded key
+  // firstVisit < eulerLen.  O(m), not the O(m log m) of a comparison sort, so the
+  // recursion as a whole stays within the paper's O(kn log n) bound.  Duplicate
+  // node ids share a firstVisit, so they land adjacent and std::unique drops them.
+  {
+    int ns = static_cast<int>(nodes.size());
+    vector<int> tmp(ns);
+    for (int shift = 0; (g.eulerLen >> shift) > 0; shift += 8) {
+      int cnt[257];
+      for (int b = 0; b < 257; ++b) cnt[b] = 0;
+      for (int x : nodes) ++cnt[((g.firstVisit[x] >> shift) & 0xFF) + 1];
+      for (int b = 0; b < 256; ++b) cnt[b + 1] += cnt[b];
+      for (int x : nodes) tmp[cnt[(g.firstVisit[x] >> shift) & 0xFF]++] = x;
+      nodes.swap(tmp);
+    }
+  }
   nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
 
   int cnt = static_cast<int>(nodes.size());
@@ -305,6 +319,9 @@ struct Scratch {
   vector<char> removed;              // [nTip + 1]
   vector<int> stamp;                 // [nTip + 1], per-step dedup
   int stampCtr;
+  vector<int> compStamp;             // [2*nTip + 5], coord-compression epoch
+  vector<int> compId;                // [2*nTip + 5], compressed dense id
+  int compCtr;
   Scratch(int k_, int nTip)
       : k(k_),
         branchLevel(k_, vector<int>(nTip + 1, 0)),
@@ -312,7 +329,10 @@ struct Scratch {
         blockOf(nTip + 1, -1),
         removed(nTip + 1, 0),
         stamp(nTip + 1, 0),
-        stampCtr(0) {}
+        stampCtr(0),
+        compStamp(static_cast<size_t>(2) * nTip + 5, 0),
+        compId(static_cast<size_t>(2) * nTip + 5, 0),
+        compCtr(0) {}
 };
 
 int makeCherry(OutTree& out, int a, int b) {
@@ -366,6 +386,8 @@ int adamsRecurse(const vector<InTree>& trees,
   vector<int> Xlist;
   vector<int> idx;
   vector<int> keyFlat;
+  vector<int> radixTmp;
+  vector<int> radixCnt;
   vector<int> curPos(k, INT_MAX);
   while (remaining >= 2) {
     ++sc.stampCtr;
@@ -399,13 +421,33 @@ int adamsRecurse(const vector<InTree>& trees,
     }
     idx.assign(sz, 0);
     for (int i = 0; i < sz; ++i) idx[i] = i;
-    std::sort(idx.begin(), idx.end(), [&](int a, int b) {
-      const int* ka = &keyFlat[static_cast<size_t>(a) * k];
-      const int* kb = &keyFlat[static_cast<size_t>(b) * k];
-      for (int j = 0; j < k; ++j)
-        if (ka[j] != kb[j]) return ka[j] < kb[j];
-      return false;
-    });
+    // Group identical meet-key vectors with an LSD radix over the k coordinates
+    // (least-significant coordinate first), each pass a stable counting sort on
+    // epoch-stamped, dense-compressed coordinate values.  O(k*sz) per step -- no
+    // comparison sort, so the meet stays within the O(kn log n) bound.  Group
+    // order is arbitrary but deterministic; the Adams tree is unique only up to
+    // sibling order, which the clade-set contract ignores.
+    radixTmp.assign(sz, 0);
+    for (int j = k - 1; j >= 0; --j) {
+      ++sc.compCtr;
+      int d = 0;
+      for (int i = 0; i < sz; ++i) {
+        int v = keyFlat[static_cast<size_t>(idx[i]) * k + j];
+        if (sc.compStamp[v] != sc.compCtr) {
+          sc.compStamp[v] = sc.compCtr;
+          sc.compId[v] = d++;
+        }
+      }
+      radixCnt.assign(d + 1, 0);
+      for (int i = 0; i < sz; ++i)
+        ++radixCnt[sc.compId[keyFlat[static_cast<size_t>(idx[i]) * k + j]] + 1];
+      for (int c = 0; c < d; ++c) radixCnt[c + 1] += radixCnt[c];
+      for (int i = 0; i < sz; ++i) {
+        int v = keyFlat[static_cast<size_t>(idx[i]) * k + j];
+        radixTmp[radixCnt[sc.compId[v]]++] = idx[i];
+      }
+      idx.swap(radixTmp);
+    }
     vector<int> theseBlocks;
     int i = 0;
     while (i < sz) {
