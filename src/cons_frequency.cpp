@@ -835,12 +835,27 @@ struct Interval {
 
 class FreqDiff {
  public:
-  // The 2n / 3n scratch sizes and the radix capacities (5n adds, key <= k) are
-  // the worst-case bounds carried verbatim from the upstream raw-array
-  // allocations; they are not proven closed-form here, but hold empirically over
-  // a wide adversarial battery (n at powers +/-1, incongruent/caterpillar/star
-  // ensembles, k >> n).  std::vector::operator[] is unchecked, so if you touch
-  // the contraction or merge, re-validate with a -D_GLIBCXX_ASSERTIONS build.
+  // Scratch sizes.  The 2n / 3n vectors below are each indexed by a SINGLE
+  // tree's node id (< 2n for a tree on n leaves) or by the contraction's entry
+  // count (= 2*marked - 1 < 2n); none accumulates both trees at once, so 2n / 3n
+  // are sound closed-form bounds.
+  //
+  // The radix is different: filter_clusters_nlogn's first fill loop adds, into
+  // ONE cleared radix, BOTH (A) every tree1 side-subtree node and (B) every
+  // contracted-tree2 node (incl. the special weight nodes contract_tree_fast
+  // splices onto subpaths).  With L_i = leaves in side-subtree i and
+  // M = sum L_i = (leaves under t1_root) - 1 <= n - 1:
+  //   (A) sum node_size(s1_roots[i]) <= sum (2 L_i - 1) = 2M - mm   [<= 2n-1 nodes/tree]
+  //   (B) sum |sub_t2[i]|            <= sum (4 L_i - 3) = 4M - 3mm   [contraction <= 2L-1
+  //       nodes + <= one sp-node per edge (<= 2L-2), all counted before insertion]
+  // so the loop adds <= 6M - 4mm <= 6n - 10 (mm >= 1).  The second fill loop
+  // (<= tree2 nodes ~ 2n) and the k>>n weight-compression quicksort (tree1+tree2
+  // ~ 4n) are both smaller.  Upstream's 5*n sits INSIDE this 6n envelope and
+  // overflows on maximally-incongruent inputs (e.g. two independent RandomTrees
+  // at n>=2000 reach ~5.4n adds -> "radix sort n overflow"); 6*n is the proven
+  // ceiling.  The add() guard remains a hard backstop should the bound ever be
+  // wrong.  std::vector::operator[] is unchecked, so if you touch the contraction
+  // or merge, re-validate with a -D_GLIBCXX_ASSERTIONS build.
   FreqDiff(int n_, int k_) : n(n_), k(k_) {
     start.assign(2 * n, 0);
     stop.assign(2 * n, 0);
@@ -869,7 +884,7 @@ class FreqDiff {
     intervals.assign(3 * n, Interval());
     origw_to_w.assign(k + 1, 0);
     subtree_cnt.assign(2 * n, 0);
-    radix.reset(new radix_t(5 * n, k));
+    radix.reset(new radix_t(6 * n, k));
   }
 
   // Consume `trees` (deletes them) and return the freq-diff consensus tree.
