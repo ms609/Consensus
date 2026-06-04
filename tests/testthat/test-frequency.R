@@ -327,6 +327,27 @@ test_that("Frequency is correct on a deep (n=2000) caterpillar", {
   expect_true(all(fs %in% splitSet(Greedy(trees), tips)))
 })
 
+test_that("Frequency survives maximally-incongruent large inputs (radix capacity)", {
+  # Regression for the radix-sort capacity overflow: filter_clusters_nlogn's
+  # first fill loop adds BOTH tree1 side-subtree nodes AND contracted-tree2 nodes
+  # (incl. spliced special weight nodes) into one radix, whose true worst case is
+  # ~6n adds -- above the 5n that upstream FDCT_new (and the original port) sized
+  # it for.  Two independent RandomTree topologies are maximally incongruent: at
+  # n = 2000 they push the radix to ~5.4n adds, which overflowed the old 5n
+  # capacity with "radix sort n overflow".  reaching Frequency() at all proves
+  # the capacity is now adequate; the envelope assertions keep it honest.
+  set.seed(11)
+  n     <- 2000L
+  tips  <- paste0("t", seq_len(n))
+  trees <- list(TreeTools::RandomTree(tips), TreeTools::RandomTree(tips))
+  f <- Frequency(trees)
+  expect_s3_class(f, "phylo")
+  expect_setequal(TreeTools::TipLabels(f), tips)
+  fs <- splitSet(f, tips)
+  expect_true(all(splitSet(Majority(trees), tips) %in% fs))
+  expect_true(all(fs %in% splitSet(Greedy(trees), tips)))
+})
+
 test_that("Frequency survives an extreme-depth caterpillar (regression guard)", {
   # Two opposite caterpillars are the SAME unrooted tree, so the frequency
   # consensus is fully resolved (n - 3 splits).  This formerly threw a catchable
