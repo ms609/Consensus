@@ -304,17 +304,37 @@ test_that("Frequency silently drops NA entries in the tree list", {
   expect_equal(Frequency(list(t, NA, t)), Frequency(list(t, t)))
 })
 
-test_that("Frequency completes on large caterpillar inputs without stack overflow", {
-  # Coverage gap 12 (F3 regression guard): O(depth) recursion in fix_tree_supp,
-  # eulerian_walk, compute_m, and newickInto can overflow the system stack for
-  # caterpillar trees with n >> 10 000.  n = 2 000 is well below the empirical
-  # crash threshold of the unfixed code and should complete today; it also serves
-  # as a regression guard once the iterative-rewrite fix lands.
+test_that("Frequency is correct on a deep (n=2000) caterpillar", {
+  # A deep caterpillar exercises the O(depth) recursion in fix_tree_supp,
+  # eulerian_walk, compute_m, and newickInto.  Two opposite caterpillars are the
+  # same unrooted tree, so the frequency consensus is fully resolved; assert the
+  # lattice invariants (not just completion) so this is a correctness check, not
+  # a tautology.  n = 2000 is comfortably within the current safe range.
   n    <- 2000L
   tips <- paste0("t", seq_len(n))
   t_left  <- ape::stree(n, type = "left",  tip.label = tips)
   t_right <- ape::stree(n, type = "right", tip.label = tips)
-  f <- Frequency(list(t_left, t_right))
+  trees <- list(t_left, t_right)
+  f <- Frequency(trees)
   expect_s3_class(f, "phylo")
+  expect_setequal(TreeTools::TipLabels(f), tips)
+  fs <- splitSet(f, tips)
+  expect_true(all(splitSet(Majority(trees), tips) %in% fs))
+  expect_true(all(fs %in% splitSet(Greedy(trees), tips)))
+})
+
+test_that("Frequency survives an extreme-depth caterpillar (regression guard)", {
+  # KNOWN LIMITATION: the freqdiff port allocates O(tree-depth) on the heap, so a
+  # very deep caterpillar (empirically ~n=30000) throws a *catchable*
+  # std::bad_alloc -- a heap exhaustion surfaced cleanly by Rcpp, NOT an
+  # uncatchable stack-overflow segfault, and not a problem at n<=8000.  Adams
+  # handles the same input.  This guard is skipped until the depth-robustness chip
+  # lands (iterativise the recursion / bound the scratch); the chip flips skip()
+  # off and asserts a clean result at n=30000.
+  skip("deep-tree robustness pending Frequency depth chip; n=30000 -> std::bad_alloc today")
+  n    <- 30000L
+  tips <- paste0("t", seq_len(n))
+  f <- Frequency(list(ape::stree(n, type = "left",  tip.label = tips),
+                      ape::stree(n, type = "right", tip.label = tips)))
   expect_setequal(TreeTools::TipLabels(f), tips)
 })

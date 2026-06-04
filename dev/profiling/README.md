@@ -38,6 +38,13 @@ Rscript.exe dev/profiling/compare.R baseline-2026-06-02.csv Greedy
   exceed a method's bench cap (`BENCH_CAPS`) record `NA`, which is itself
   informative. (`RStar`'s former 200-leaf *memory* cap is gone — see below — so
   its `BENCH_CAPS` entry now only bounds grid runtime.)
+- **`baseline-2026-06-02.csv` has `nSplit = NA` throughout** — captured before a
+  `<<-` scoping bug in `timeCall()` (since fixed) was discovered, so the split
+  column never recorded. The timings are the real pre-change numbers and remain
+  valid; only the split-count anchor is unavailable for *this* baseline. Re-run
+  `baseline.R` to capture a fresh baseline with populated `nSplit` if you need the
+  anchor (note: the old slow R implementations are gone from `main`, so a fresh
+  run times the current fast code, not the original pipeline).
 - `compare.R` flags any cell where the output **split count** changed. For the
   unique-output methods that is a bug; for **Greedy** it may be the documented
   tie-break on equal-frequency incompatible splits — confirm against the FACT

@@ -66,7 +66,7 @@ pattern — only the C++ selection logic differs:
 | `Frequency()` | selection.R | FACT2/FDCT `freqdiff.h` | property-validated (`dev/oracle/freqdiff/`) |
 | `Adams()` | adams.R (Rcpp) | Jansson, Li & Sung 2017 (`src/cons_adams.cpp`) | slow-Adams clade-oracle exact |
 | `Local(type=)` | local.R (Rcpp) | FACT2/FDCT `local_consensus.h` (Jansson, Rajaby & Sung 2018) | FDCT-oracle exact; **≤20 leaves**; see runtime caveat |
-| `RStar()` | rstar.R (Rcpp) | Jansson et al. 2016 | definition-exact (strong-cluster oracle); **≤200 leaves** (memory) |
+| `RStar()` | rstar.R (Rcpp) | Jansson et al. 2016 | definition-exact (strong-cluster oracle); no leaf cap (~`O(kn³)` time, `O(kn²)` memory) |
 | `Quartet()` | Quartet.R (Rcpp) | Quartet pkg (ported) | brute-force oracle (n=5); ≤100 tips |
 | `Average()` | Average.R | Lapointe & Cucumel | user-authored (path-length LS / BME) |
 | `BHV…()` | BHV.R (Rcpp) | BHV geodesic | distance / Fréchet-mean utilities |
