@@ -1,4 +1,4 @@
-# ConsTree 0.0.0.9007 (development)
+# ConsTree 0.0.0.9008 (development)
 
 **Performance overhaul (in progress).** Reimplementing each consensus method
 with its fastest available algorithm, then profiling and optimising (harness in
@@ -57,6 +57,21 @@ with its fastest available algorithm, then profiling and optimising (harness in
   returns in well under a second. The port is boost-free (the upstream
   `dynamic_bitset` is dead code on this near-linear path) and its output is
   validated to match the FDCT `freqdiff` reference exactly.
+- `Frequency()` is now robust to very deep trees. The filter's centroid-path
+  decomposition descends each subtree's `children[0]` assuming it is the
+  heaviest child, but the deep copy and merge re-add children in id / `m` order
+  and silently undid the upstream `reorder()`; on a deep or caterpillar input
+  the path degenerated to a single leaf, making the filter _O_(_n_²) in both
+  time and heap and throwing a catchable `std::bad_alloc` around 30 000 leaves.
+  The heavy-child-first invariant is now re-established (`reorder()` +
+  `fix_tree()`) at the top of `filter()`, restoring the paper's
+  _O_(_kn_ log _n_): an opposite-caterpillar pair on 30 000 leaves goes from
+  `bad_alloc` to ~0.5 s (100 000 leaves in ~2 s), and incongruent random
+  ensembles that previously timed out now finish in milliseconds (e.g. 50 trees
+  on 50 leaves: 19 s to 0.03 s). The decomposition is a performance device only,
+  so the unique frequency-difference split set is unchanged (the change reorders
+  the Newick serialisation but not the consensus; still exact against the FDCT
+  `freqdiff` reference).
 
 First public release: a consensus-tree toolkit built on
 [TreeTools](https://ms609.github.io/TreeTools/).

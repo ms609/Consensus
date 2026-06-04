@@ -1193,6 +1193,28 @@ void FreqDiff::filter_clusters_nlogn(prob_set* prob, Tree::Node* t1_root, Tree* 
 }
 
 void FreqDiff::filter(Tree* tree1, Tree* tree2, bool* to_del) {
+  // Re-establish the heavy-child-first invariant on BOTH trees before any work,
+  // so that (a) filter_clusters_nlogn's children[0] descent IS the heavy path
+  // (every off-path side branch < half the leaves -> O(log n) recursion depth)
+  // and (b) tree2's pos_in_parent==0 centroid paths ARE heavy paths (so
+  // max_subpath_query crosses O(log n) paths).  Upstream relies on a reorder()
+  // of the inputs in run(), but reorder() only permutes child pointers while the
+  // deep-copy Tree(Tree*) and merge_trees both re-add children in id/m order,
+  // silently undoing it; on a deep/caterpillar input children[0] is then a lone
+  // leaf and the recursion degenerates to an n-deep chain doing O(n) work per
+  // level -> O(n^2) time and heap (the n=30000 std::bad_alloc).  Following
+  // reorder() with fix_tree() renumbers preorder so the heaviest child genuinely
+  // lands at id-position 0 and survives.  Doing it here (not once in run())
+  // covers the merged accumulator T, which is rebuilt in m-order by merge_trees.
+  // This is a pure performance device: the decomposition does not affect which
+  // clusters are marked, so the unique frequency-difference split set is
+  // unchanged (only the Newick child order is); idempotent on an already
+  // heavy-first tree.
+  tree1->reorder();
+  tree1->fix_tree();
+  tree2->reorder();
+  tree2->fix_tree();
+
   for (int i = 0; i < static_cast<int>(tree1->get_nodes_num()); i++)
     tree1->get_node(i)->orig_w = tree1->get_node(i)->weight;
   for (int i = 0; i < static_cast<int>(tree2->get_nodes_num()); i++)
@@ -1291,7 +1313,9 @@ void FreqDiff::merge_trees(Tree* tree1, Tree* tree2, taxas_ranges_t* t1_tr, lca_
 Tree* FreqDiff::run(std::vector<Tree*>& trees) {
   calc_w_knlogn(trees, n);
 
-  for (size_t i = 0; i < trees.size(); i++) trees[i]->reorder();
+  // (Upstream reorder()s the inputs here; we instead re-establish the heavy-child
+  // invariant inside filter(), which also catches the merged accumulator -- see
+  // the note there.)
 
   std::vector<char> to_del_t(2 * n), to_del_ti(2 * n);
 

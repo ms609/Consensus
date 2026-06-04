@@ -63,9 +63,13 @@ test_that("Frequency keeps a clade strictly more frequent than its rivals", {
     ape::read.tree(text = "((t1, t3), (t2, t4), t5);")
   )
   labels <- TreeTools::TipLabels(trees[[1]])
-  fSplits <- as.character(TreeTools::as.Splits(Frequency(trees), tipLabels = labels))
-  wanted <- as.character(TreeTools::as.Splits(
-    ape::read.tree(text = "((t1, t2), (t3, t4), t5);"), tipLabels = labels))
+  # Use canonical (polarised) split strings via splitSet(): the comparison tree is
+  # hand-rooted, not rooted by .RootLikeFirst as the consensus is, so a raw
+  # as.character() split list is sensitive to that rooting difference (a no-op for
+  # the consensus topology).  The retained clade {t1,t2} (frequency 2) must beat
+  # its rival {t1,t3} (frequency 1).
+  fSplits <- splitSet(Frequency(trees), labels)
+  wanted  <- splitSet(ape::read.tree(text = "((t1, t2), (t3, t4), t5);"), labels)
   expect_true(all(wanted %in% fSplits))
 })
 
@@ -324,17 +328,52 @@ test_that("Frequency is correct on a deep (n=2000) caterpillar", {
 })
 
 test_that("Frequency survives an extreme-depth caterpillar (regression guard)", {
-  # KNOWN LIMITATION: the freqdiff port allocates O(tree-depth) on the heap, so a
-  # very deep caterpillar (empirically ~n=30000) throws a *catchable*
-  # std::bad_alloc -- a heap exhaustion surfaced cleanly by Rcpp, NOT an
-  # uncatchable stack-overflow segfault, and not a problem at n<=8000.  Adams
-  # handles the same input.  This guard is skipped until the depth-robustness chip
-  # lands (iterativise the recursion / bound the scratch); the chip flips skip()
-  # off and asserts a clean result at n=30000.
-  skip("deep-tree robustness pending Frequency depth chip; n=30000 -> std::bad_alloc today")
+  # Two opposite caterpillars are the SAME unrooted tree, so the frequency
+  # consensus is fully resolved (n - 3 splits).  This formerly threw a catchable
+  # std::bad_alloc at ~n=30000: the freqdiff filter decomposed each subtree along
+  # children[0] assuming reorder() had made it the heaviest child, but the deep
+  # copy/merge re-add children in id/m order and silently undo reorder(), so on a
+  # caterpillar children[0] is a lone leaf, the recursion degenerates to an n-deep
+  # chain doing O(n) work per level, and the whole filter is O(n^2) time AND heap.
+  # The fix re-establishes the heavy-child-first invariant (reorder()+fix_tree())
+  # at the top of filter(), restoring the paper's O(kn log n).  NSplits == n - 3 is
+  # a strong correctness anchor (a single dropped/extra split would change it).
   n    <- 30000L
   tips <- paste0("t", seq_len(n))
   f <- Frequency(list(ape::stree(n, type = "left",  tip.label = tips),
                       ape::stree(n, type = "right", tip.label = tips)))
+  expect_s3_class(f, "phylo")
   expect_setequal(TreeTools::TipLabels(f), tips)
+  expect_equal(TreeTools::NSplits(f), n - 3L)   # fully resolved
+})
+
+test_that("Frequency stays near-linear on intermediate-depth caterpillars", {
+  # Spot intermediate depths between the n=2000 correctness check and the n=30000
+  # guard, and one well above it, so an O(n^2) regression (which would take
+  # minutes / exhaust the heap at these sizes) is caught long before it reaches
+  # the bad_alloc cliff.  Opposite caterpillars => fully resolved (n - 3 splits).
+  for (n in c(15000L, 50000L)) {
+    tips <- paste0("t", seq_len(n))
+    f <- Frequency(list(ape::stree(n, type = "left",  tip.label = tips),
+                        ape::stree(n, type = "right", tip.label = tips)))
+    expect_s3_class(f, "phylo")
+    expect_setequal(TreeTools::TipLabels(f), tips)
+    expect_equal(TreeTools::NSplits(f), n - 3L)
+  }
+})
+
+test_that("Frequency handles a deep NON-caterpillar (cherry ladder)", {
+  # A ladder of cherries -- (((...((c1,c2),(c3,c4)),(c5,c6))...) -- is ~n/2 deep
+  # like a caterpillar but every spine node carries a 2-leaf cherry, so it
+  # exercises the deep recursion on a topology that is NOT a pure caterpillar
+  # (guards against a fix that only balances single-leaf side branches).  Two
+  # identical copies agree on every split, so the consensus is the input itself.
+  m   <- 8000L                       # 8000 cherries => n = 16000 tips, depth ~8000
+  nwk <- "(1,2)"
+  for (k in 2:m) nwk <- paste0("(", nwk, ",(", 2 * k - 1, ",", 2 * k, "))")
+  tree <- ape::read.tree(text = paste0(nwk, ";"))
+  f <- Frequency(list(tree, tree))
+  expect_s3_class(f, "phylo")
+  expect_setequal(TreeTools::TipLabels(f), tree[["tip.label"]])
+  expect_equal(TreeTools::NSplits(f), TreeTools::NSplits(tree))
 })
