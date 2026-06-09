@@ -60,3 +60,24 @@ rStarConsensus <- function(edgeList, nTip) {
     .Call(`_ConsTree_rStarConsensus`, edgeList, nTip)
 }
 
+#' Transfer consensus (C++ implementation)
+#'
+#' @param splits_list List of raw matrices (one per tree), each from as.Splits().
+#' @param n_tip Number of tips.
+#' @param scale Logical: use scaled transfer distance?
+#' @param greedy_best_flag Logical: TRUE for "best", FALSE for "first".
+#' @param init_majority Logical: TRUE to start from majority-rule splits.
+#'
+#' @return A `LogicalVector` of length n_splits indicating which pooled splits
+#'   are included in the consensus, plus attributes "raw_splits" (a raw matrix
+#'   of all unique splits) and "light_side" (integer vector).
+#' @keywords internal
+cpp_transfer_consensus <- function(splits_list, n_tip, scale, greedy_best_flag, init_majority, n_threads = 1L) {
+    .Call(`_ConsTree_cpp_transfer_consensus`, splits_list, n_tip, scale, greedy_best_flag, init_majority, n_threads)
+}
+
+#' @keywords internal
+cpp_tc_profile <- function(splits_list, n_tip, scale, greedy_best_flag, init_majority, n_iter, n_threads = 1L) {
+    .Call(`_ConsTree_cpp_tc_profile`, splits_list, n_tip, scale, greedy_best_flag, init_majority, n_iter, n_threads)
+}
+

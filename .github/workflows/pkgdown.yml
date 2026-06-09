@@ -21,7 +21,6 @@ jobs:
   pkgdown:
     runs-on: ubuntu-latest
 
-    # github-actions[bot] needs write access to push the built site to gh-pages.
     permissions:
       contents: write
 

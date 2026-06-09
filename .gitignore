@@ -65,3 +65,4 @@ dev/**/_*
 # Upstream source clones kept locally as a port reference (e.g. FDCT_new); used
 # to port algorithms into src/, never committed or shipped.
 dev/reference/
+/.claude/worktrees

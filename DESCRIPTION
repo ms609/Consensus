@@ -30,7 +30,9 @@ Imports:
   Rdpack (>= 2.6),
   TreeTools (>= 2.1.0),
 LinkingTo:
-  Rcpp
+  Rcpp,
+  TreeTools (>= 2.1.0)
+SystemRequirements: C++17
 Suggests:
   knitr,
   Quartet,
