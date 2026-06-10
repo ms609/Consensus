@@ -44,6 +44,7 @@ rather than by selecting groupings:
 |----------|---------|
 | `Average()` | the tree best fitting the **mean path-length** (patristic) distances of the inputs |
 | `Quartet()` | an approximate median minimizing the total **quartet distance** to the inputs; often more resolved than majority-rule |
+| `Transfer()` | a greedy consensus minimizing total **transfer distance** to the inputs; often more resolved than majority-rule |
 | `BHVMean()` | the Fréchet **mean tree** in Billera–Holmes–Vogtmann treespace, with branch lengths; `BHVDistance()`, `BHVPairwiseDistances()` and `BHVVariance()` provide the supporting geodesic distances and dispersion |
 
 ## Usage
@@ -58,6 +59,7 @@ Majority(trees)      # the familiar 50% majority-rule tree
 Loose(trees)         # everything not actively contradicted
 Frequency(trees)     # frequency-difference: often more resolved than majority
 Greedy(trees)        # most resolved of the split-based summaries
+Transfer(trees)      # minimizes transfer distance; often more resolved than majority-rule
 ```
 
 ## Installation
