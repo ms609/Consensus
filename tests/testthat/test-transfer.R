@@ -87,6 +87,27 @@ test_that("Error on bad input", {
   expect_error(ConsTree:::tc_profile(tiny), "at least 4 tips")
 })
 
+test_that("Transfer validates tip-label sets (TC-002)", {
+  # Mismatched tip SETS (subset) must error, not silently return a wrong tree.
+  mismatch <- structure(
+    list(TreeTools::BalancedTree(letters[1:6]),
+         TreeTools::BalancedTree(letters[1:5])),
+    class = "multiPhylo")
+  expect_error(Transfer(mismatch), "same tip labels")
+
+  # Same SET, different ORDER must succeed (validation is setequal, not identical).
+  t8a <- TreeTools::BalancedTree(letters[1:8])
+  t8b <- TreeTools::RenumberTips(t8a, rev(letters[1:8]))
+  expect_s3_class(Transfer(structure(list(t8a, t8b), class = "multiPhylo")),
+                  "phylo")
+
+  # Duplicated tip labels must error.
+  dup <- TreeTools::BalancedTree(letters[1:6])
+  dup[["tip.label"]][2] <- dup[["tip.label"]][1]
+  expect_error(
+    Transfer(structure(list(dup, dup), class = "multiPhylo")), "unique")
+})
+
 test_that("Two-tree consensus returns a valid tree", {
   trees <- as.phylo(1:2, nTip = 8)
   tc <- Transfer(trees)
@@ -705,10 +726,26 @@ test_that("R greedy pipeline matches C++ consensus", {
 
   tc_r <- ConsTree:::.SplitsToPhylo(pool$rawSplits, st$incl, tipLabels, nTip)
 
-  # Both should produce resolved trees with same tip labels
   expect_s3_class(tc_r, "phylo")
+  expect_s3_class(tc_cpp, "phylo")
   expect_equal(sort(TipLabels(tc_r)), sort(TipLabels(tc_cpp)))
-  # Resolution should be similar (not necessarily identical due to
-  # possible differences in canonicalization/sort-order between R and C++)
-  expect_gte(NSplits(tc_r), 1)
+
+  # Canonical, label-based split key (members of the side that excludes the
+  # first tip), so comparison is invariant to split storage / tip-column order.
+  splitKey <- function(tr) {
+    sp <- as.logical(as.Splits(tr, tipLabels))
+    if (is.null(dim(sp))) sp <- matrix(sp, nrow = 1L)
+    sort(unname(apply(sp, 1L, function(r) {
+      side <- if (r[1L]) which(!r) else which(r)
+      paste(sort(tipLabels[side]), collapse = "+")
+    })))
+  }
+
+  # Discriminating: the shipped C++ greedy path must produce exactly the same
+  # consensus splits as the independent pure-R reimplementation (TC-006), and
+  # the consensus is pinned (TC-005) so a C++-only regression is caught even if
+  # both paths were ever to drift together.
+  expect_identical(splitKey(tc_cpp), splitKey(tc_r))
+  expect_identical(splitKey(tc_cpp),
+                   c("t2+t6+t7+t8", "t2+t7+t8", "t2+t8"))
 })

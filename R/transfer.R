@@ -62,13 +62,22 @@ Transfer <- function(trees,
   nTree <- length(trees)
   if (nTree < 2L) stop("Need at least 2 trees.")
   tipLabels <- TipLabels(trees[[1]])
+  if (anyDuplicated(tipLabels)) {
+    stop("all tip labels must be unique")
+  }
+  if (any(vapply(trees[-1L], function(tr)
+    !setequal(TipLabels(tr), tipLabels), logical(1L)))) {
+    stop("all trees must have the same tip labels")
+  }
   nTip <- length(tipLabels)
+  .CheckMaxTips(nTip)
   if (nTip < 4L) {
     return(StarTree(tipLabels))
   }
 
   # Convert each tree to a raw split matrix (TreeTools C++ internally).
-  # as.Splits() will error if a tree's tips don't match tipLabels.
+  # Tip-label consistency is validated above; as.Splits(tr, tipLabels)
+  # renumbers each tree into the shared tipLabels order.
   splitsList <- lapply(trees, function(tr) {
     sp <- as.Splits(tr, tipLabels)
     unclass(sp)
@@ -113,6 +122,7 @@ tc_profile <- function(trees, scale = TRUE, greedy = "best",
   if (length(trees) < 2L) stop("Need at least 2 trees.")
   tipLabels <- TipLabels(trees[[1]])
   nTip <- length(tipLabels)
+  .CheckMaxTips(nTip)
   if (nTip < 4L) stop("Need at least 4 tips for profiling.")
 
   splitsList <- lapply(trees, function(tr) unclass(as.Splits(tr, tipLabels)))
@@ -131,6 +141,19 @@ tc_profile <- function(trees, scale = TRUE, greedy = "best",
 
 # popcount lookup for 0:255
 .POPCOUNT <- as.integer(sapply(0:255, function(x) sum(as.integer(intToBits(x)))))
+
+# Validate nTip against the supported ceiling (mirrors TreeDist::.CheckMaxTips).
+# The transfer C++ stores tip counts and split-word indices in `int`, and builds
+# M*M distance/compatibility matrices over M unique splits; cap at 32767 tips,
+# matching TreeTools' heap-backed split storage and the upstream TreeDist limit.
+.CheckMaxTips <- function(nTip) {
+  if (is.na(nTip)) return(invisible(NULL))
+  if (nTip > 32767L) {
+    stop("Trees with ", nTip,
+         " tips are not yet supported (maximum 32767).")
+  }
+  invisible(NULL)
+}
 
 #' Pool unique splits, returning an integer (logical) matrix
 #' @noRd

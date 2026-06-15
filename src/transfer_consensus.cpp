@@ -218,7 +218,7 @@ static std::vector<int> transfer_dist_mat(const PooledSplits& pool,
   const int nb = pool.n_bins;
   const int nt = pool.n_tips;
 
-  std::vector<int> dist(M * M, 0);
+  std::vector<int> dist(static_cast<std::size_t>(M) * M, 0);
 
   #ifdef _OPENMP
   #pragma omp parallel for schedule(dynamic) num_threads(n_threads)
@@ -232,8 +232,8 @@ static std::vector<int> transfer_dist_mat(const PooledSplits& pool,
         hamming += count_bits(a[bin] ^ b[bin]);
       }
       int td = std::min(hamming, nt - hamming);
-      dist[i * M + j] = td;
-      dist[j * M + i] = td;
+      dist[static_cast<std::size_t>(i) * M + j] = td;
+      dist[static_cast<std::size_t>(j) * M + i] = td;
     }
   }
   return dist;
@@ -270,7 +270,7 @@ static std::vector<double> compute_td(
 
       int min_d = p_minus_1; // sentinel distance
       for (int k = 0; k < n_mem; ++k) {
-        int d = dist[b * M + members[k]];
+        int d = dist[static_cast<std::size_t>(b) * M + members[k]];
         if (d < min_d) min_d = d;
       }
       if (scale) {
@@ -299,7 +299,7 @@ static std::vector<uint8_t> compat_mat(const PooledSplits& pool,
   const int last_bin = nb - 1;
   const splitbit lm = pool.last_mask;
 
-  std::vector<uint8_t> compat(M * M, 1);
+  std::vector<uint8_t> compat(static_cast<std::size_t>(M) * M, 1);
 
   #ifdef _OPENMP
   #pragma omp parallel for schedule(dynamic) num_threads(n_threads)
@@ -320,8 +320,8 @@ static std::vector<uint8_t> compat_mat(const PooledSplits& pool,
         if (ab && anb && nab && nanb) break;
       }
       uint8_t comp = (!ab || !anb || !nab || !nanb) ? 1 : 0;
-      compat[i * M + j] = comp;
-      compat[j * M + i] = comp;
+      compat[static_cast<std::size_t>(i) * M + j] = comp;
+      compat[static_cast<std::size_t>(j) * M + i] = comp;
     }
   }
   return compat;
@@ -340,7 +340,7 @@ inline int sent_dist(int b, const PooledSplits& pool) {
 // "Effective distance" from split b to its match (or sentinel if match == -1)
 inline int eff_dist(int b, int match_idx, const std::vector<int>& dist,
                     int M, const PooledSplits& pool) {
-  return (match_idx < 0) ? sent_dist(b, pool) : dist[b * M + match_idx];
+  return (match_idx < 0) ? sent_dist(b, pool) : dist[static_cast<std::size_t>(b) * M + match_idx];
 }
 
 // Find second-closest included split to split b (excluding matchIdx).
@@ -358,7 +358,7 @@ static std::pair<int, int> find_second(
 
   for (int c = 0; c < M; ++c) {
     if (!incl[c] || c == matchIdx) continue;
-    int d = dist[b * M + c];
+    int d = dist[static_cast<std::size_t>(b) * M + c];
     if (d < best_d) {
       best_d = d;
       best = c;
@@ -427,7 +427,7 @@ struct GreedyState {
       if (!incl[i]) continue;
       n_incl++;
       for (int j = 0; j < M; ++j) {
-        if (!compat[j * M + i]) n_incompat[j]++;
+        if (!compat[static_cast<std::size_t>(j) * M + i]) n_incompat[j]++;
       }
     }
   }
@@ -441,7 +441,7 @@ struct GreedyState {
   double add_benefit(int c) const {
     double ben = -td[c];
     for (int b = 0; b < M; ++b) {
-      int diff = match_dist[b] - dist[b * M + c];
+      int diff = match_dist[b] - dist[static_cast<std::size_t>(b) * M + c];
       if (diff <= 0) continue;
       ben += diff * weight[b];
     }
@@ -453,7 +453,7 @@ struct GreedyState {
     double ben = td[c];
     for (int b = 0; b < M; ++b) {
       if (match[b] != c) continue;
-      int diff = dist[b * M + c] - match2_dist[b];
+      int diff = dist[static_cast<std::size_t>(b) * M + c] - match2_dist[b];
       if (diff >= 0) continue;
       ben += diff * weight[b];
     }
@@ -468,12 +468,12 @@ struct GreedyState {
 
     // Update n_incompat for all splits
     for (int j = 0; j < M; ++j) {
-      if (!compat[j * M + idx]) n_incompat[j]++;
+      if (!compat[static_cast<std::size_t>(j) * M + idx]) n_incompat[j]++;
     }
 
     // Update match/match2 and their cached distances
     for (int b = 0; b < M; ++b) {
-      int new_d = dist[b * M + idx];
+      int new_d = dist[static_cast<std::size_t>(b) * M + idx];
       if (new_d < match_dist[b]) {
         match2[b]      = match[b];
         match2_dist[b] = match_dist[b];
@@ -494,7 +494,7 @@ struct GreedyState {
 
     // Update n_incompat
     for (int j = 0; j < M; ++j) {
-      if (!compat[j * M + idx]) n_incompat[j]--;
+      if (!compat[static_cast<std::size_t>(j) * M + idx]) n_incompat[j]--;
     }
 
     // Update match/match2 for affected splits
@@ -654,7 +654,7 @@ static void init_matches(
     int best_d = p_minus_1, second_d = p_minus_1; // sentinel threshold
 
     for (int c : inc_idx) {
-      int d = dist[b * M + c];
+      int d = dist[static_cast<std::size_t>(b) * M + c];
       if (d < best_d) {
         second = best;
         second_d = best_d;
