@@ -48,6 +48,70 @@ entirely unreviewed, with new OpenMP. `last_focus` seeded at 8 so a bare
 
 ---
 
+## 2026-06-15 — Round 1: Area 9 (Transfer consensus), sonnet
+
+First live round under the tier system. Finder: `red-team-finder` @ **sonnet**.
+Verifiers: high-sev static → `red-team-verifier` @ **opus**; low/med test-quality →
+@ **haiku**; execution-dependent claims (TC-002/003) settled by the orchestrator
+against an **installed** build (`load_all` is broken on this path — TC-008).
+
+- **Finder yield: 6 confirmed, 1 refuted** (7 candidates).
+- **TC-002 (HIGH, REAL)** — `Transfer()` silently accepts mismatched tip-label
+  sets (subset case) → wrong consensus, no error. The cross-cutting validation
+  gap `1d77249` closed elsewhere, missed in the later-ported Transfer. Confirmed
+  by execution (installed pkg: 6-tip+5-tip input returns 2 splits, no error).
+- **TC-001 (MED, REAL)** — `.CheckMaxTips` guard dropped vs TreeDist oracle.
+- **TC-004 (LOW-MED, REAL but LATENT)** — `M*M` int overflow; byte-identical in
+  oracle, not a port regression; very-large-input only.
+- **TC-005/006 (MED, REAL)** — test suite tests the R reimpl, not the C++ path;
+  bridge test non-discriminating.
+- **TC-007 (LOW, REAL)** — false comment at `R/transfer.R:71` (TC-002 disproves it).
+- **TC-003 — REFUTED**: duplicate labels are caught by RenumberTips, not silently
+  corrupted.
+- **TC-008 (INFO/dev)** — the finder's "CRITICAL segfault on the happy path" was a
+  `load_all` build artifact (inconsistent TreeTools `SplitList.h`), **not a
+  shipping bug**: installed `Transfer()` and the TreeDist oracle both work. This
+  near-miss is why the round verified by execution against an installed build.
+- **No inline fixes applied** (TC-002's guard is a behaviour change wanting a test;
+  recommend bundling TC-007's comment fix with it).
+- **Seam status: still yielding** → next visit to area 9 stays at **sonnet** (mine
+  the immature seam with a fresh agent before escalating).
+
+last_tier(area 9): sonnet
+yield(area 9): 6 confirmed (1 HIGH)
+
+Full record: `reviews/transfer/review.md`. Filed: TC-001/002/004/005/006/007/008
+in `findings.md`.
+
+---
+
+## 2026-06-15 — Round 2: Area 9 fix pass
+
+Applied fixes for every actionable Round-1 finding (TC-008 is dev-infra, left as
+a caveat). Mechanical C++ widening delegated to a `red-team-finder` @ **sonnet**;
+R + test work done by the orchestrator. Verified against an **installed** build
+(`R CMD INSTALL` → full `test-transfer.R`: **150 pass / 0 fail**).
+
+- **TC-002 (HIGH)** — `Transfer()` now validates tip labels: `anyDuplicated` +
+  `setequal`-across-trees guard (mirrors `R/rstar.R:103`). Subset/duplicate inputs
+  `stop()`; same-set-different-order still works. New regression test added.
+- **TC-001 (MED)** — added internal `.CheckMaxTips()` (cap 32767, mirrors TreeDist),
+  called from `Transfer()` and `tc_profile()`.
+- **TC-004 (LOW-MED)** — all 16 flat-index sites in `src/transfer_consensus.cpp`
+  now do the `M*M`/`i*M+j` multiplication in `std::size_t`. Loop counters left
+  `int` (no sign-compare warnings). Compiles clean.
+- **TC-005/006 (MED)** — the R-vs-C++ bridge test now asserts the shipped C++
+  greedy path's splits are **identical** to the pure-R reference and pins the
+  canonical consensus.
+- **TC-007 (LOW)** — false comment at `R/transfer.R:71` corrected.
+
+Empirical drivers kept: `reviews/transfer/verify-fixes.R`. Fixes **not yet
+committed** at time of writing. Area 9 seam: the structural finds are now closed;
+a future revisit should target the greedy heuristic's optimality (untested) — may
+warrant escalation past sonnet.
+
+---
+
 ## Prior reviews (pre-tier-system, folded from `reviews/`)
 
 These predate the `sonnet/opus/fable` tier system; treat `tier: legacy`. Each has
@@ -74,5 +138,5 @@ a full `review.md` under `reviews/<dir>/`. Listed newest-first by review date.
 
 ---
 
-last_focus: 8
-last_focus_set: 2026-06-15 (seeded past areas 1–8 which carry recent prior reviews; resumes at area 9 Transfer — newest, unreviewed)
+last_focus: 9
+last_focus_set: 2026-06-15 (area 9 Transfer reviewed at sonnet, yielded — next bare /red-team picks area 10 FACT/memory-safety; area 9 seam still yielding, stays sonnet on revisit)

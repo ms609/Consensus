@@ -15,9 +15,34 @@ pass (a single read-only sweep) was **wrong on 2 of 2 rows that were spot-checke
   A-001, A-002, and the T-001 test-quality cluster. Treat as candidates until the
   area's next `/red-team` round confirms with the finder/verifier pair.
 
-Headline "MAJOR" items from the old reviews were re-checked and found **already
-fixed** (see *Resolved on reconciliation*), so **no MAJOR correctness finding
-currently survives**.
+Headline "MAJOR" items from the *old* reviews were re-checked and found **already
+fixed** (see *Resolved on reconciliation*). The 2026-06-15 area-9 (Transfer)
+round then found **one new HIGH correctness bug, TC-002** (see the next section) —
+verified by execution against an installed build.
+
+## Area 9 — Transfer consensus (2026-06-15 round, sonnet finder + opus/haiku verifiers)
+
+Full record: `reviews/transfer/review.md`. **TC-003 was REFUTED** (dup labels are
+caught, not silently corrupted). The finder's "CRITICAL segfault" was a
+`pkgload::load_all` dev-build artifact (TC-008), **not a shipping bug** — the
+installed package works.
+
+**2026-06-15 fix pass — TC-001/002/004/005/006/007 all FIXED** and verified
+against an installed build (full `test-transfer.R`: 150 pass / 0 fail). TC-008 is
+a dev-infra caveat (not a package bug); it stays open as a reviewer note. Fixes
+*not yet committed* at time of writing.
+
+| id | severity | status | area | title | file:line — detail | source |
+|----|----------|--------|------|-------|--------------------|--------|
+| TC-002 | **HIGH** | **FIXED** | 9 Transfer | Mismatched tip-label sets silently accepted → wrong consensus | `R/transfer.R` — added `anyDuplicated` + `setequal`-across-trees guard (mirrors `R/rstar.R:103`); subset/dup inputs now `stop()`. Regression test added (`test-transfer.R` "Transfer validates tip-label sets"). Verified: subset → error, reorder → ok. | reviews/transfer (executed) |
+| TC-001 | MED | **FIXED** | 9 Transfer | `.CheckMaxTips` guard dropped in the port | `R/transfer.R` — added internal `.CheckMaxTips()` (cap 32767, mirrors TreeDist) called from `Transfer()` and `tc_profile()`. | reviews/transfer (opus-verified) |
+| TC-004 | LOW-MED | **FIXED** | 9/10 | `M*M` 32-bit overflow in transfer matrices | `src/transfer_consensus.cpp` — all 16 flat-index sites (`M*M`, `i*M+j`, …) now compute the product in `std::size_t` via `static_cast`. Compiles clean; tests pass. | reviews/transfer (opus-verified) |
+| TC-005 | MED | **FIXED** | 12 Tests | Transfer R-vs-C++ bridge test non-discriminating | `tests/testthat/test-transfer.R` — bridge test now pins the canonical label-based split set of the C++ path. | reviews/transfer |
+| TC-006 | MED | **FIXED** | 12 Tests | Transfer tests exercise the R reimpl, not the C++ path | `tests/testthat/test-transfer.R` — bridge test now asserts the shipped C++ greedy path's splits are **identical** to the pure-R reference (content-level, not just tip labels). | reviews/transfer |
+| TC-007 | LOW | **FIXED** | 9 Transfer | Comment is provably false | `R/transfer.R:70-72` — false comment replaced (validation now happens above; `as.Splits` renumbers into tipLabels order). | reviews/transfer |
+| TC-008 | INFO/dev | OPEN | infra | `load_all` segfaults on the Transfer path | `pkgload::load_all` builds the transfer code against a TreeTools `SplitList.h` inconsistent with the runtime `as.Splits` raw format → OOB segfault (even single-threaded). Installed package is fine. **Test Transfer via an installed build, not load_all.** | reviews/transfer (caveat) |
+
+## Carried-forward open items (from pre-tier-system reviews)
 
 | id | severity | status | area | title | file:line — detail | source |
 |----|----------|--------|------|-------|--------------------|--------|
